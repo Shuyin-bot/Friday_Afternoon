@@ -7,7 +7,7 @@ import os
 
 def establish_connection() -> (bool, any):
     try:
-        imap = imaplib.IMAP4_SSL("imap.gmail.com", 993)
+        imap = imaplib.IMAP4_SSL("outlook.office365.com", 993)
     except:
         return False, None
     return True, imap
@@ -27,10 +27,10 @@ def check_new_emails(imap):
 if __name__ == "__main__":
     load_dotenv()
     did_conn, imap_conn = establish_connection()
-    gmail_pass = os.getenv("GMAIL_PASS")
+    outlook_pass = os.getenv("OUTLOOK_PASS")
     
     if did_conn:
-        res, val = imap_conn.login("kinstugi.webdev@gmail.com", gmail_pass)
+        res, val = imap_conn.login("pack_flow@outlook.com", outlook_pass)
         imap_conn.select("INBOX")
         stat, unread_mail_bytes = imap_conn.search(None, "UNSEEN")
         unread_email = unread_mail_bytes[0].split()

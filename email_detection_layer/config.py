@@ -17,6 +17,7 @@ class EmailSettings(BaseModel):
     imap_password: SecretStr
     mailbox: str = Field(default="INBOX", min_length=1)
     state_db_path: str = Field(default="data/email_state.db", min_length=1)
+    data_dir: str = Field(default="data", min_length=1)
     ollama_base_url: str = Field(default="http://localhost:11434", min_length=1)
     ollama_model: str = Field(default="llama3.1:8b", min_length=1)
 
@@ -37,6 +38,7 @@ class EmailSettings(BaseModel):
             imap_password=environ["IMAP_PASSWORD"],
             mailbox=environ.get("MAILBOX", "INBOX"),
             state_db_path=environ.get("STATE_DB_PATH", "data/email_state.db"),
+            data_dir=environ.get("DATA_DIR", "data"),
             ollama_base_url=environ.get("OLLAMA_BASE_URL", "http://localhost:11434"),
             ollama_model=environ.get("OLLAMA_MODEL", "llama3.1:8b"),
         )

@@ -17,6 +17,7 @@ dev = [
 
 [project.scripts]
 email-detect = "email_detection_layer.detector:main"
+email-ingest = "email_detection_layer.pipeline:main"
 
 [tool.pytest.ini_options]
 markers = [

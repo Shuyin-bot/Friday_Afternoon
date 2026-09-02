@@ -101,8 +101,27 @@ class EmailStateStore:
             ).fetchone()
         return row is not None and row["status"] in {
             EmailProcessingStatus.DETECTED.value,
+            EmailProcessingStatus.RETRIEVED.value,
             EmailProcessingStatus.FAILED.value,
         }
+
+    def list_retryable(self, mailbox: str) -> list[DetectedEmail]:
+        """Return recorded emails that still need retrieval or queue insertion."""
+        with self._lock:
+            rows = self._connection.execute(
+                """
+                SELECT uid, mailbox FROM email_messages
+                WHERE mailbox = ? AND status IN (?, ?, ?)
+                ORDER BY uid ASC
+                """,
+                (
+                    mailbox,
+                    EmailProcessingStatus.DETECTED.value,
+                    EmailProcessingStatus.RETRIEVED.value,
+                    EmailProcessingStatus.FAILED.value,
+                ),
+            ).fetchall()
+        return [DetectedEmail(uid=row["uid"], mailbox=row["mailbox"]) for row in rows]
 
     def mark_queued(self, email: DetectedEmail) -> None:
         """Mark an email queued and advance its mailbox cursor after queue insertion."""
@@ -112,7 +131,7 @@ class EmailStateStore:
                 """
                 UPDATE email_messages
                 SET status = ?, error = NULL, processed_at = ?
-                WHERE mailbox = ? AND uid = ? AND status IN (?, ?)
+                WHERE mailbox = ? AND uid = ? AND status IN (?, ?, ?)
                 """,
                 (
                     EmailProcessingStatus.QUEUED.value,
@@ -120,6 +139,7 @@ class EmailStateStore:
                     email.mailbox,
                     email.uid,
                     EmailProcessingStatus.DETECTED.value,
+                    EmailProcessingStatus.RETRIEVED.value,
                     EmailProcessingStatus.FAILED.value,
                 ),
             )

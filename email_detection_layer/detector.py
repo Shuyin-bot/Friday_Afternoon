@@ -1,38 +1,50 @@
+"""IMAP connection primitives for the email detection layer."""
+
+from __future__ import annotations
+
 import imaplib
 from email import policy
 from email.parser import BytesParser
-from dotenv import load_dotenv
-import os
+from typing import Any
+
+from .config import EmailSettings
+from .models import DetectedEmail
 
 
-def establish_connection() -> (bool, any):
+def establish_connection(settings: EmailSettings) -> tuple[bool, imaplib.IMAP4_SSL | None]:
+    """Open an IMAP TLS connection without authenticating or selecting a mailbox."""
     try:
-        imap = imaplib.IMAP4_SSL("imap.gmail.com", 993)
-    except:
+        imap = imaplib.IMAP4_SSL(settings.imap_host, settings.imap_port)
+    except OSError:
         return False, None
     return True, imap
 
 
-def fetch_email(imap, email_id):
+def fetch_email(imap: imaplib.IMAP4_SSL, email_id: bytes) -> Any:
+    """Fetch and parse one RFC822 message; retrieval will be completed in M4."""
     status, data = imap.fetch(email_id, "(RFC822)")
+    if status != "OK" or not data or not isinstance(data[0], tuple):
+        raise RuntimeError(f"Unable to fetch IMAP message {email_id!r}")
     raw_data = data[0][1]
-    msg = BytesParser(policy=policy.default).parsebytes(raw_data)
-    print(msg)
-    
+    return BytesParser(policy=policy.default).parsebytes(raw_data)
 
-def check_new_emails(imap):
+
+def check_new_emails(imap: imaplib.IMAP4_SSL) -> list[DetectedEmail]:
+    """Return detected email references; UID search is implemented in M2."""
     pass
 
 
+def main() -> None:
+    """Validate detector configuration and establish a test connection."""
+    settings = EmailSettings.from_env()
+    connected, imap = establish_connection(settings)
+    if not connected or imap is None:
+        raise RuntimeError(f"Unable to connect to {settings.imap_host}:{settings.imap_port}")
+    try:
+        print(f"Connected to {settings.imap_host}:{settings.imap_port}")
+    finally:
+        imap.logout()
+
+
 if __name__ == "__main__":
-    load_dotenv()
-    did_conn, imap_conn = establish_connection()
-    gmail_pass = os.getenv("GMAIL_PASS")
-    
-    if did_conn:
-        res, val = imap_conn.login("kinstugi.webdev@gmail.com", gmail_pass)
-        imap_conn.select("INBOX")
-        stat, unread_mail_bytes = imap_conn.search(None, "UNSEEN")
-        unread_email = unread_mail_bytes[0].split()
-        fetch_email(imap_conn, unread_email[-1])
-        imap_conn.logout()
+    main()

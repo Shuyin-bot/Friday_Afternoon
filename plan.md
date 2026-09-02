@@ -45,7 +45,7 @@ email_detection_layer/
 ├── models.py
 └── state.py
 
-queue/
+job_queue/
 ├── __init__.py
 ├── models.py
 ├── database.py
@@ -82,7 +82,7 @@ storage/
 
 tests/
 ├── email_detection_layer/
-├── queue/
+├── job_queue/
 ├── agent_system/
 └── tools/
 ```
@@ -258,7 +258,7 @@ Definition of done:
 Directory:
 
 ```text
-queue/
+job_queue/
 ```
 
 The queue is intentionally implemented in Python and SQLite for the first version. This exposes the important mechanics instead of hiding them behind Celery or another framework.

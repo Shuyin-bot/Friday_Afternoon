@@ -1,5 +1,7 @@
 """Pydantic contracts for the asynchronous job queue."""
 
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
@@ -43,3 +45,16 @@ class Job(BaseModel):
     attempts: int = Field(default=0, ge=0)
     available_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    lease_owner: str | None = None
+    lease_until: datetime | None = None
+    last_error: str | None = None
+
+
+class ClaimedJob(BaseModel):
+    """A job currently leased to one worker."""
+
+    model_config = ConfigDict(frozen=True)
+
+    job: Job
+    worker_id: str = Field(min_length=1)
+    lease_until: datetime

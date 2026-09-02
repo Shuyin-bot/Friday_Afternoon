@@ -6,11 +6,11 @@ import imaplib
 from email import policy
 from email.parser import BytesParser
 import logging
-from os import environ
 from typing import Any
 
 from .config import EmailSettings
 from .models import DetectedEmail
+from .state import EmailStateStore
 
 logger = logging.getLogger(__name__)
 
@@ -107,11 +107,16 @@ def detect_new_emails(settings: EmailSettings, last_uid: int = 0) -> list[Detect
 
 
 def main() -> None:
-    """Detect messages from the configured UID and print their references."""
+    """Detect and record new messages from the configured mailbox."""
     settings = EmailSettings.from_env()
-    last_uid = int(environ.get("LAST_UID", "0"))
-    for email in detect_new_emails(settings, last_uid):
-        print(email.model_dump_json())
+    state = EmailStateStore(settings.state_db_path)
+    try:
+        last_uid = state.get_last_queued_uid(settings.mailbox)
+        for email in detect_new_emails(settings, last_uid):
+            if state.record_detected(email):
+                print(email.model_dump_json())
+    finally:
+        state.close()
 
 
 if __name__ == "__main__":

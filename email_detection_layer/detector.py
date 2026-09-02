@@ -10,6 +10,7 @@ from typing import Any
 
 from .config import EmailSettings
 from .models import DetectedEmail
+from .retriever import fetch_raw_email
 from .state import EmailStateStore
 
 logger = logging.getLogger(__name__)
@@ -44,11 +45,8 @@ def establish_connection(settings: EmailSettings) -> tuple[bool, imaplib.IMAP4_S
 
 
 def fetch_email(imap: imaplib.IMAP4_SSL, email_id: bytes) -> Any:
-    """Fetch and parse one RFC822 message; retrieval will be completed in M4."""
-    status, data = imap.fetch(email_id, "(RFC822)")
-    if status != "OK" or not data or not isinstance(data[0], tuple):
-        raise RuntimeError(f"Unable to fetch IMAP message {email_id!r}")
-    raw_data = data[0][1]
+    """Fetch and parse one RFC822 message through the retrieval layer."""
+    raw_data = fetch_raw_email(imap, int(email_id))
     return BytesParser(policy=policy.default).parsebytes(raw_data)
 
 

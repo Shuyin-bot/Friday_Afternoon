@@ -1,7 +1,7 @@
 [project]
-name = "project"
+name = "quotation-agent"
 version = "0.1.0"
-description = "Add your description here"
+description = "Local agentic quotation workflow"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
@@ -10,9 +10,23 @@ dependencies = [
     "python-dotenv>=1.2.1",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9",
+]
+
 [project.scripts]
-project = "project:main"
+email-detect = "email_detection_layer.detector:main"
+email-ingest = "email_detection_layer.pipeline:main"
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: tests multiple application layers together",
+]
 
 [build-system]
-requires = ["uv_build>=0.12.7,<0.13.0"]
-build-backend = "uv_build"
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["email_detection_layer", "agent_system", "job_queue"]

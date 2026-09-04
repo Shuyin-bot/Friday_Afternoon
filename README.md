@@ -278,7 +278,37 @@ The project should be evaluated on more than response quality:
 
 ## Development
 
-The implementation stack and local setup instructions will be added as the project is built. Planned configuration areas include:
+The current proof of concept uses IMAP for ingestion and SQLite for state and queued jobs.
+
+Install the project with development dependencies:
+
+```bash
+uv sync --extra dev
+```
+
+Run one ingestion cycle manually:
+
+```bash
+uv run email-ingest
+```
+
+The ingestion pipeline connects to IMAP, detects new UIDs, retrieves and parses each email, saves raw and normalized artifacts under `DATA_DIR`, and adds an `EMAIL_RECEIVED` job to SQLite. It does not run agents or send email. Agent-worker startup will be documented in a later milestone.
+
+Example cron entry:
+
+```cron
+*/5 * * * * cd /path/to/quotation-agent && uv run email-ingest >> logs/pipeline.log 2>&1
+```
+
+Configuration is documented in `.env.example`. Copy those keys into `.env` and replace the placeholder credentials with a Gmail app password. Never commit `.env`.
+
+Run the tests with:
+
+```bash
+uv run --extra dev pytest
+```
+
+Planned configuration areas include:
 
 - Email provider credentials and mailbox settings.
 - LLM provider and model configuration.

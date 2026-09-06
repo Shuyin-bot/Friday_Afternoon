@@ -6,6 +6,10 @@ The system is designed to reduce repetitive quotation work without giving an AI 
 
 > **Project status:** Early design and development
 
+## Developer Documentation
+
+New to the codebase? Start with the [developer documentation](docs/README.md), especially the [Getting Started](docs/getting-started.md), [Architecture](docs/architecture.md), and [Maintenance Guide](docs/maintenance.md).
+
 ## Problem
 
 Quotation requests often arrive through shared inboxes and require people to:

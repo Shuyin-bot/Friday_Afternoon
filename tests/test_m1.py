@@ -25,7 +25,8 @@ def test_settings_load_from_environment(monkeypatch, tmp_path: Path):
 def test_settings_requires_credentials(monkeypatch, tmp_path: Path):
     monkeypatch.chdir(tmp_path)
     for name in ("IMAP_HOST", "IMAP_USERNAME", "IMAP_PASSWORD"):
-        monkeypatch.delenv(name, raising=False)
+        # Explicit empty values prevent the repository .env from satisfying this test.
+        monkeypatch.setenv(name, "")
 
     with pytest.raises(ValueError, match="IMAP_HOST, IMAP_USERNAME, IMAP_PASSWORD"):
         EmailSettings.from_env()

@@ -280,6 +280,8 @@ The project should be evaluated on more than response quality:
 
 The current proof of concept uses IMAP for ingestion and SQLite for state and queued jobs.
 
+M7 adds a Python agent framework under `agent_system/`. It includes typed agent context and results, an explicit registry, execution validation and audit records, a deterministic quotation-classifier stub, and a queue-worker adapter. The stub does not contact Ollama; Ollama and PydanticAI integration are planned for M8.
+
 Install the project with development dependencies:
 
 ```bash
@@ -307,6 +309,8 @@ Run the tests with:
 ```bash
 uv run --extra dev pytest
 ```
+
+Run one queued job through the M7 agent worker from Python by registering an agent with `AgentRegistry`, creating an `AgentRunner`, and passing both to `AgentWorker`. The worker claims jobs using the existing SQLite leases and records each agent execution in the configured SQLite database.
 
 Planned configuration areas include:
 

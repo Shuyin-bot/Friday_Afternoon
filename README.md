@@ -288,6 +288,8 @@ M7 adds a Python agent framework under `agent_system/`. It includes typed agent 
 
 M8 adds `PydanticAIQuotationClassifier`, configured through the provider-neutral `LLMSettings` and `create_model()` factory. It can target local Ollama or hosted providers such as Groq, Gemini, Anthropic, and OpenAI. Its client is injectable for tests, and it has no tools enabled. The deterministic M7 stub remains available for offline development.
 
+M9 adds explicit Python workflow orchestration and `WorkflowWorker`. It chains typed stages from `EMAIL_RECEIVED` through classification, extraction, verification, research, quote preparation, and draft generation, then stops at `NEEDS_HUMAN_REVIEW`. The M9 default stubs do not use external tools or send email.
+
 Install the project with development dependencies:
 
 ```bash

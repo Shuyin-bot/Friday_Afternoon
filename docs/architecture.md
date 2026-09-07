@@ -141,6 +141,21 @@ The queue worker claims a job and supplies a lease. `AgentWorker` maps the job t
 
 Queue completion remains separate from agent audit logging. A runner failure is raised to `QueueWorker`, which applies queue retry rules.
 
+### 6. Workflow Orchestration
+
+`QuotationWorkflow` is the M9 stage coordinator. It is deliberately explicit Python code rather than a prompt asking one model to manage its own workflow. `WorkflowWorker` registers the coordinator as the handler for `EMAIL_RECEIVED` and all configured agent stages.
+
+Each stage validates its result with a Pydantic model before saving it into `workflow_state` and creating the next queue job. The coordinator stops instead of guessing when:
+
+- Classification says the message is not a quotation.
+- Classification produces security flags.
+- Classification confidence is below the configured threshold.
+- Required quotation fields are missing.
+- Sender verification is incomplete or requires review.
+- Product research needs tools or has unresolved products.
+
+The current M9 stub agents demonstrate the transitions without external services. They do not provide real sender identity checks, product data, pricing, or outbound email.
+
 ## State Machines
 
 ### Email state

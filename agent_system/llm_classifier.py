@@ -1,4 +1,4 @@
-"""PydanticAI quotation classifier backed by a local Ollama model."""
+"""Provider-neutral PydanticAI quotation classifier."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pydantic_ai import Agent
 
 from .classifier import EmailClassificationInput, QuotationClassification
 from .models import AgentContext, AgentMetadata, AgentRiskLevel
-from .ollama import OllamaSettings, create_ollama_model
+from .llm import LLMSettings, create_model
 
 
 CLASSIFIER_INSTRUCTIONS = """You classify business emails for a quotation workflow.
@@ -40,7 +40,7 @@ class PydanticAIQuotationClassifier:
     """Classify emails with validated structured output from Ollama."""
 
     metadata = AgentMetadata(
-        name="quotation_classifier_ollama",
+        name="quotation_classifier_llm",
         allowed_tools=(),
         retry_limit=1,
         risk_level=AgentRiskLevel.LOW,
@@ -51,7 +51,7 @@ class PydanticAIQuotationClassifier:
     def __init__(
         self,
         model: object | None = None,
-        settings: OllamaSettings | None = None,
+        settings: LLMSettings | None = None,
         client: PydanticAIClient | None = None,
     ):
         """Create the agent, optionally injecting a model or test client."""
@@ -59,7 +59,7 @@ class PydanticAIQuotationClassifier:
             self._client = client
         else:
             self._client = Agent(
-                model or create_ollama_model(settings),
+                model or create_model(settings),
                 output_type=QuotationClassification,
                 instructions=CLASSIFIER_INSTRUCTIONS,
                 retries=1,

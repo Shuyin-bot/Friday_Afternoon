@@ -67,7 +67,24 @@ Owns Python agent execution.
 - `classifier.py`: deterministic M7 classifier stub.
 - `worker.py`: adapts queue jobs to registered agents.
 
-M8 will add PydanticAI and Ollama behind this boundary.
+M8 provides the provider-neutral LLM boundary:
+
+- `llm/config.py`: `LLMProvider` and `LLMSettings` loaded from `LLM_*` environment variables.
+- `llm/factory.py`: constructs the correct PydanticAI model for Ollama, Groq, Gemini, Anthropic, or OpenAI.
+- `llm_classifier.py`: uses the factory but does not know which provider is active.
+- `ollama.py`: compatibility aliases for older Ollama-specific callers.
+
+Ollama and OpenAI use the OpenAI-compatible chat model. Groq, Gemini, and Anthropic use native PydanticAI providers. Model construction is local and does not make a network request; network access begins only when an agent runs.
+
+Change providers by changing configuration, not agent code:
+
+```env
+LLM_PROVIDER=groq
+LLM_MODEL=llama-3.1-8b-instant
+LLM_API_KEY=gsk_your_key
+```
+
+Hosted provider credentials must never be logged or committed.
 
 ### `tests/`
 

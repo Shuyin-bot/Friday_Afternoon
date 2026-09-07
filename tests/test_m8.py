@@ -3,6 +3,7 @@ import asyncio
 from agent_system.classifier import QuotationClassification
 from agent_system.llm_classifier import PydanticAIQuotationClassifier
 from agent_system.models import AgentContext
+from agent_system.llm import LLMProvider, LLMSettings, create_model
 from agent_system.ollama import OllamaSettings, create_ollama_model
 from job_queue.models import Job, JobType
 
@@ -46,6 +47,39 @@ def test_ollama_model_factory_uses_openai_compatible_v1_endpoint():
 
     assert model.model_name == "qwen2.5:7b"
     assert str(model.base_url).rstrip("/") == "http://ollama.local/v1"
+
+
+def test_groq_factory_uses_native_provider_without_network():
+    model = create_model(
+        LLMSettings(
+            provider=LLMProvider.GROQ,
+            model_name="llama-3.1-8b-instant",
+            api_key="test-key",
+        )
+    )
+
+    assert model.model_name == "llama-3.1-8b-instant"
+
+
+def test_gemini_factory_uses_native_provider_without_network():
+    model = create_model(
+        LLMSettings(
+            provider=LLMProvider.GEMINI,
+            model_name="gemini-2.0-flash",
+            api_key="test-key",
+        )
+    )
+
+    assert model.model_name == "gemini-2.0-flash"
+
+
+def test_hosted_provider_requires_api_key():
+    try:
+        create_model(LLMSettings(provider=LLMProvider.GROQ, model_name="test"))
+    except ValueError as error:
+        assert "LLM_API_KEY" in str(error)
+    else:
+        raise AssertionError("Expected hosted provider API key validation")
 
 
 def test_pydantic_ai_classifier_validates_structured_output_without_network():

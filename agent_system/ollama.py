@@ -1,25 +1,27 @@
-"""Ollama model configuration and PydanticAI model construction."""
+"""Backward-compatible Ollama names for the provider-neutral LLM layer."""
 
 from __future__ import annotations
 
 from os import environ
+from typing import Literal
 
 from dotenv import load_dotenv
-from pydantic import BaseModel, ConfigDict, Field, SecretStr
+from pydantic import SecretStr
+
+from .llm.config import LLMProvider, LLMSettings
+from .llm.factory import create_model
 
 
-class OllamaSettings(BaseModel):
-    """Validated connection settings for a local Ollama server."""
+class OllamaSettings(LLMSettings):
+    """Compatibility settings model for callers that explicitly choose Ollama."""
 
-    model_config = ConfigDict(frozen=True)
-
-    base_url: str = Field(default="http://localhost:11434", min_length=1)
-    model_name: str = Field(default="llama3.1:8b", min_length=1)
+    provider: Literal[LLMProvider.OLLAMA] = LLMProvider.OLLAMA
+    base_url: str = "http://localhost:11434"
     api_key: SecretStr = SecretStr("ollama")
 
     @classmethod
     def from_env(cls) -> "OllamaSettings":
-        """Load Ollama settings from `.env` and process environment variables."""
+        """Load only legacy Ollama variables for backward-compatible callers."""
         load_dotenv()
         return cls(
             base_url=environ.get("OLLAMA_BASE_URL", "http://localhost:11434"),
@@ -29,21 +31,5 @@ class OllamaSettings(BaseModel):
 
 
 def create_ollama_model(settings: OllamaSettings | None = None) -> object:
-    """Create a PydanticAI OpenAI model configured for Ollama's local API.
-
-    PydanticAI does not need an Ollama-specific model class because Ollama
-    exposes an OpenAI-compatible endpoint. Importing this function is safe;
-    network access starts only when an agent executes a model run.
-    """
-    from pydantic_ai.models.openai import OpenAIChatModel
-    from pydantic_ai.providers.openai import OpenAIProvider
-
-    configuration = settings or OllamaSettings.from_env()
-    base_url = configuration.base_url.rstrip("/")
-    if not base_url.endswith("/v1"):
-        base_url += "/v1"
-    provider = OpenAIProvider(
-        base_url=base_url,
-        api_key=configuration.api_key.get_secret_value(),
-    )
-    return OpenAIChatModel(configuration.model_name, provider=provider)
+    """Create an Ollama model through the generalized model factory."""
+    return create_model(settings)

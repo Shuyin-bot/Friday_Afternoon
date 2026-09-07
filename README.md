@@ -286,7 +286,7 @@ The current proof of concept uses IMAP for ingestion and SQLite for state and qu
 
 M7 adds a Python agent framework under `agent_system/`. It includes typed agent context and results, an explicit registry, execution validation and audit records, a deterministic quotation-classifier stub, and a queue-worker adapter. The stub does not contact Ollama; Ollama and PydanticAI integration are planned for M8.
 
-M8 adds `PydanticAIQuotationClassifier`, configured to call a local Ollama model through Ollama's OpenAI-compatible `/v1` API. Its client is injectable for tests, and it has no tools enabled. The deterministic M7 stub remains available for offline development.
+M8 adds `PydanticAIQuotationClassifier`, configured through the provider-neutral `LLMSettings` and `create_model()` factory. It can target local Ollama or hosted providers such as Groq, Gemini, Anthropic, and OpenAI. Its client is injectable for tests, and it has no tools enabled. The deterministic M7 stub remains available for offline development.
 
 Install the project with development dependencies:
 

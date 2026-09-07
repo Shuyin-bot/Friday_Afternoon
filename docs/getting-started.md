@@ -33,8 +33,10 @@ IMAP_PASSWORD=your-gmail-app-password
 MAILBOX=INBOX
 STATE_DB_PATH=data/email_state.db
 DATA_DIR=data
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama3.1:8b
+LLM_PROVIDER=ollama
+LLM_BASE_URL=http://localhost:11434
+LLM_MODEL=llama3.1:8b
+LLM_API_KEY=
 ```
 
 For Gmail, `IMAP_PASSWORD` should be an App Password, not your normal account password. The `.env` file is ignored by Git. Never put credentials in Python source, tests, logs, or queue payloads.
@@ -148,7 +150,28 @@ ollama pull llama3.1:8b
 ollama serve
 ```
 
-M8 uses Ollama's OpenAI-compatible endpoint at `OLLAMA_BASE_URL/v1`. The real classifier is created with `PydanticAIQuotationClassifier`; its output is validated as `QuotationClassification`. The M8 tests inject a fake PydanticAI client, so normal CI does not need Ollama.
+M8 uses a provider-neutral factory. Ollama is configured through `LLM_PROVIDER=ollama` and uses the OpenAI-compatible endpoint at `LLM_BASE_URL/v1`. The real classifier is created with `PydanticAIQuotationClassifier`; its output is validated as `QuotationClassification`.
+
+Hosted provider examples:
+
+```env
+# Groq
+LLM_PROVIDER=groq
+LLM_MODEL=llama-3.1-8b-instant
+LLM_API_KEY=gsk_your_key
+
+# Gemini
+LLM_PROVIDER=gemini
+LLM_MODEL=gemini-2.0-flash
+LLM_API_KEY=your_google_key
+
+# Anthropic
+LLM_PROVIDER=anthropic
+LLM_MODEL=claude-3-5-haiku-latest
+LLM_API_KEY=your_anthropic_key
+```
+
+The M8 tests inject a fake PydanticAI client, so normal CI does not need any provider service.
 
 Do not test the real model with customer emails or production data. Use a fixture mailbox and review the model's output before connecting it to workflow transitions.
 

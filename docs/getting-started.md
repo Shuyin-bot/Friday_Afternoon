@@ -139,6 +139,19 @@ M7 is currently demonstrated by enqueueing a `CLASSIFY_EMAIL` job directly and m
 
 The stub is intentionally deterministic. It identifies quotation-related keywords and flags a small set of prompt-injection phrases. It does not contact Ollama and is not a production classifier.
 
+## Test Ollama Integration
+
+Install and start Ollama separately, then pull the configured model:
+
+```bash
+ollama pull llama3.1:8b
+ollama serve
+```
+
+M8 uses Ollama's OpenAI-compatible endpoint at `OLLAMA_BASE_URL/v1`. The real classifier is created with `PydanticAIQuotationClassifier`; its output is validated as `QuotationClassification`. The M8 tests inject a fake PydanticAI client, so normal CI does not need Ollama.
+
+Do not test the real model with customer emails or production data. Use a fixture mailbox and review the model's output before connecting it to workflow transitions.
+
 ## Stop and Reset Local State
 
 To reset the local proof of concept, stop cron first, then remove only local generated data:

@@ -2,7 +2,9 @@
 
 from .base import BaseAgent
 from .classifier import StubQuotationClassifier
+from .llm_classifier import PydanticAIQuotationClassifier
 from .models import AgentContext, AgentExecutionRecord, AgentMetadata
+from .ollama import OllamaSettings
 from .registry import AgentRegistry
 from .runner import AgentRunner
 
@@ -13,5 +15,7 @@ __all__ = [
     "AgentRegistry",
     "AgentRunner",
     "BaseAgent",
+    "OllamaSettings",
+    "PydanticAIQuotationClassifier",
     "StubQuotationClassifier",
 ]

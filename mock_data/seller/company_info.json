@@ -1,0 +1,71 @@
+{
+  "company_id": "SELLER-001",
+  "legal_name": "PackFlow Systems GmbH",
+  "brand_name": "PackFlow",
+  "founded": 1998,
+  "headquarters": {
+    "street": "Dieselstraße 14",
+    "postal_code": "74076",
+    "city": "Heilbronn",
+    "state": "Baden-Württemberg",
+    "country": "DE"
+  },
+  "commercial_register": "HRB 104728, Amtsgericht Stuttgart",
+  "vat_id": "DE214559810",
+  "employees": 85,
+  "annual_revenue_eur": 18500000,
+  "export_share": 0.42,
+  "website": "https://www.packflow-systems.de",
+  "inboxes": {
+    "general": "info@packflow-systems.de",
+    "sales": "sales@packflow-systems.de",
+    "service": "service@packflow-systems.de"
+  },
+  "business_domain": {
+    "de": "Entwicklung, Bau und Service von End-of-Line-Verpackungsmaschinen: Kartonaufrichter, Kartonverschließer, Wrap-Around-Packer und Robotik-Palettierzellen, inklusive Formatteilen, Ersatzteilen und Retrofit.",
+    "en": ["Design, manufacture and service of end-of-line packaging machinery: case erectors, carton sealers,",
+    " wrap-around case packers and robotic palletizing cells, including format parts, spare parts and retrofits."]
+  },
+  "target_industries": [
+    "Food & Beverage",
+    "Pharma / Nutraceuticals (GMP)",
+    "Cosmetics",
+    "Contract Packing (Lohnverpackung)",
+    "E-Commerce Fulfilment"
+  ],
+  "typical_customer_size": "50-1000 employees, production sites in DACH and EU",
+  "sales_region": "DACH primary, EU secondary, selective overseas via partners",
+  "sales_team": [
+    { "name": "Katrin Vogel", "role_de": "Vertriebsleiterin", "role_en": "Head of Sales", "email": "k.vogel@packflow-systems.de" },
+    { "name": "Jonas Brenner", "role_de": "Vertriebsinnendienst", "role_en": "Inside Sales", "email": "j.brenner@packflow-systems.de" }
+  ],
+  "value_propositions": {
+    "de": [
+      "Modulare Maschinenplattform, Formatwechsel unter 15 Minuten",
+      "Steuerung Siemens S7-1500, OPC UA / Industrie-4.0-Anbindung serienmäßig",
+      "24 Monate Gewährleistung, 24/7-Service-Hotline, Ersatzteilversand in 48 h",
+      "Konstruktion und Fertigung zu 100 % in Heilbronn"
+    ],
+    "en": [
+      "Modular machine platform, format change under 15 minutes",
+      "Siemens S7-1500 control, OPC UA / Industry 4.0 connectivity as standard",
+      "24-month warranty, 24/7 service hotline, spare parts dispatch within 48 h",
+      "Engineering and production 100% in Heilbronn, Germany"
+    ]
+  },
+  "commercial_terms": {
+    "delivery": "EXW Heilbronn (Incoterms 2020)",
+    "standard_lead_time_weeks": "14-16 (machines), 18-20 (wrap-around packer), 2-4 (format/spare kits)",
+    "payment": "30% on order, 60% on ready-for-dispatch notification, 10% after commissioning",
+    "warranty_months": 24,
+    "discount_policy": "max. 3% at sales discretion; larger concessions via service/warranty packages, never on list price alone"
+  },
+  "known_competitors": [
+    { "name": "Verpatec Packaging GmbH", "note": "German competitor, similar range, aggressive at trade fairs (fictional)" },
+    { "name": "Cartomac S.r.l.", "note": "Italian competitor, 15-25% cheaper, weaker service network in DACH (fictional)" }
+  ],
+  "trade_fairs_2026": [
+    { "name": "FachPack 2026", "location": "Nürnberg", "dates": "2026-09-22 to 2026-09-24", "booth": "Halle 3, Stand 3-227" }
+  ],
+  "disclaimer": "Fictional company for AI agent development and evaluation. Any resemblance to real companies is coincidental."
+}

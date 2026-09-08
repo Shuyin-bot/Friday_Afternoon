@@ -1,0 +1,282 @@
+{
+  "channel": "email",
+  "note": ["Raw IMAP adapter output from info@packflow-systems.de. lead_id assigned at ingestion.",
+  " Bodies verbatim including typos and colloquialisms. Labels live separately in ground_truth/ground_truth.json."],
+  "leads": [
+    {
+      "lead_id": "LEAD-2026-016",
+      "source_channel": "email",
+      "timestamp": "2026-09-01T10:14:00+02:00",
+      "raw_input": {
+        "from": "Thomas Maier <t.maier@nudelwerke-ulm.de>",
+        "to": "info@packflow-systems.de",
+        "subject": "Anfrage Kartonaufrichter + Verschließer für neue Verpackungslinie",
+        "body": "Sehr geehrte Damen und Herren,\n\nwir sind ein mittelständischer Teigwarenhersteller in Ulm (ca. 160 Mitarbeiter) und erneuern 2027 unsere End-of-Line-Verpackung. Gesucht werden ein Kartonaufrichter und ein Kartonverschließer für Beutelware in Umkartons:\n\n- Leistung: 14-18 Kartons/min\n- Kartongrößen: 300x200x200 bis 600x400x400 mm (FEFCO 0201)\n- Verschluss: Heißleim\n- Übergabe an bestehenden Palettierer, Anbindung an Siemens-Leitsystem erforderlich\n\nZeitplan: Ausschreibung bis November 2026, Lieferung Q2/2027. Bitte senden Sie uns ein Richtpreisangebot und Referenzen aus der Lebensmittelindustrie.\n\nMit freundlichen Grüßen\nThomas Maier\nLeiter Produktion\nSchwäbische Nudelwerke GmbH | Ulm"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-017",
+      "source_channel": "email",
+      "timestamp": "2026-09-02T19:03:00+02:00",
+      "raw_input": {
+        "from": "h.mueller62@gmx.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Preis",
+        "body": "Hallo, was kostet der Kartonaufrichter?\nMfG H. Müller"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-018",
+      "source_channel": "email",
+      "timestamp": "2026-09-03T08:21:00+02:00",
+      "raw_input": {
+        "from": "vertrieb@lintec-komponenten.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Linearführungen und Profilschienen – Rahmenvertragskonditionen für Maschinenbauer",
+        "body": "Sehr geehrte Damen und Herren,\n\nals Hersteller von Linearführungen, Profilschienen und Führungswagen beliefern wir zahlreiche Verpackungsmaschinenbauer in Süddeutschland. Gerne unterbreiten wir auch Ihnen ein Angebot mit attraktiven Rahmenvertragskonditionen ab Losgröße 50.\n\nAnbei unser Katalog 2026/27. Für ein Erstgespräch stehe ich jederzeit zur Verfügung.\n\nMit freundlichen Grüßen\nRalf Steinbach, Vertrieb\nLinTec Komponenten GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-019",
+      "source_channel": "email",
+      "timestamp": "2026-09-18T16:38:00+02:00",
+      "raw_input": {
+        "from": "Soren Dahl <sd@jyskmejeri.dk>",
+        "to": "info@packflow-systems.de",
+        "subject": "Palletizing cell for dairy plant – budget quote",
+        "body": "Dear PackFlow team,\n\nwe are a Danish dairy (approx. 290 employees) and plan to automate palletizing at our Horsens plant. Requirements:\n\n- approx. 550 cases/h, case weight up to 25 kg\n- Euro pallets, stack height max 1,950 mm\n- integration with our MES via OPC UA is mandatory\n- gripper must handle both cartons and shrink-wrapped trays\n\nCould you send a budget quotation and typical delivery time? We plan vendor shortlisting in October.\n\nBest regards,\nSøren Dahl\nTechnical Project Manager, Jysk Mejeri A/S"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-020",
+      "source_channel": "email",
+      "timestamp": "2026-09-07T12:47:00+02:00",
+      "raw_input": {
+        "from": "K. Ertl <k.ertl@bergland-versand.de>",
+        "to": "info@packflow-systems.de",
+        "subject": "kartonverschliesser",
+        "body": "Sehr geehrte damen und heren,\n\nwir brauchen ein kartonverschliesser fur ca 10 kartons pro minute, klebeband. karton grösse ist meistens 400x300x300. was kostet sowas ungefähr und wie lange ist die lieferzeit?\n\nmfg\nK. Ertl\nBergland Versand GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-021",
+      "source_channel": "email",
+      "timestamp": "2026-09-08T16:09:00+02:00",
+      "raw_input": {
+        "from": "jonas.pfeiffer@student.uni-stuttgart.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Umfrage für Masterarbeit: Digitalisierung im Verpackungsmaschinenbau",
+        "body": "Sehr geehrte Damen und Herren,\n\nim Rahmen meiner Masterarbeit an der Universität Stuttgart untersuche ich den Digitalisierungsgrad im Verpackungsmaschinenbau. Ich würde mich sehr freuen, wenn Sie an meiner 15-minütigen Online-Umfrage teilnehmen. Gerne würde ich auch ein Experteninterview mit Ihrer Geschäftsführung führen.\n\nVielen Dank und freundliche Grüße\nJonas Pfeiffer"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-022",
+      "source_channel": "email",
+      "timestamp": "2026-09-09T06:54:00+02:00",
+      "raw_input": {
+        "from": "Emre Kaya <e.kaya@anadolu-gida-export.com.tr>",
+        "to": "info@packflow-systems.de",
+        "subject": "Case erector best price request",
+        "body": "Dear Sirs,\n\nwe are exporter of dried fruits from Izmir, Turkey. We need case erector machine for our facility. Please send your best price and catalog. Also inform discount for cash payment and if you have cheaper second model. Quantity: 1 machine now, maybe more later.\n\nBest regards,\nEmre Kaya\nAnadolu Gıda Export Ltd. Şti."
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-023",
+      "source_channel": "email",
+      "timestamp": "2026-09-10T18:26:00+02:00",
+      "raw_input": {
+        "from": "krausmetzgerei@gmail.com",
+        "to": "info@packflow-systems.de",
+        "subject": "Anfrage Kartonverschließer Versandgeschäft",
+        "body": "Guten Abend,\n\nunser Online-Versand (Wurst- und Schinkenspezialitäten, gekühlte Pakete) wächst stark, wir verschließen aktuell alles von Hand. Wir suchen einen Kartonverschließer für ca. 8 Kartons/min, Klebeband, zwei feste Kartongrößen (390x290x280 und 590x390x300 mm). Was würde uns das kosten und wie schnell wäre Lieferung möglich?\n\nMit freundlichen Grüßen\nMartin Kraus\nLandmetzgerei Kraus e.K.\nHauptstraße 41, 97993 Creglingen\nTel. 07933 912-44 | www.landmetzgerei-kraus.de"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-024",
+      "source_channel": "email",
+      "timestamp": "2026-09-11T16:41:00+02:00",
+      "raw_input": {
+        "from": "procurement.consult23@web.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Dringend: Unterlagen für Maschinenvergleich",
+        "body": "Sehr geehrte Damen und Herren,\n\nfür einen Maschinenvergleich benötige ich kurzfristig Ihre vollständige Preisliste aller Modelle, technische Zeichnungen mit Abmessungen sowie Ihre Ersatzteilpreisliste. Bitte alles als PDF an diese Adresse. Um welches Projekt es geht, kann ich aus Vertraulichkeitsgründen leider nicht sagen.\n\nMit freundlichen Grüßen\nP. Schuster"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-025",
+      "source_channel": "email",
+      "timestamp": "2026-09-14T09:31:00+02:00",
+      "raw_input": {
+        "from": "Frank Ostermann <f.ostermann@metallform-automotive.de>",
+        "to": "info@packflow-systems.de",
+        "subject": "Anfrage Palettierzelle für KLT-Behälter",
+        "body": "Sehr geehrte Damen und Herren,\n\nwir sind Automobilzulieferer (Stanz- und Umformteile, 260 Mitarbeiter) und möchten die Palettierung an zwei Linien automatisieren:\n\n- KLT-Behälter 600x400 und 400x300, bis 18 kg\n- ca. 400 Behälter/h auf Industriepaletten 1200x1000\n- Lagenbilder wechselnd, Anbindung an Linien-SPS (Profinet)\n\nKönnen Ihre Palettierzellen KLT handhaben? Bitte um Rückmeldung und ggf. Richtpreis.\n\nMit freundlichen Grüßen\nFrank Ostermann\nLeiter Industrial Engineering, MetallForm Automotive GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-026",
+      "source_channel": "email",
+      "timestamp": "2026-09-15T11:12:00+02:00",
+      "raw_input": {
+        "from": "sarah.brinkmann@talentbridge-recruiting.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Top-Kandidaten im Sondermaschinenbau verfügbar",
+        "body": "Guten Tag,\n\nwir haben aktuell drei exzellente Konstrukteure (m/w/d) und einen Serviceleiter aus dem Verpackungsmaschinenbau im Angebot – wechselbereit und regional verfügbar. Hätten Sie diese Woche 15 Minuten für ein kurzes Gespräch?\n\nBeste Grüße\nSarah Brinkmann\nSenior Consultant, TalentBridge Recruiting GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-027",
+      "source_channel": "email",
+      "timestamp": "2026-09-16T08:03:00+02:00",
+      "raw_input": {
+        "from": "Bernd Sailer <b.sailer@kellerei-weinland.de>",
+        "to": "info@packflow-systems.de",
+        "subject": "Neuer Formatsatz + Verschleißteile für PFS-CE 240 (SN 23-1147)",
+        "body": "Guten Morgen Herr Brenner,\n\nwir nehmen zum Jahreswechsel ein weiteres Kartonformat auf: 400x300x280 mm. Bitte um Angebot für einen Formatsatz für unsere PFS-CE 240, Seriennummer 23-1147. Wenn Sie dabei sind: Das nächste Verschleißteil-Kit können Sie gleich mit anbieten, wir sind bei ca. 1.900 Betriebsstunden seit dem letzten Service.\n\nViele Grüße\nBernd Sailer\nInstandhaltung, Kellerei Weinland eG"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-028",
+      "source_channel": "email",
+      "timestamp": "2026-09-16T22:17:00+02:00",
+      "raw_input": {
+        "from": "Rachel Torres <r.torres@bluesummitbev.com>",
+        "to": "info@packflow-systems.de",
+        "subject": "End-of-line equipment for new EU plant (Poznań, PL) – case erector + sealer",
+        "body": "Hello,\n\nBlue Summit Beverages (HQ Denver, CO) is commissioning a canning plant in Poznań, Poland, go-live Q1 2027. We're sourcing European equipment for end-of-line:\n\n- case erector + carton sealer, approx. 20 cases/min\n- case sizes roughly 16x12x10 in (we will convert to mm), hot-melt\n- CE marking and EU-based service network required, OPC UA preferred\n- budget approved (~USD 150k for both machines)\n\nWe found you via FachPack exhibitor list. Could we schedule a call this or next week? Please also indicate lead times.\n\nThanks,\nRachel Torres\nDirector of Engineering, Blue Summit Beverages Inc."
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-029",
+      "source_channel": "email",
+      "timestamp": "2026-09-17T04:12:00+02:00",
+      "raw_input": {
+        "from": "billing@secure-invoice-portal.info",
+        "to": "info@packflow-systems.de",
+        "subject": "ACTION REQUIRED: Overdue invoice #INV-4477",
+        "body": "Dear Customer,\n\nyour invoice #INV-4477 of EUR 2,340.00 is overdue. To avoid legal escalation, open the attached file and confirm payment details immediately.\n\n[attachment: invoice_4477.html]\n\nAccounts Department"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-030",
+      "source_channel": "email",
+      "timestamp": "2026-09-18T10:44:00+02:00",
+      "raw_input": {
+        "from": "Uwe Petzold <u.petzold@foerdertech-anlagenbau.de>",
+        "to": "info@packflow-systems.de",
+        "subject": "Kooperationsanfrage: Integration Ihrer Maschinen in unsere Linienprojekte",
+        "body": "Sehr geehrte Frau Vogel,\n\nwir planen und bauen Förder- und Gesamtanlagen für die Lebensmittelindustrie (ca. 120 Mitarbeiter, Raum Kassel). In zwei aktuellen Linienprojekten benötigen unsere Kunden End-of-Line-Technik. Wir würden gerne prüfen, ob wir Ihre Kartonaufrichter und Palettierer als Komponenten in unsere Linien integrieren können – ggf. mit Rahmenvereinbarung und OEM-Konditionen.\n\nHätten Sie kommende Woche Zeit für ein Gespräch?\n\nMit freundlichen Grüßen\nUwe Petzold\nGeschäftsführer, FörderTech Anlagenbau GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-031",
+      "source_channel": "email",
+      "timestamp": "2026-09-11T16:40:00+02:00",
+      "raw_input": {
+        "from": "Anton Wiedemann <a.wiedemann@biomolkerei-allgaeu.de>",
+        "to": "info@packflow-systems.de",
+        "subject": "Ersatz Wrap-Around-Packer Käsetrays – Angebot erbeten",
+        "body": "Sehr geehrte Damen und Herren,\n\nunsere Genossenschaft (Bio-Molkerei, ca. 210 Mitarbeiter) muss den Wrap-Around-Packer der Traylinie ersetzen (Baujahr 2011, Ersatzteilversorgung läuft aus). Anforderungen:\n\n- Käse-Trays, 26 Takte/min\n- Wrap-Around-Zuschnitte FEFCO 0406\n- Heißleim, Anbindung an Leitsystem (OPC UA)\n- Entscheidung im November, Umbau im Sommerstillstand 2027\n\nBitte um Angebot und einen Termin zur Besichtigung unserer Linie.\n\nMit freundlichen Grüßen\nAnton Wiedemann\nTechnischer Leiter, Bio-Molkerei Allgäuer Land eG"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-032",
+      "source_channel": "email",
+      "timestamp": "2026-09-21T13:39:00+02:00",
+      "raw_input": {
+        "from": "redaktion@packaging-insider.blog",
+        "to": "info@packflow-systems.de",
+        "subject": "Interviewanfrage: Mittelstand und KI im Verpackungsmaschinenbau",
+        "body": "Guten Tag,\n\nfür unseren Branchenblog (ca. 9.000 Abonnenten) suchen wir Gesprächspartner zum Thema KI im Maschinenbau-Vertrieb. Hätte Ihre Geschäftsführung Interesse an einem 30-minütigen Interview? Gerne auch auf der FachPack.\n\nViele Grüße\nRedaktion Packaging Insider"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-033",
+      "source_channel": "email",
+      "timestamp": "2026-09-22T09:58:00+02:00",
+      "raw_input": {
+        "from": "einkauf@hanseatic-foods.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Katalog- und Preisanfrage",
+        "body": "Sehr geehrte Damen und Herren,\n\nbitte senden Sie uns Ihren aktuellen Maschinenkatalog sowie eine Preisübersicht für Ihr Lieferprogramm zu.\n\nMit freundlichen Grüßen\ni.A. Einkauf\nHanseatic Foods GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-034",
+      "source_channel": "email",
+      "timestamp": "2026-09-22T21:33:00+02:00",
+      "raw_input": {
+        "from": "globaltradexpress77@gmail.com",
+        "to": "info@packflow-systems.de",
+        "subject": "case packer machine urgent",
+        "body": "dear sir\n\nplz quote best price for case packer machine, urgent need for export africa market. give maximum discount and tell minimum price. also send all machine catalog.\n\nregards"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-035",
+      "source_channel": "email",
+      "timestamp": "2026-09-23T07:46:00+02:00",
+      "raw_input": {
+        "from": "Nadine Scholz <n.scholz@lohnpack-express.de>",
+        "to": "info@packflow-systems.de",
+        "subject": "Kartonaufrichter für 3-Schicht-Betrieb – Verfügbarkeit und Servicevertrag",
+        "body": "Sehr geehrte Damen und Herren,\n\nals Lohnverpacker (3-Schicht-Betrieb, Standort Ludwigsburg) benötigen wir kurzfristig einen zusätzlichen Kartonaufrichter:\n\n- FEFCO 0201, 20 Kartons/min, Heißleim\n- Formate wechseln täglich, Magazin nachfüllbar im Lauf\n- 24/7-Servicevertrag und Ersatzteilpaket zwingend erforderlich\n\nWie ist Ihre aktuelle Lieferzeit? Bei passender Verfügbarkeit können wir schnell entscheiden – die Anlage soll spätestens im Februar 2027 laufen.\n\nMit freundlichen Grüßen\nNadine Scholz\nLeiterin Produktion, Lohnpack Express GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-036",
+      "source_channel": "email",
+      "timestamp": "2026-09-25T15:55:00+02:00",
+      "raw_input": {
+        "from": "Torben Behrens <t.behrens@knusperwerk.de>",
+        "to": "info@packflow-systems.de",
+        "subject": "fachpack / palettierer",
+        "body": "Moin,\n\nwir hatten Donnerstag bei euch am Stand gesprochen (Knusperwerk, Halle 3). brauchen wie gesagt was zum palettieren, so 300 kisten die stunde, kartons bis 12 kg, europalette. platz ist eher knapp bei uns in der halle. schickt mir mal ein angebot bzw. was ihr da empfehlt.\n\ngruß\nTorben Behrens\nBetriebsleiter, Knusperwerk Snacks GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-037",
+      "source_channel": "email",
+      "timestamp": "2026-09-24T12:20:00+02:00",
+      "raw_input": {
+        "from": "vorstand@sv-eintracht-boeckingen.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Sponsoring Jugendmannschaft Saison 2026/27",
+        "body": "Sehr geehrte Damen und Herren,\n\nunser Sportverein sucht für die kommende Saison Trikotsponsoren für die D-Jugend. Als Heilbronner Unternehmen wären Sie ein toller Partner! Pakete gibt es ab 500 Euro. Über eine Rückmeldung freuen wir uns sehr.\n\nMit sportlichen Grüßen\nDer Vorstand, SV Eintracht Böckingen"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-038",
+      "source_channel": "email",
+      "timestamp": "2026-09-24T16:02:00+02:00",
+      "raw_input": {
+        "from": "Lukas Hofer <l.hofer@alpenpfote.at>",
+        "to": "info@packflow-systems.de",
+        "subject": "Case erector + sealer for pet food plant (Austria)",
+        "body": "Dear PackFlow team,\n\nwe produce premium pet food near Salzburg (approx. 110 employees) and are automating our end-of-line. Requirement: case erector and carton sealer for stand-up pouches packed into FEFCO 0201 cases, approx. 18 cases/min, case sizes 300x250x200 up to 550x380x350 mm.\n\nOne question in advance: for our case board quality, would you recommend hot-melt or tape sealing? We had adhesion problems with tape in the past (cold storage at 4°C).\n\nPlease send a budget offer for both machines. Timeline: order in Q4 2026.\n\nBest regards,\nLukas Hofer\nTechnical Manager, Alpenpfote Tiernahrung GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-039",
+      "source_channel": "email",
+      "timestamp": "2026-09-25T11:08:00+02:00",
+      "raw_input": {
+        "from": "Dr. Felix Anders <f.anders@packaging-advisory.com>",
+        "to": "info@packflow-systems.de",
+        "subject": "RFI on behalf of FMCG client – end-of-line package",
+        "body": "Dear Sir or Madam,\n\nwe are advising an FMCG manufacturer (name confidential at this stage) on a new end-of-line installation. Please find the key requirements below and indicate budgetary pricing and lead times:\n\n- case erector: 22 cases/min, FEFCO 0201, hot-melt\n- carton sealer: matching capacity\n- palletizing: approx. 700 cases/h, cases up to 20 kg, Euro pallets\n\nPlease respond by 2 October for inclusion in the vendor long list. NDA available on request.\n\nKind regards,\nDr. Felix Anders\nPackaging Advisory Partners"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-040",
+      "source_channel": "email",
+      "timestamp": "2026-09-28T14:37:00+02:00",
+      "raw_input": {
+        "from": "buchhaltung@stahlhandel-bickel.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Zahlungserinnerung: Ihre Bestellung 4711 – Rechnung 26-08812 Blechzuschnitte",
+        "body": "Sehr geehrte Damen und Herren,\n\nzu Ihrer Bestellung 4711 (Blechzuschnitte 3 mm, Liefertermin 04.09.2026) ist unsere Rechnung 26-08812 über EUR 6.412,80 laut unserer Buchhaltung noch offen. Wir bitten um Ausgleich bis zum 05.10.2026 oder kurze Rückmeldung, falls die Zahlung bereits veranlasst wurde.\n\nMit freundlichen Grüßen\nBuchhaltung, Stahlhandel Bickel GmbH"
+      }
+    }
+  ]
+}

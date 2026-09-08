@@ -5,10 +5,12 @@ description = "Local agentic quotation workflow"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
+    "psycopg2-binary>=2.9.12",
     "pydantic>=2.13.5",
     "pydantic-ai>=0.8.1",
     "pydantic-ai-slim[anthropic,google,groq,openai]>=0.8.1",
     "python-dotenv>=1.2.1",
+    "sqlalchemy>=2.0.52",
 ]
 
 [project.optional-dependencies]

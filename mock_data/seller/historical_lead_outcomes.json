@@ -1,0 +1,147 @@
+{
+  "purpose": "Calibration corpus for the Scoring agent. Retrieval over these cases grounds each new fit-score judgment. Note: fit_score measures lead quality at intake time; outcome can still diverge (e.g. HIST-003 lost on price despite high fit). The scorer is evaluated on ranking quality (Precision@20), not on predicting every single outcome.",
+  "scoring_rubric": {
+    "bands": { "high": "70-100: pursue with priority", "medium": "40-69: clarify / enrich before investing", "low": "0-39: decline politely or ignore" },
+    "axes": [
+      "A1 product-spec match against catalog (throughput, format, industry application)",
+      "A2 company profile: industry, size band, production site in serviceable region",
+      "A3 buying-stage signals: timeline, budget, replacement of existing machine, plant project",
+      "A4 contact quality: role/authority, corporate domain vs freemail, signature completeness",
+      "A5 disqualifiers: student/thesis, supplier pitch, competitor probe, private one-off, spec far outside range"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "HIST-001",
+      "received": "2025-02-18",
+      "channel": "email",
+      "inquiry_text": "Sehr geehrte Damen und Herren, für unsere Feinkost-Produktion (zwei Linien, Gläser in Umkartons) suchen wir einen Kartonaufrichter, ca. 18 Kartons/min, FEFCO 0201, Inbetriebnahme Q3. Bitte um Angebot und Terminvorschlag für eine Besichtigung. Mit freundlichen Grüßen, T. Marek, Produktionsleiter",
+      "buyer_company": { "name": "Feinkost Marek GmbH", "industry": "food manufacturing", "employees": 140, "country": "DE", "contact_role": "Produktionsleiter", "email_domain": "corporate" },
+      "outcome": "converted",
+      "order_value_eur": 78900,
+      "fit_score": 88,
+      "justification": "A1: 18/min within PFS-CE 240 capacity (24/min), FEFCO 0201 exact match. A2: food manufacturer, 140 employees, DE. A3: named commissioning quarter and asked for site visit = active project. A4: Produktionsleiter on corporate domain. No disqualifiers."
+    },
+    {
+      "case_id": "HIST-002",
+      "received": "2025-04-03",
+      "channel": "form",
+      "inquiry_text": "We are a pharmaceutical contract packer. Looking for a carton sealer suitable for GMP environment, stainless steel, tape sealing, approx. 10 cartons/min, with IQ/OQ documentation.",
+      "buyer_company": { "name": "Rhein-Main Pharma Services GmbH", "industry": "pharma contract packing", "employees": 210, "country": "DE", "contact_role": "Head of Production", "email_domain": "corporate" },
+      "outcome": "converted",
+      "order_value_eur": 47200,
+      "fit_score": 81,
+      "justification": "A1: PFS-CS 180 GMP stainless option with IQ/OQ package is an exact catalog match; 10/min well within 18/min. A2: pharma co-packer, target industry. A3: requirement precisely specified = advanced evaluation stage. A4: senior role, corporate domain."
+    },
+    {
+      "case_id": "HIST-003",
+      "received": "2025-06-12",
+      "channel": "email",
+      "inquiry_text": "Anfrage Wrap-Around-Packer für 0,5l-PET, 28 Takte/min, Austausch Bestandsanlage. Budget vorhanden, Entscheidung bis August.",
+      "buyer_company": { "name": "Getränke Holst GmbH & Co. KG", "industry": "beverages", "employees": 95, "country": "DE", "contact_role": "Technischer Leiter", "email_domain": "corporate" },
+      "outcome": "lost",
+      "loss_reason": "price: competitor Cartomac S.r.l. approx. 22% below offer",
+      "fit_score": 84,
+      "justification": "A1: 28 cycles/min within PFS-WA 320 capacity (32/min), PET bottles supported. A2/A3: beverage producer, replacement project with budget and deadline. High score was correct at intake; loss was a commercial outcome, not a scoring error. Lesson: flag price-sensitive buyers (explicit budget comparison language) for early value argumentation."
+    },
+    {
+      "case_id": "HIST-004",
+      "received": "2025-01-27",
+      "channel": "email",
+      "inquiry_text": "Hallo, ich schreibe meine Bachelorarbeit über Verpackungsautomatisierung und würde Ihnen gerne ein paar Fragen zu Ihren Maschinen und Preisen stellen. Können Sie mir Datenblätter und eine Preisliste schicken?",
+      "buyer_company": { "name": "none (student, university context)", "industry": "n/a", "employees": 0, "country": "DE", "contact_role": "student", "email_domain": "freemail" },
+      "outcome": "lost",
+      "loss_reason": "no commercial intent",
+      "fit_score": 12,
+      "justification": "A5 disqualifier: thesis research, no company, freemail, asks for price list without application. Polite template decline; no sales effort."
+    },
+    {
+      "case_id": "HIST-005",
+      "received": "2025-03-30",
+      "channel": "email",
+      "inquiry_text": "Sehr geehrter Einkauf, wir sind Hersteller von Bandstahl und Blechzuschnitten und würden Sie gerne als Lieferant beliefern. Anbei unser Katalog.",
+      "buyer_company": { "name": "Bandstahl Krüger GmbH", "industry": "steel supply", "employees": 60, "country": "DE", "contact_role": "sales", "email_domain": "corporate" },
+      "outcome": "lost",
+      "loss_reason": "not a lead: inbound supplier pitch",
+      "fit_score": 6,
+      "justification": "A5 disqualifier: vendor selling to us, not a buyer. Route to purchasing, remove from sales pipeline."
+    },
+    {
+      "case_id": "HIST-006",
+      "received": "2024-09-25",
+      "channel": "badge_scan",
+      "inquiry_text": "FachPack badge scan. Note field: 'case erector? will send carton sizes'. No phone. Company field: 'Convertis Lebensmittel'.",
+      "buyer_company": { "name": "Convertis Lebensmittel GmbH", "industry": "food manufacturing", "employees": 180, "country": "DE", "contact_role": "Leiter Technik", "email_domain": "corporate" },
+      "outcome": "converted",
+      "order_value_eur": 69800,
+      "fit_score": 67,
+      "justification": "A1 thin at intake (product category only, no specs). A2 strong after enrichment: food manufacturer, 180 employees. A3: fair conversation implies active interest. Same-day follow-up with format questionnaire converted it. Lesson: fair leads with a product note + target industry deserve medium-high despite missing specs, IF followed up fast."
+    },
+    {
+      "case_id": "HIST-007",
+      "received": "2025-05-19",
+      "channel": "email",
+      "inquiry_text": "Hi! We're building a vegan snack brand and want to automate our carton packing. Currently doing ~2 cartons/min by hand. What would a machine cost? We're a small team of 3.",
+      "buyer_company": { "name": "VeganBites (no register entry found)", "industry": "food startup", "employees": 3, "country": "DE", "contact_role": "founder", "email_domain": "freemail" },
+      "outcome": "lost",
+      "loss_reason": "no budget; machine economics not viable at 2 cartons/min",
+      "fit_score": 42,
+      "justification": "A1: real application but volume far below economic threshold for EUR 34k+ machinery. A2: 3-person startup, no register entry. A4: freemail founder. Genuine but premature; nurture list, not pipeline."
+    },
+    {
+      "case_id": "HIST-008",
+      "received": "2025-09-30",
+      "channel": "email",
+      "inquiry_text": "We urgently need two palletizing cells for our new fulfilment hall (go-live before peak season). Approx. 550 cases/h each, cases up to 32 kg, Euro pallets, MES integration via OPC UA. Please send offer and earliest delivery.",
+      "buyer_company": { "name": "LogiFul Fulfillment GmbH", "industry": "e-commerce fulfilment", "employees": 380, "country": "DE", "contact_role": "Head of Engineering", "email_domain": "corporate" },
+      "outcome": "converted",
+      "order_value_eur": 402000,
+      "fit_score": 91,
+      "justification": "A1: 550 cases/h and 32 kg within PFS-PAL 600 spec (600/h, 40 kg), OPC UA standard. A2: fulfilment, 380 employees. A3: hard deadline (peak season), two cells, new hall = funded project. A4: engineering lead. Textbook high-fit."
+    },
+    {
+      "case_id": "HIST-009",
+      "received": "2025-08-08",
+      "channel": "email",
+      "inquiry_text": "Guten Tag, bitte senden Sie mir Ihre komplette Preisliste aller Maschinen inklusive aller Optionen sowie technische Zeichnungen und Ersatzteilpreise. Es eilt.",
+      "buyer_company": { "name": "undisclosed (later matched to competitor employee via public profile)", "industry": "packaging machinery", "employees": null, "country": "DE", "contact_role": "unknown", "email_domain": "freemail" },
+      "outcome": "lost",
+      "loss_reason": "competitor price probe",
+      "fit_score": 14,
+      "justification": "A5 disqualifier pattern: full price list + drawings + spare part prices, zero application detail, urgency without context, freemail, no company. Classic competitive probe; send only public brochure."
+    },
+    {
+      "case_id": "HIST-010",
+      "received": "2025-10-22",
+      "channel": "form",
+      "inquiry_text": "Wir benötigen einen Kartonaufrichter für 60 Kartons/min für unsere neue Molkerei-Linie. Bitte um kurzfristiges Angebot.",
+      "buyer_company": { "name": "Molkerei Steinbach eG", "industry": "dairy", "employees": 320, "country": "DE", "contact_role": "Projektleiter", "email_domain": "corporate" },
+      "outcome": "lost",
+      "loss_reason": "requirement 60/min exceeds PFS-CE 240 maximum of 24/min; referred to high-speed specialist",
+      "fit_score": 38,
+      "justification": "A2/A3/A4 all strong, but A1 is a hard mismatch: 60/min is 2.5x above catalog maximum. Spec ceiling caps the score regardless of company quality. Honest referral preserved goodwill."
+    },
+    {
+      "case_id": "HIST-011",
+      "received": "2025-04-29",
+      "channel": "email",
+      "inquiry_text": "Grüß Gott, wir suchen für unsere Braumanufaktur einen Kartonverschließer, ca. 8-10 Kartons/min, Klebeband, für Geschenkkartons. Angebot und Referenzen aus der Getränkebranche wären super.",
+      "buyer_company": { "name": "Braumanufaktur Alpenquell GmbH", "industry": "craft brewery", "employees": 60, "country": "AT", "contact_role": "Geschäftsführer", "email_domain": "corporate" },
+      "outcome": "converted",
+      "order_value_eur": 38600,
+      "fit_score": 74,
+      "justification": "A1: 8-10/min tape sealing = PFS-CS 180 core use case. A2: smaller size band (60) but target industry, AT serviceable. A3: asks for references = comparison stage. A4: owner-level contact. Solid mid-high fit."
+    },
+    {
+      "case_id": "HIST-012",
+      "received": "2025-07-07",
+      "channel": "form",
+      "inquiry_text": "Wir machen Ihre Marke sichtbar! Performance-Marketing für Maschinenbauer. 30 Minuten Erstgespräch gefällig?",
+      "buyer_company": { "name": "AdVision Marketing GmbH", "industry": "marketing agency", "employees": 25, "country": "DE", "contact_role": "sales", "email_domain": "corporate" },
+      "outcome": "lost",
+      "loss_reason": "not a lead: service pitch",
+      "fit_score": 4,
+      "justification": "A5 disqualifier: agency selling services through the contact form. No response required."
+    }
+  ]
+}

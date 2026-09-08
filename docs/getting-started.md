@@ -113,6 +113,25 @@ sqlite3 data/email_state.db \
 
 The M6 jobs will normally remain `PENDING` until a worker is configured to handle their job type.
 
+## Run the M9 Workflow
+
+M9 provides `QuotationWorkflow` and `WorkflowWorker`. The workflow worker consumes queue jobs, loads normalized email artifacts for `EMAIL_RECEIVED`, and runs the configured Python agents for each later stage. A production worker command is not provided yet; construct the worker with an `SQLiteJobQueue`, `AgentRunner`, `WorkflowStore`, and explicit agent mapping. The complete behavior is demonstrated in `tests/test_m9.py`.
+
+The M9 stub path is intentionally conservative:
+
+```text
+EMAIL_RECEIVED
+  -> CLASSIFY_EMAIL
+  -> EXTRACT_QUOTATION
+  -> VERIFY_SENDER
+  -> RESEARCH_PRODUCTS
+  -> PREPARE_QUOTE
+  -> GENERATE_DRAFT
+  -> NEEDS_HUMAN_REVIEW
+```
+
+The default sender verifier requires human review, and the default product researcher reports that tooling is required. M10 will add controlled product and research tools. No M9 path sends email.
+
 ## Run from Cron
 
 Create a log directory:

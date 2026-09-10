@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .models import AgentContext, AgentMetadata, AgentRiskLevel
+from models import AgentContext, AgentMetadata, AgentRiskLevel
 
 
 class EmailClassificationInput(BaseModel):

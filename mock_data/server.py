@@ -3,10 +3,12 @@ import json
 from pathlib import Path
 import pandas as pd
 
+# 创建一个名为app的FastAPI应用
 app = FastAPI(title="PackFlow Mock Data API", version="1.0")
 
 BASE_DIR = Path(__file__).parent
 
+# 读取json文件的逻辑
 def load_json(filepath):
     p = BASE_DIR / filepath
     if not p.exists():
@@ -14,6 +16,7 @@ def load_json(filepath):
     with open(p, "r", encoding="utf-8") as f:
         return json.load(f)
 
+# 定义当别人访问某个网址时，该返回什么数据
 @app.get("/")
 def root():
     return {"message": "PackFlow Mock Data API is running", "endpoints": [

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
-from pydantic_ai import Agent
+from pydantic_ai import Agent, RunContext
 from tavily import TavilyClient, AsyncTavilyClient
 from typing import Any, Protocol
 from models import AgentMetadata, AgentRiskLevel, AgentContext
@@ -15,7 +15,6 @@ TAVILY_API_KEY = os.environ["TAVILY_API_KEY"]
 client = AsyncTavilyClient(TAVILY_API_KEY)
 
 async def search_web(query: str):
-    websites_rawdate = []
     search_results = await client.search(query)
     urls = [r["url"] for r in search_results["results"]]
     extracted = await client.extract(urls)
@@ -49,12 +48,13 @@ class CompanyCredibility(BaseModel):
 
 class Company_To_Cred(BaseModel):
         model_config = ConfigDict(frozen=True)
-        
+        comopany_name: str
 
 
 class PydanticAICompanyCredreviewer:
     """Evaluates seriosity of Quotations by Webpresence of Customers
       collected and evaluated by Ollama."""
+
 
     metadata = AgentMetadata(
         name="company_cred_reviewer",
@@ -75,8 +75,11 @@ class PydanticAICompanyCredreviewer:
                 model or create_model(settings),
                 output_type=CompanyCredibility,
                 instructions=RESEARCH_INSTRUCTIONS,
-                retries=1,
+                retries=0,
             )
+            self._client.tool_plain(search_web)
+
+
 
     async def run(self, company) -> CompanyCredibility:
         """Run classification and return the PydanticAI structured output."""
@@ -90,6 +93,7 @@ class PydanticAICompanyCredreviewer:
             f"Evaluate the seriousness of. the requesting {Company}\n"
             "Use a Point System for exisitng Website, Google Entry, registration in a company, and other relevant information.\n" \
             "Provide a score between 0 and 1, where 1 is a serious request and 0 is not serious.\n"
+            "Use the provided Tools to search the web for information about the company and its credibility. tell if u didnt used it \n"
             
         )
 def company_name():
@@ -103,6 +107,6 @@ async def do_something():
     research_agent = PydanticAICompanyCredreviewer()
     data  = await research_agent.run(company_name())
     print(data)
-if __name__ == "__main__":
-    asyncio.run(do_something())
+
+asyncio.run(do_something())
     

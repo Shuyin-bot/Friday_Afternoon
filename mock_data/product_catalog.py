@@ -14,7 +14,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
-CATALOG_PATH = Path(__file__).parent / "seller" / "product_catalog.json"
+CATALOG_PATH = Path(__file__).parent / "product_catalog.json"
 
 
 class ProductCategory(str, Enum):

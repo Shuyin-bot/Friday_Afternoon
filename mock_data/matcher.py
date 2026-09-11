@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .catalog import Product, ProductCatalog, ProductCategory, get_catalog
+from .product_catalog import Product, ProductCatalog, ProductCategory, get_catalog
 
 # Keyword -> category. German first (the seller's main market), then English.
 # Substring matching is intentional: "Kartonaufrichters" contains

@@ -12,7 +12,6 @@ Interactive docs: http://localhost:8790/docs
 
 from __future__ import annotations
 
-import csv
 import json
 from pathlib import Path
 from typing import Any
@@ -23,14 +22,16 @@ from pydantic import BaseModel, Field
 # Support both `uvicorn mock_data.server:app` (package) and `uvicorn server:app`
 # (run from inside mock_data/), so a wrong working directory cannot break a demo.
 try:
-    from .catalog import get_catalog
     from .matcher import MatchResult, match_lead, match_text
+    from .product_catalog import get_catalog
 except ImportError:  # pragma: no cover - fallback for non-package execution
-    from catalog import get_catalog
     from matcher import MatchResult, match_lead, match_text
+    from product_catalog import get_catalog
 
 BASE_DIR = Path(__file__).parent
-LEADS_FILE = BASE_DIR / "leads" / "email_inbox.json"
+CATALOG_FILE = BASE_DIR / "product_catalog.json"
+LEADS_FILE = BASE_DIR / "email_inbox.json"
+OUTCOMES_FILE = BASE_DIR / "historical_lead_outcomes.json"
 
 app = FastAPI(
     title="PackFlow Mock Data API",
@@ -47,20 +48,19 @@ app = FastAPI(
 # --------------------------------------------------------------------------- #
 
 
-def _read_json(relative_path: str) -> Any:
-    """Read a JSON file under `BASE_DIR`, or raise a 404 when it is absent."""
-    path = BASE_DIR / relative_path
+def _read_json(path: Path) -> Any:
+    """Read a JSON dataset, or raise a 404 when it is absent."""
     if not path.is_file():
-        raise HTTPException(status_code=404, detail=f"Dataset not available: {relative_path}")
+        raise HTTPException(status_code=404, detail=f"Dataset not available: {path.name}")
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except ValueError as error:
-        raise HTTPException(status_code=500, detail=f"Malformed dataset {relative_path}: {error}") from error
+        raise HTTPException(status_code=500, detail=f"Malformed dataset {path.name}: {error}") from error
 
 
 def _load_leads() -> list[dict]:
     """Return the raw lead records from the email corpus."""
-    payload = _read_json("leads/email_inbox.json")
+    payload = _read_json(LEADS_FILE)
     leads = payload.get("leads") if isinstance(payload, dict) else payload
     if not isinstance(leads, list):
         raise HTTPException(status_code=500, detail="email_inbox.json has no 'leads' array")
@@ -68,7 +68,7 @@ def _load_leads() -> list[dict]:
 
 
 def _find_lead(lead_id: str) -> dict:
-    """Return one lead by id, or raise a 404 listing nothing sensitive."""
+    """Return one lead by id, or raise a 404 without echoing dataset contents."""
     wanted = lead_id.strip().casefold()
     for lead in _load_leads():
         if str(lead.get("lead_id", "")).casefold() == wanted:
@@ -84,17 +84,16 @@ def _find_lead(lead_id: str) -> dict:
 @app.get("/", tags=["meta"], summary="Service health and dataset inventory")
 def root() -> dict:
     """Report which datasets are present so a demo never starts blind."""
-    datasets = {
-        "seller/product_catalog.json": (BASE_DIR / "seller/product_catalog.json").is_file(),
-        "leads/email_inbox.json": LEADS_FILE.is_file(),
-        "seller/company_info.json": (BASE_DIR / "seller/company_info.json").is_file(),
-        "seller/historical_lead_outcomes.json": (BASE_DIR / "seller/historical_lead_outcomes.json").is_file(),
-    }
     return {
         "service": "PackFlow Mock Data API",
         "status": "ok",
-        "datasets_available": datasets,
-        "key_endpoints": ["/catalog", "/leads", "/match", "/match/{lead_id}", "/docs"],
+        "datasets_available": {
+            "product_catalog.json": CATALOG_FILE.is_file(),
+            "email_inbox.json": LEADS_FILE.is_file(),
+            "historical_lead_outcomes.json": OUTCOMES_FILE.is_file(),
+        },
+        "demo_path": ["/catalog", "/leads/LEAD-2026-016", "/match/LEAD-2026-016", "/match", "POST /match"],
+        "docs": "/docs",
     }
 
 
@@ -136,24 +135,6 @@ def catalog_detail(product_id: str) -> dict:
     return product.model_dump()
 
 
-@app.get("/seller/product_catalog", tags=["catalog"], summary="Raw catalog file")
-def raw_product_catalog() -> Any:
-    """Return the catalog exactly as stored on disk."""
-    return _read_json("seller/product_catalog.json")
-
-
-@app.get("/seller/company_info", tags=["catalog"], summary="Seller company profile")
-def company_info() -> Any:
-    """Return the seller profile used for drafting and commercial terms."""
-    return _read_json("seller/company_info.json")
-
-
-@app.get("/seller/historical_lead_outcomes", tags=["catalog"], summary="Scoring calibration corpus")
-def historical_lead_outcomes() -> Any:
-    """Return the historical scored cases used to calibrate fit scoring."""
-    return _read_json("seller/historical_lead_outcomes.json")
-
-
 # --------------------------------------------------------------------------- #
 # Leads
 # --------------------------------------------------------------------------- #
@@ -178,28 +159,16 @@ def list_leads() -> dict:
     }
 
 
-@app.get("/leads/email_inbox", include_in_schema=False)
-def raw_email_inbox() -> Any:
-    """Return the raw lead corpus file (kept for backwards compatibility)."""
-    return _read_json("leads/email_inbox.json")
-
-
-@app.get("/leads/badge_scan_export", tags=["leads"], summary="Trade-fair badge scans")
-def badge_scan_export() -> list[dict]:
-    """Return badge scans parsed with the standard library, if the file exists."""
-    path = BASE_DIR / "leads" / "badge_scan_export.csv"
-    if not path.is_file():
-        raise HTTPException(status_code=404, detail="Dataset not available: leads/badge_scan_export.csv")
-    with path.open(encoding="utf-8-sig", newline="") as handle:
-        return list(csv.DictReader(handle))
-
-
-# Declared after the static /leads/* paths: FastAPI resolves routes in
-# definition order, so a path parameter here would otherwise swallow them.
 @app.get("/leads/{lead_id}", tags=["leads"], summary="One raw lead")
 def get_lead(lead_id: str) -> dict:
     """Return one lead verbatim, including the untrusted email body."""
     return _find_lead(lead_id)
+
+
+@app.get("/historical_lead_outcomes", tags=["leads"], summary="Scoring calibration corpus")
+def historical_lead_outcomes() -> Any:
+    """Return the historical scored cases used to calibrate fit scoring."""
+    return _read_json(OUTCOMES_FILE)
 
 
 # --------------------------------------------------------------------------- #

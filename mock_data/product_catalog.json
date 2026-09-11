@@ -1,0 +1,173 @@
+{
+  "catalog_version": "2026-09",
+  "currency": "EUR",
+  "note": "All prices are list-price bands EXW Heilbronn, excl. VAT. Machines MOQ = 1 unit. Spec fields are the grounding anchors for Drafting/Scoring agents.",
+  "products": [
+    {
+      "product_id": "PFS-CE-240",
+      "model_code": "PFS-CE 240",
+      "category": "case_erector",
+      "name_de": "Kartonaufrichter PFS-CE 240",
+      "name_en": "Case Erector PFS-CE 240",
+      "description_de": "Vollautomatischer Kartonaufrichter für FEFCO-0201-Faltkartons. Entnimmt flache Zuschnitte aus dem Magazin, richtet sie auf und verschließt den Boden mit Heißleim oder Klebeband. Formatwechsel werkzeuglos unter 15 Minuten. Ausgelegt für 2- und 3-Schicht-Betrieb.",
+      "description_en": "Fully automatic case erector for FEFCO 0201 cases. Picks flat blanks from the magazine, erects them and seals the bottom with hot-melt glue or tape. Tool-free format change in under 15 minutes. Designed for 2- and 3-shift operation.",
+      "specs": {
+        "max_throughput": "24 cartons/min",
+        "carton_standard": "FEFCO 0201",
+        "carton_range_mm": { "length": "250-600", "width": "150-400", "height": "150-500" },
+        "bottom_sealing": "hot-melt (Nordson-compatible) or self-adhesive tape 50/75 mm",
+        "magazine_capacity": "approx. 150 blanks, refillable during operation",
+        "power": "3.5 kW, 400 V / 50 Hz",
+        "compressed_air": "6 bar, approx. 180 NL/min",
+        "footprint_mm": "2800 x 1600 x 2100 (L x W x H)",
+        "weight_kg": 1450,
+        "control": "Siemens S7-1500, HMI Siemens TP900 Comfort",
+        "connectivity": "OPC UA server, ProfiNet, remote service module",
+        "noise_level": "< 78 dB(A)",
+        "options": [
+          "stainless steel washdown version",
+          "low-level blank magazine 300 blanks",
+          "print & apply interface"
+        ],
+        "typical_industries": [
+          "food & beverage",
+          "cosmetics",
+          "contract packing",
+          "e-commerce fulfilment"
+        ]
+      },
+      "moq": "1 unit",
+      "price_range_eur": { "min": 68000, "max": 92000 },
+      "lead_time_weeks": "14-16"
+    },
+    {
+      "product_id": "PFS-CS-180",
+      "model_code": "PFS-CS 180",
+      "category": "carton_sealer",
+      "name_de": "Kartonverschließer PFS-CS 180",
+      "name_en": "Carton Sealer PFS-CS 180",
+      "description_de": "Automatischer Kartonverschließer für Ober- und Unterverschluss per Klebeband oder Heißleim. Automatische Formatverstellung per Servoachsen, Rezepturverwaltung über HMI. Als GMP-Ausführung in Edelstahl für Pharma- und Lebensmittelumgebungen lieferbar (inkl. IQ/OQ-Dokumentationspaket).",
+      "description_en": "Automatic carton sealer for top and bottom sealing with tape or hot-melt. Automatic servo-driven format adjustment with recipe management via HMI. Available as GMP stainless-steel version for pharma and food environments (incl. IQ/OQ documentation package).",
+      "specs": {
+        "max_throughput": "18 cartons/min",
+        "carton_range_mm": { "length": "200-600", "width": "150-450", "height": "120-500" },
+        "sealing": "self-adhesive tape 50/75 mm or hot-melt",
+        "format_change": "automatic via servo axes, recipe selection on HMI",
+        "power": "2.2 kW, 400 V / 50 Hz",
+        "compressed_air": "6 bar, approx. 120 NL/min",
+        "footprint_mm": "2200 x 1400 x 1900 (L x W x H)",
+        "weight_kg": 780,
+        "control": "Siemens S7-1500, HMI Siemens TP700 Comfort",
+        "connectivity": "OPC UA server, ProfiNet",
+        "options": [
+          "GMP stainless steel version (+ IQ/OQ documentation)",
+          "hot-melt unit",
+          "carton presence check with reject station"
+        ],
+        "typical_industries": [
+          "pharma (GMP)",
+          "food & beverage",
+          "mail order / fulfilment"
+        ]
+      },
+      "moq": "1 unit",
+      "price_range_eur": { "min": 34000, "max": 49000 },
+      "lead_time_weeks": "14-16"
+    },
+    {
+      "product_id": "PFS-WA-320",
+      "model_code": "PFS-WA 320",
+      "category": "wrap_around_packer",
+      "name_de": "Wrap-Around-Packer PFS-WA 320",
+      "name_en": "Wrap-Around Case Packer PFS-WA 320",
+      "description_de": "Wrap-Around-Verpackungsmaschine für Dosen, Flaschen und Trays (FEFCO 0406/0409). Gruppierung, Umwickeln und Heißleimverschluss in einem Durchlauf. Servogetriebene Produktzuführung, geeignet für Mehrformatbetrieb in Getränke- und Molkereianwendungen.",
+      "description_en": "Wrap-around case packer for cans, bottles and trays (FEFCO 0406/0409). Collating, wrapping and hot-melt sealing in a single pass. Servo-driven product infeed, suited to multi-format operation in beverage and dairy applications.",
+      "specs": {
+        "max_throughput": "32 cycles/min (product-dependent)",
+        "carton_standard": "FEFCO 0406 / 0409 wrap-around blanks",
+        "product_types": "cans, glass/PET bottles, cups, trays",
+        "collation_range": "2x2 up to 6x4 per case",
+        "sealing": "hot-melt (Nordson-compatible)",
+        "power": "7.5 kW, 400 V / 50 Hz",
+        "compressed_air": "6 bar, approx. 350 NL/min",
+        "footprint_mm": "5600 x 2400 x 2300 (L x W x H)",
+        "weight_kg": 4200,
+        "control": "Siemens S7-1500F, HMI Siemens TP1200 Comfort",
+        "connectivity": "OPC UA server, ProfiNet, line integration interface (upstream/downstream handshake)",
+        "options": [
+          "tray-only economy version",
+          "automatic blank magazine extension",
+          "camera-based collation check"
+        ],
+        "typical_industries": [
+          "beverages / breweries",
+          "dairy",
+          "canned food"
+        ]
+      },
+      "moq": "1 unit",
+      "price_range_eur": { "min": 185000, "max": 260000 },
+      "lead_time_weeks": "18-20"
+    },
+    {
+      "product_id": "PFS-PAL-600",
+      "model_code": "PFS-PAL 600",
+      "category": "palletizing_cell",
+      "name_de": "Robotik-Palettierzelle PFS-PAL 600",
+      "name_en": "Robotic Palletizing Cell PFS-PAL 600",
+      "description_de": "Vollautomatische Palettierzelle mit 6-Achs-Industrieroboter für Kartons und Trays. Lagenbilder werden über die PackFlow-Software 'PackDesign' ohne Roboterprogrammierung erstellt. Inklusive Sicherheitszaun, Palettenzuführung und Leerpaletten-Handling. Kompaktvariante PFS-PAL 300c mit kollaborativem Roboter für kleinere Leistungen verfügbar.",
+      "description_en": "Fully automatic palletizing cell with 6-axis industrial robot for cartons and trays. Layer patterns are created in the PackFlow 'PackDesign' software without robot programming. Includes safety fencing, pallet infeed and empty-pallet handling. Compact variant PFS-PAL 300c with collaborative robot available for lower throughput.",
+      "specs": {
+        "max_throughput": "600 cases/h (PAL 600) / 300 cases/h (PAL 300c)",
+        "payload": "40 kg incl. gripper (PAL 600) / 12 kg (PAL 300c)",
+        "pallet_types": "Euro 1200x800, industrial 1200x1000, CHEP",
+        "max_stack_height_mm": "2000 (option 2400)",
+        "gripper": "vacuum / clamp / hybrid, product-specific engineering",
+        "layer_pattern_software": "PackFlow PackDesign, pattern creation without robot programming",
+        "power": "9 kW, 400 V / 50 Hz (PAL 600)",
+        "compressed_air": "6 bar, approx. 250 NL/min",
+        "footprint_mm": "3900 x 3200 x 3400 cell (PAL 600); PAL 300c fenceless from 2600 x 2200",
+        "control": "Siemens S7-1500F, robot brand FANUC or KUKA per customer preference",
+        "connectivity": "OPC UA server (companion spec for MES integration), ProfiNet",
+        "options": [
+          "double pick station",
+          "automatic pallet dispenser",
+          "stretch-wrapper integration",
+          "KLT / bin gripper (engineering check required)"
+        ],
+        "typical_industries": [
+          "fulfilment / logistics",
+          "food & beverage",
+          "contract packing",
+          "automotive supply (KLT, with engineering check)"
+        ]
+      },
+      "moq": "1 cell",
+      "price_range_eur": { "min": 145000, "max": 210000, "pal_300c_from": 98000 },
+      "lead_time_weeks": "16-18"
+    },
+    {
+      "product_id": "PFS-FS-KIT",
+      "model_code": "PFS-FS",
+      "category": "format_and_wear_parts",
+      "name_de": "Formatsätze & Verschleißteil-Kits PFS-FS",
+      "name_en": "Format Sets & Wear Part Kits PFS-FS",
+      "description_de": "Maschinenspezifische Formatsätze für zusätzliche Kartonformate sowie vorkonfektionierte Verschleißteil-Kits (Riemen, Vakuumsauger, Messer, Leimdüsen) für alle PackFlow-Maschinen. Identifikation über Maschinenseriennummer.",
+      "description_en": "Machine-specific format sets for additional carton formats plus pre-configured wear part kits (belts, vacuum cups, knives, glue nozzles) for all PackFlow machines. Identified via machine serial number.",
+      "specs": {
+        "format_set_scope": "guide rails, change parts, HMI recipe, on-site or remote commissioning",
+        "wear_kit_scope": "machine-specific consumables for 1 maintenance interval (approx. 2000 operating hours)",
+        "compatibility": "all PFS-CE / PFS-CS / PFS-WA / PFS-PAL series, identified by serial number",
+        "delivery": "wear kits ex stock within 48 h (DACH); format sets 2-4 weeks"
+      },
+      "moq": "1 set / 1 kit",
+      "price_range_eur": {
+        "format_set_min": 4500,
+        "format_set_max": 8500,
+        "wear_kit_min": 950,
+        "wear_kit_max": 2400
+      },
+      "lead_time_weeks": "2-4 (format sets), 48 h (wear kits ex stock)"
+    }
+  ]
+}

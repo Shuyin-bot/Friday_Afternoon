@@ -4,7 +4,7 @@ This guide is for someone setting up the project for the first time.
 
 ## Prerequisites
 
-- Python 3.9 or newer.
+- Python 3.12 or newer.
 - `uv` installed.
 - A test mailbox if you intend to connect to IMAP.
 - A Gmail app password if using Gmail with IMAP.

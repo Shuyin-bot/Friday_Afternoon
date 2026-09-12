@@ -1,5 +1,5 @@
 from db_contexts.sessions import SessionLocal
-from db_contexts.models import RetrievedEmail, QueuedJob
+from db_contexts.models import RetrievedEmail, QueuedJob, JobStatus
 
 def create_email_if_not_exist(
     email_id: int,
@@ -37,3 +37,9 @@ def filter_out_seen_emails(email_ids: list) -> list:
                 continue
             ret.append(id)
     return ret
+
+
+def get_queued_jobs() -> list:
+    with SessionLocal() as session:
+        queued_jobs = session.query(QueuedJob).filter_by(status=JobStatus.PENDING).all()
+        return queued_jobs

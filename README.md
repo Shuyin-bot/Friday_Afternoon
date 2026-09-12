@@ -1,337 +1,247 @@
-# Quotation Agent
+# Quotation Bot
 
-Quotation Agent is an agentic workflow for monitoring business email, identifying quotation requests, gathering trusted product information, and preparing a quotation response for human approval.
+Quotation Bot is currently a Python 3.11 proof of concept for retrieving
+business emails and placing quotation-related work into an agentic workflow
+that is being built with Pydantic and PydanticAI.
 
-The system is designed to reduce repetitive quotation work without giving an AI agent unrestricted control over external communications or business systems.
+The current implementation focuses on:
 
-> **Project status:** Early design and development
+- Reading email from an IMAP mailbox.
+- Avoiding duplicate email records.
+- Storing email metadata in SQLite.
+- Creating a queued job for every new email.
+- Saving the retrieved email body as a JSON artifact.
+- Managing the database schema with SQLAlchemy and Alembic.
+- Modeling products, aliases, warehouses, inventory, price lists, and prices
+  for a packaging manufacturer.
 
-## Developer Documentation
+The agent workflow is present as a scaffold. Its agents are intentionally empty
+so they can be built and learned from incrementally. Semantic search, human
+review, and outbound email are not implemented yet.
 
-New to the codebase? Start with the [developer documentation](docs/README.md), especially the [Getting Started](docs/getting-started.md), [Architecture](docs/architecture.md), and [Maintenance Guide](docs/maintenance.md).
-
-## Problem
-
-Quotation requests often arrive through shared inboxes and require people to:
-
-- Identify which messages are genuine quotation requests.
-- Extract products, quantities, delivery requirements, and customer details.
-- Check product, pricing, inventory, and commercial policy information.
-- Prepare a consistent quotation and email response.
-- Review the result before sending it to the customer.
-
-Quotation Agent aims to automate the repetitive parts of this process while keeping important decisions and outbound communication under human control.
-
-## Goals
-
-- Monitor email for new messages.
-- Classify whether an email is a quotation request.
-- Extract structured quotation requirements from the message and attachments.
-- Evaluate sender and request authenticity using technical and business signals.
-- Protect the agent and connected systems from prompt injection.
-- Retrieve trusted product and business data through RAG and/or MCP tools.
-- Generate a proposed quotation and draft reply.
-- Require human review and explicit approval before sending an email.
-- Maintain an audit trail for agent decisions, tool calls, data sources, and approvals.
-
-## Non-Goals
-
-- Automatically sending quotations without human approval in the initial version.
-- Treating an LLM's opinion as proof that a sender is authentic.
-- Allowing customer-provided text to define system instructions or tool permissions.
-- Using unverified information as the source of prices, stock levels, discounts, or delivery commitments.
-
-## Core Workflow
+## Current Flow
 
 ```text
-Incoming email
-      |
-      v
-Email ingestion and normalization
-      |
-      v
-Quotation-request classification
-      |
-      +---- Not a quotation request --> Route or archive
-      |
-      v
-Sender and request verification
-      |
-      v
-Security and prompt-injection checks
-      |
-      v
-Requirement extraction
-      |
-      v
-Trusted product and business data retrieval
-      |       (RAG and/or MCP tools)
-      v
-Quote calculation and validation
-      |
-      v
-Quotation and email draft generation
-      |
-      v
-Human review and approval
-      |
-      +---- Rejected or edited --> Revise, request information, or close
-      |
-      v
-Send approved email and record outcome
+IMAP mailbox
+    |
+    v
+email_retriever.retriever
+    |
+    +--> RetrievedEmail metadata in SQLite
+    +--> QueuedJob with PENDING status
+    +--> data/emails/<email_id>_email.json
 ```
 
-## Proposed Architecture
+The email body is not stored in the `retrieved_email` table. It is written to a
+JSON file so it can later be passed to an extraction or classification process.
 
-### 1. Email Ingestion
-
-The ingestion service monitors a configured mailbox and converts messages into a normalized internal representation containing:
-
-- Sender and recipient metadata.
-- Subject and body.
-- Attachments and extracted text.
-- Message identifiers and timestamps.
-- Email authentication results when provided by the email provider.
-
-The original message should be preserved for traceability, while the agent receives a clearly marked, untrusted representation of its contents.
-
-### 2. Quotation Classifier
-
-An agent or classifier determines whether the message is related to a quotation request. It should return a structured result such as:
-
-```json
-{
-  "is_quotation_request": true,
-  "confidence": 0.94,
-  "reason": "The sender requests pricing and availability for three products",
-  "requires_human_review": false
-}
-```
-
-Low-confidence messages should be routed to a review queue rather than being silently discarded.
-
-### 3. Authenticity and Trust Evaluation
-
-Authenticity is evaluated using multiple layers rather than relying on the LLM alone:
-
-- SPF, DKIM, and DMARC results where available.
-- Sender domain and address checks.
-- Known-customer or approved-domain records.
-- Conversation history and reply-to consistency.
-- Suspicious attachment and link checks.
-- Business rules for high-value or unusual requests.
-- Human escalation when signals conflict.
-
-These checks help estimate whether a request is trustworthy, but they do not guarantee that the sender or request is legitimate.
-
-### 4. Security and Prompt-Injection Guardrails
-
-All email content, attachments, retrieved documents, and external tool responses are untrusted data. They must not be treated as instructions by default.
-
-The system should:
-
-- Keep system instructions and customer content in separate trust boundaries.
-- Prevent email text from changing tool permissions, policies, or workflow state.
-- Validate tool arguments against schemas and business rules.
-- Use allowlists for available tools and destinations.
-- Apply least-privilege credentials to every integration.
-- Require confirmation for high-impact actions.
-- Scan attachments and avoid executing customer-provided code or files.
-- Detect common prompt-injection patterns and route suspicious messages for review.
-- Record the relevant input, decision, and action for later investigation.
-
-Security checks should be treated as defense in depth. Prompt-injection detection is useful, but it is not a substitute for permission boundaries and human approval.
-
-### 5. Requirement Extraction
-
-The agent converts the request into structured fields that can be validated before a quote is generated:
-
-- Customer name and contact details.
-- Product names, identifiers, quantities, and units.
-- Required delivery location and date.
-- Currency and tax requirements.
-- Requested discounts or commercial terms.
-- Missing or ambiguous information.
-
-The agent should ask for clarification or flag missing fields instead of guessing.
-
-### 6. Product Data Retrieval
-
-Product and business information can be retrieved using a retrieval-augmented generation layer, MCP servers, or both. Potential data sources include:
-
-- Product catalogues.
-- Current price lists.
-- Inventory systems.
-- Customer-specific pricing.
-- Discount and approval policies.
-- Delivery and tax rules.
-- Previous approved quotations.
-
-Every important value in a quotation should be traceable to a trusted source and timestamp. The model should not invent a price, product specification, stock level, or delivery promise.
-
-### 7. Quote Calculation and Validation
-
-Deterministic application code should perform calculations such as:
-
-- Line totals.
-- Discounts.
-- Taxes.
-- Shipping and other fees.
-- Currency conversions, where supported.
-- Grand totals.
-
-The LLM may explain or format a quotation, but it should not be the source of truth for arithmetic or commercial rules.
-
-### 8. Draft Generation and Human Review
-
-The system produces:
-
-- A structured quotation.
-- A customer-facing email draft.
-- The data sources used.
-- Assumptions and unresolved issues.
-- A risk or confidence summary.
-
-The draft is placed in a human review queue. A reviewer must be able to inspect, edit, approve, reject, or request clarification. Only an explicit approval may trigger the outbound email action.
-
-## Example
-
-### Incoming request
+## Project Structure
 
 ```text
-Subject: Request for quotation - network equipment
+db_contexts/
+├── base.py                         Shared SQLAlchemy declarative base
+├── sessions.py                     Engine and SessionLocal
+├── models/
+│   ├── email_retriever_models.py   Email and queued-job models
+│   ├── packaging_models.py         Product and manufacturing data models
+│   └── __init__.py                 Model exports for application and Alembic
+└── repos/
+    ├── email_repository.py         Email deduplication and queue creation
+    └── product_repository.py       Product, inventory, and pricing queries
 
-Hello,
+email_retriever/
+└── retriever.py                    IMAP retrieval and JSON artifact creation
 
-Please provide pricing and availability for:
+agents_workflow/
+├── workflow.py                     Entry point for pending queued jobs
+└── agents/
+    ├── base_agent.py               Agent base abstraction
+    ├── classifier_extractor_agent.py  Classifier/extractor scaffold
+    ├── product_catalog_research_agent.py
+    ├── external_research_agent.py
+    └── email_draft_agent.py
 
-- 10 x Model A routers
-- 5 x Model B switches
-
-Please include delivery to Accra and indicate the expected delivery date.
+migrations/
+├── env.py                          Alembic metadata and database configuration
+├── script.py.mako                  Migration file template
+└── versions/                       Versioned schema changes
 ```
 
-### Internal result
+## Setup
+
+Install the project dependencies:
+
+```bash
+uv sync
+```
+
+The project uses Python 3.11:
+
+```bash
+uv run python --version
+```
+
+Configure a local `.env` file. At minimum, email retrieval needs:
+
+```env
+IMAP_HOST=imap.gmail.com
+IMAP_PORT=993
+IMAP_USERNAME=your-test-account@gmail.com
+IMAP_PASSWORD=your-gmail-app-password
+MAILBOX=INBOX
+EMAIL_DB_PATH=data/emails.db
+DATA=data
+```
+
+For Gmail, use an App Password rather than the normal account password.
+Never commit `.env` or place credentials in source code.
+
+## Database Migrations
+
+Apply all migrations:
+
+```bash
+uv run alembic upgrade head
+```
+
+Check the current revision:
+
+```bash
+uv run alembic current
+```
+
+The current schema creates these tables:
 
 ```text
-Classification: Quotation request
-Sender status: Requires verification
-Missing information: Customer billing details
-Retrieved data: Current catalogue and price list
-Risk flags: None detected
-Action: Draft quotation and route to human review
+retrieved_email
+queued_jobs
+products
+product_aliases
+warehouses
+inventory
+price_lists
+product_prices
 ```
 
-The agent should not send a response until the sender has passed the configured checks and a reviewer approves the final draft.
-
-## Human-in-the-Loop Policy
-
-Human approval is required before:
-
-- Sending an external email.
-- Confirming a price, discount, stock level, or delivery commitment.
-- Sharing sensitive customer or company information.
-- Accepting unusual commercial terms.
-- Proceeding when authenticity or security checks fail.
-
-The approval record should include the reviewer, timestamp, version of the draft, and any edits made before approval.
-
-## Observability and Auditability
-
-Each request should have a correlation ID and an auditable lifecycle. Logs should capture:
-
-- Message and attachment identifiers.
-- Classification and extraction results.
-- Authenticity and security signals.
-- Retrieved documents or tool responses.
-- Tool calls and validated arguments.
-- Quote calculation inputs and outputs.
-- Generated draft versions.
-- Reviewer actions and final delivery status.
-
-Logs must avoid exposing secrets and should follow the project's data-retention and privacy requirements.
-
-## Initial Roadmap
-
-1. Define the normalized email and quotation schemas.
-2. Integrate with an email provider in read-only mode.
-3. Add quotation-request classification and confidence thresholds.
-4. Extract products, quantities, and missing requirements.
-5. Add sender verification and security guardrails.
-6. Connect a trusted product catalogue through RAG or MCP.
-7. Implement deterministic quote calculation and validation.
-8. Generate quotation and email drafts.
-9. Build a human review and approval workflow.
-10. Add approved outbound email sending.
-11. Add evaluation datasets, monitoring, and additional communication channels.
-
-## Evaluation Criteria
-
-The project should be evaluated on more than response quality:
-
-- Correct quotation-request classification.
-- Accurate extraction of products, quantities, and customer requirements.
-- Correct use of current and authorized product data.
-- Correct deterministic calculations.
-- Resistance to prompt injection and malicious attachments.
-- Appropriate handling of suspicious or ambiguous senders.
-- No unauthorized tool calls or outbound messages.
-- Human approval enforcement.
-- Complete and useful audit records.
-- Clear escalation when information is missing or confidence is low.
-
-## Development
-
-The current proof of concept uses IMAP for ingestion and SQLite for state and queued jobs.
-
-M7 adds a Python agent framework under `agent_system/`. It includes typed agent context and results, an explicit registry, execution validation and audit records, a deterministic quotation-classifier stub, and a queue-worker adapter. The stub does not contact Ollama; Ollama and PydanticAI integration are planned for M8.
-
-M8 adds `PydanticAIQuotationClassifier`, configured through the provider-neutral `LLMSettings` and `create_model()` factory. It can target local Ollama or hosted providers such as Groq, Gemini, Anthropic, and OpenAI. Its client is injectable for tests, and it has no tools enabled. The deterministic M7 stub remains available for offline development.
-
-M9 adds explicit Python workflow orchestration and `WorkflowWorker`. It chains typed stages from `EMAIL_RECEIVED` through classification, extraction, verification, research, quote preparation, and draft generation, then stops at `NEEDS_HUMAN_REVIEW`. The M9 default stubs do not use external tools or send email.
-
-Install the project with development dependencies:
+Create a migration after changing SQLAlchemy models:
 
 ```bash
-uv sync --extra dev
+uv run alembic revision --autogenerate -m "describe the schema change"
 ```
 
-Run one ingestion cycle manually:
+Review an autogenerated migration before applying it. To roll back one
+migration:
 
 ```bash
-uv run email-ingest
+uv run alembic downgrade -1
 ```
 
-The ingestion pipeline connects to IMAP, detects new UIDs, retrieves and parses each email, saves raw and normalized artifacts under `DATA_DIR`, and adds an `EMAIL_RECEIVED` job to SQLite. It does not run agents or send email. Agent-worker startup will be documented in a later milestone.
+The application does not call `Base.metadata.create_all()`. Alembic owns schema
+creation and updates.
 
-Example cron entry:
+## Run Email Retrieval
 
-```cron
-*/5 * * * * cd /path/to/quotation-agent && uv run email-ingest >> logs/pipeline.log 2>&1
-```
-
-Configuration is documented in `.env.example`. Copy those keys into `.env` and replace the placeholder credentials with a Gmail app password. Never commit `.env`.
-
-Run the tests with:
+Run the retriever from the repository root as a module:
 
 ```bash
-uv run --extra dev pytest
+uv run python -m email_retriever.retriever
 ```
 
-Run one queued job through the M7 agent worker from Python by registering an agent with `AgentRegistry`, creating an `AgentRunner`, and passing both to `AgentWorker`. The worker claims jobs using the existing SQLite leases and records each agent execution in the configured SQLite database.
+The retriever:
 
-Planned configuration areas include:
+1. Connects to the configured IMAP mailbox.
+2. Searches for all messages, or only unseen messages when configured by the
+   caller.
+3. Filters out email IDs already stored in SQLite.
+4. Fetches each new email.
+5. Extracts plain-text content.
+6. Inserts email metadata into `retrieved_email`.
+7. Creates a `PENDING` row in `queued_jobs`.
+8. Writes the email data to `data/emails/<email_id>_email.json`.
 
-- Email provider credentials and mailbox settings.
-- LLM provider and model configuration.
-- RAG storage or vector database configuration.
-- MCP server endpoints and permissions.
-- Product, pricing, inventory, and policy data sources.
-- Human review application settings.
-- Logging, monitoring, and data-retention settings.
+The module does not classify emails, call an LLM, or send replies.
 
-Never commit credentials, API keys, customer emails, or production data to the repository.
+## Inspect the Database
 
-## License
+If the SQLite command-line client is installed:
 
-License information will be added when the project license is selected.
+```bash
+sqlite3 data/emails.db ".tables"
+```
+
+Inspect retrieved emails:
+
+```bash
+sqlite3 data/emails.db \
+  "SELECT id, email_id, from_email, subject, created_at FROM retrieved_email;"
+```
+
+Inspect queued work:
+
+```bash
+sqlite3 data/emails.db \
+  "SELECT id, email_id, status, created_at FROM queued_jobs;"
+```
+
+Inspect migration state:
+
+```bash
+sqlite3 data/emails.db "SELECT * FROM alembic_version;"
+```
+
+## Database Domain
+
+The packaging-company catalogue contains:
+
+- `Product`: SKU, name, category, box style, material, dimensions, and active
+  status.
+- `ProductAlias`: customer or sales terminology for a product.
+- `Warehouse`: physical storage locations.
+- `Inventory`: product quantities by warehouse.
+- `PriceList`: named currency-specific price lists.
+- `ProductPrice`: quantity-based prices with validity dates.
+
+Repository functions are in:
+
+```text
+db_contexts/repos/product_repository.py
+```
+
+They currently support product creation, exact SKU/name/alias lookup, active
+product listing, warehouse inventory lookup, and current quantity-based price
+lookup.
+
+## Important Boundaries
+
+The current code intentionally separates:
+
+```text
+email retrieval
+database persistence
+database migrations
+    agent workflow scaffold
+```
+
+Email content is treated as external data. It is written to a JSON artifact and
+is not used as a database instruction or schema definition.
+
+## Current Limitations
+
+- The `agents_workflow` package is currently a scaffold; its agents are being
+  implemented incrementally with Pydantic/PydanticAI.
+- There is no worker process for continuously consuming `queued_jobs` yet.
+- The workflow entry point currently only reads pending jobs.
+- There is no semantic vector database connection in the current working tree.
+- Inventory and pricing repository functions are available, but seed data and
+  application commands for them are not included yet.
+- The retriever currently extracts plain text only.
+- There is no automated test suite in the current working tree.
+
+## Security
+
+- Use a test mailbox during development.
+- Use Gmail App Passwords for IMAP access.
+- Keep `.env` out of version control.
+- Do not commit customer emails or generated database files.
+- Do not run retrieval against a production mailbox until the duplicate and
+  failure behavior has been reviewed.

@@ -1,6 +1,6 @@
 from .base_agent import AgentBase
 
-class Classifier(AgentBase):
+class ClassifierAndExtractor(AgentBase):
 
     def __init__(self, system_prompt):
         self.system_prompt = system_prompt

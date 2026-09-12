@@ -1,5 +1,5 @@
 from db_contexts.sessions import SessionLocal
-from db_contexts.models import RetrievedEmail
+from db_contexts.models import RetrievedEmail, QueuedJob
 
 def create_email_if_not_exist(
     email_id: int,
@@ -17,6 +17,12 @@ def create_email_if_not_exist(
             subject=subject,
         )
         session.add(new_email)
+        session.flush()
+
+        new_job = QueuedJob(
+            email_id=new_email.id,
+        )
+        session.add(new_job)
         session.commit()
         return True  # New email recorded
 

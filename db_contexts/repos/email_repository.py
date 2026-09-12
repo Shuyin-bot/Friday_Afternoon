@@ -21,9 +21,13 @@ def create_email_if_not_exist(
         return True  # New email recorded
 
 
-def does_email_exist(email_id: int) -> bool:
+def filter_out_seen_emails(email_ids: list) -> list:
+    ret = []
     with SessionLocal() as session:
-        existing_email = session.query(RetrievedEmail).filter_by(email_id=email_id).first()
-        if existing_email:
-            return True
-        return False
+        for id in email_ids:
+            email_id = int(id.decode('utf8'))
+            existing_email = session.query(RetrievedEmail).filter_by(email_id=email_id).first()
+            if existing_email:
+                continue
+            ret.append(id)
+    return ret

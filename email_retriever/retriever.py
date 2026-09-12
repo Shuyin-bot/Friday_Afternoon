@@ -1,8 +1,9 @@
 import imaplib
 import email
-import os
+import os, json
 from dotenv import load_dotenv
-from db_contexts.repos.email_repository import create_email_if_not_exist, does_email_exist
+from db_contexts.repos.email_repository import create_email_if_not_exist, filter_out_seen_emails
+from pathlib import Path
 
 load_dotenv()
 
@@ -10,11 +11,27 @@ def record_new_email(
     email_id: int, 
     from_email: str, 
     subject: str,
+    content: str
 ) -> bool:
+    data_dir = os.getenv('DATA', 'data')
+
     if create_email_if_not_exist(email_id, from_email, subject):
         print(f"New email recorded: {subject} from {from_email}")
+    
+        file_path = Path(f"{data_dir}/emails/{email_id}_email.json")
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(file_path, "w") as fh:
+            mp = {
+                'email_id':email_id, 
+                'from': from_email, 
+                'subject': subject, 
+                'content': content
+            }
+            json.dump(mp, fh, indent=4)
         return True
     return False
+
 
 def connect_and_retrieve_email(fetch_all: bool = True) -> None:
     # load the env variable
@@ -34,10 +51,11 @@ def connect_and_retrieve_email(fetch_all: bool = True) -> None:
     status, messages = imap.search(None, "ALL" if fetch_all else "UNSEEN")
     if status != "OK":
         raise Exception("Failed to retrieve emails")
-    
-    for email_id in messages[0].split():
-        if does_email_exist(int(email_id.decode('utf8'))):
-            continue
+
+    email_ids = filter_out_seen_emails(messages[0].split())
+    print(f"skipped {len(messages[0].split()) - len(email_ids)}....\nProcessing {len(email_ids)}")
+
+    for email_id in email_ids:
         status, msg_data = imap.fetch(email_id, "(RFC822)")
 
         if status != "OK":
@@ -58,6 +76,7 @@ def connect_and_retrieve_email(fetch_all: bool = True) -> None:
             email_id=int(email_id.decode('utf8')),
             from_email=email_message.get("From"),
             subject=email_message.get("Subject"),
+            content=content
         )
 
     imap.close()

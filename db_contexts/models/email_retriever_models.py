@@ -20,7 +20,11 @@ class RetrievedEmail(Base):
 
 class JobStatus(str, PythonEnum):
     PENDING = "PENDING"
-    IN_PROGRESS = "IN_PROGRESS"
+    CLASSIFIED = "CLASSIFIED"
+    EXTRACTED = "EXTRACTED"
+    RESEARCH_EXT = "RESEARCH_EXT"
+    RESEARCH_INT = "RESEARCH_INT"
+    DRAFTED = "DRAFTED"
     COMPLETED = "COMPLETED"
 
 

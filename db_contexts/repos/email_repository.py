@@ -39,7 +39,16 @@ def filter_out_seen_emails(email_ids: list) -> list:
     return ret
 
 
-def get_queued_jobs() -> list:
+def get_queued_jobs_by_stat(job_stat:JobStatus = JobStatus.PENDING) -> list:
     with SessionLocal() as session:
-        queued_jobs = session.query(QueuedJob).filter_by(status=JobStatus.PENDING).all()
+        queued_jobs = session.query(QueuedJob).filter_by(status=job_stat).all()
         return queued_jobs
+
+
+def update_queued_job_status(job_id: int, stat: JobStatus):
+    with SessionLocal() as session:
+        job = session.query(QueuedJob).filter_by(id=job_id).first()
+        if not job:
+            return 
+        job.status = stat
+        session.commit()

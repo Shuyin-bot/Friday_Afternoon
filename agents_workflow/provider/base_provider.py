@@ -46,3 +46,12 @@ elif llm_provider == "groq":
         model_name=os.getenv('LLM_MODEL'),
         provider=provider
     )
+elif llm_provider == "openrouter":
+    from pydantic_ai.providers.openrouter import OpenRouterProvider
+    from pydantic_ai.models.openrouter import OpenRouterModel
+
+    provider = OpenRouterProvider(api_key=api_key)
+    model = OpenRouterModel(
+        model_name=llm_model_name,
+        provider=provider
+    )

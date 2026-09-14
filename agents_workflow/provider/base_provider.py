@@ -6,7 +6,12 @@ from pydantic_ai.models.google import GoogleModel
 
 load_dotenv()
 
-llm_provider = os.getenv('LLM_PROVIDER')
+llm_provider = os.getenv('LLM_PROVIDER', None)
+api_key = os.getenv("LLM_API_KEY")
+llm_model_name = os.getenv("LLM_MODEL")
+
+if not llm_model_name or not api_key:
+    raise Exception("Some env variables are missing")
 
 provider = GoogleProvider(api_key=os.getenv("LLM_API_KEY"))
 model = GoogleModel(
@@ -32,5 +37,12 @@ elif llm_provider == "ollama":
         model_name=os.get('LLM_MODEL'),
         provider=provider
     )
+elif llm_provider == "groq":
+    from pydantic_ai.providers.groq import GroqProvider
+    from pydantic_ai.models.groq import GroqModel
 
-
+    provider = GroqProvider(api_key=os.getenv('LLM_API_KEY'))
+    model = GroqModel(
+        model_name=os.getenv('LLM_MODEL'),
+        provider=provider
+    )

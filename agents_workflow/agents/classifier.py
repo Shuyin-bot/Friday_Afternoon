@@ -2,21 +2,21 @@ from typing import Any
 from .base_agent import CustomBaseAgent
 from pydantic_ai import Agent
 from db_contexts import QueuedJob, JobStatus
+from pydantic import BaseModel, Field
+from ..provider.base_provider import model
 
-class Classifier(Agent):
 
-    def __init__(
-        self, 
-        **kwargs: Any
-    ):
-        # self.m_system_prompt = system_prompt
-        super().__init__(**kwargs)
-    
-    def _setup_tools(self):
-        @self.system_prompt
-        def add_context() -> str:
-            return self.m_system_prompt
+class ClassifierOutput(BaseModel):
+    result: float = Field(ge=0.0, le=1.0)
+    reason: str
+    is_quote: bool
 
-    def run(self, user_prompt: str) -> None:
-        self.input_payload.status
-        pass
+
+def get_classifying_agent() -> Agent:
+    classifier = Agent(
+        model, 
+        instructions="You are a classifier, you look at the content of an email and determine if it is a quotation email or not",
+        output_type=ClassifierOutput
+    )
+
+    return classifier

@@ -45,10 +45,12 @@ def get_queued_jobs_by_stat(job_stat:JobStatus = JobStatus.PENDING) -> list:
         return queued_jobs
 
 
-def update_queued_job_status(job_id: int, stat: JobStatus):
+def update_queued_job(job_id: int, stat: JobStatus, metadata: str = ""):
     with SessionLocal() as session:
         job = session.query(QueuedJob).filter_by(id=job_id).first()
         if not job:
             return 
         job.status = stat
+        if metadata:
+            job.metadata = metadata
         session.commit()

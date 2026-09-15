@@ -6,7 +6,6 @@ from ..provider.base_provider import model
 
 
 class ClassifierOutput(BaseModel):
-    result: float = Field(ge=0.0, le=1.0)
     reason: str
     is_quote: bool
 

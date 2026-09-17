@@ -1,0 +1,68 @@
+{
+  "price_lists": [
+    {
+      "name": "Standard EUR",
+      "currency": "EUR",
+      "is_active": true
+    }
+  ],
+  "warehouses": [
+    {
+      "code": "MAIN",
+      "name": "Main Warehouse",
+      "location": "Accra",
+      "inventory": {
+        "PIZZA-001": 2500,
+        "MAILER-001": 1200,
+        "CARTON-001": 5000
+      }
+    }
+  ],
+  "products": [
+    {
+      "sku": "PIZZA-001",
+      "name": "Pizza Shipping Box",
+      "category": "FOOD_PACKAGING",
+      "description": "Foldable corrugated pizza box for takeaway and delivery.",
+      "box_style": "Lock corner box",
+      "material": "E-flute corrugated cardboard",
+      "dimensions": "320 x 320 x 45 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["pizza box", "takeaway pizza carton"],
+      "prices": [
+        {"minimum_quantity": 1, "unit_price": 1.85},
+        {"minimum_quantity": 1000, "unit_price": 1.35}
+      ]
+    },
+    {
+      "sku": "MAILER-001",
+      "name": "E-commerce Mailer Box",
+      "category": "MAILER_BOX",
+      "description": "Self-locking mailer box for online retail shipments.",
+      "box_style": "Roll-end tuck front",
+      "material": "B-flute kraft corrugated cardboard",
+      "dimensions": "300 x 220 x 100 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["mailer carton", "shipping mailer", "ecommerce box"],
+      "prices": [
+        {"minimum_quantity": 1, "unit_price": 2.4},
+        {"minimum_quantity": 500, "unit_price": 1.9}
+      ]
+    },
+    {
+      "sku": "CARTON-001",
+      "name": "Standard Shipping Carton",
+      "category": "SHIPPING_CARTON",
+      "description": "Strong regular slotted carton for general logistics use.",
+      "box_style": "Regular slotted carton",
+      "material": "Double-wall corrugated cardboard",
+      "dimensions": "400 x 300 x 250 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["shipping box", "transport carton", "物流 carton"],
+      "prices": [
+        {"minimum_quantity": 1, "unit_price": 3.2},
+        {"minimum_quantity": 500, "unit_price": 2.65}
+      ]
+    }
+  ]
+}

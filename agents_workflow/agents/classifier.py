@@ -1,7 +1,5 @@
-from typing import Any
 from pydantic_ai import Agent
-from db_contexts import QueuedJob, JobStatus
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from ..provider.base_provider import model
 
 
@@ -12,8 +10,14 @@ class ClassifierOutput(BaseModel):
 
 def get_classifying_agent() -> Agent:
     classifier = Agent(
-        model, 
-        instructions="You are a classifier, you look at the content of an email and determine if it is a quotation email or not",
+        model,
+        instructions=(
+            "Your role is to classify an email and determine whether it is a "
+            "quotation request. Set is_quote to True only when the sender is "
+            "requesting a price, quote, offer, or quotation for a product or "
+            "service. Set it to False for unrelated emails. Give a short "
+            "reason based only on the email content."
+        ),
         output_type=ClassifierOutput
     )
     return classifier

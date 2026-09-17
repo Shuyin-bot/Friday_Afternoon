@@ -52,5 +52,5 @@ def update_queued_job(job_id: int, stat: JobStatus, metadata: str = ""):
             return 
         job.status = stat
         if metadata:
-            job.metadata = metadata
+            job.meta_data = metadata
         session.commit()

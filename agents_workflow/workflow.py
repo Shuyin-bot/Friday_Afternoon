@@ -8,13 +8,17 @@ from pathlib import Path
 import json
 
 
+def get_path_to_email(email_id) -> Path:
+    return Path.joinpath(Path.cwd(), "data", "emails", f"{email_id}_email.json")
+
+
 async def classify_emails():
     jobs = get_queued_jobs_by_stat()
     print(f"retrieved {len(jobs)} jobs to be processed")
     classifier = get_classifying_agent()
 
     for job in jobs:
-        file_path = Path.joinpath(Path.cwd(), "data", "emails", f"{job.email_id}_email.json")
+        file_path = get_path_to_email(job.email_id)
         email_data = json.loads(file_path.read_text())
         res = await classifier.run(email_data.get('content'))
     
@@ -31,6 +35,16 @@ async def classify_emails():
 async def extract_quotations():
     quotation_emails = get_queued_jobs_by_stat(JobStatus.CLASSIFIED)
     print(f"extracting quote from {len(quotation_emails)} emails")
+    extractor = get_extractor_agent()
+
+    for job in quotation_emails:
+        file_path = get_path_to_email(job.email_id)
+        email_data = json.loads(file_path.read_text())
+        res = await extractor.run(email_data.get("content"))
+
+        payload = {"extraction": res.output.model_dump_json()}
+        print(payload)
+        update_queued_job(job.id, JobStatus.EXTRACTED, json.dumps(payload))
 
 async def main():
     await classify_emails()

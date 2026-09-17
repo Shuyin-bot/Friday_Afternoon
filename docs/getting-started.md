@@ -27,6 +27,11 @@ IMAP_PASSWORD=your-gmail-app-password
 MAILBOX=INBOX
 EMAIL_DB_PATH=data/emails.db
 DATA=data
+LLM_PROVIDER=google
+LLM_MODEL=gemini-2.5-flash
+LLM_API_KEY=your-api-key
+CHROMA_PATH=data/chroma
+CHROMA_PRODUCT_COLLECTION=products
 ```
 
 `EMAIL_DB_PATH` controls the SQLite database used by SQLAlchemy. `DATA`
@@ -68,6 +73,27 @@ data/emails/<email_id>_email.json
 
 Running the retriever again skips email IDs already present in the database.
 
+## Load Product Data
+
+Apply the migrations first, then load the sample packaging catalogue:
+
+```bash
+uv run python -m scripts.load_product_data
+```
+
+This stores product, inventory, and pricing records in SQLite and product
+documents with local embeddings in Chroma.
+
+## Run the Agent Workflow
+
+```bash
+uv run python -m agents_workflow.workflow
+```
+
+The workflow processes pending jobs sequentially. It classifies each email and
+extracts quotation details from quotation requests, saving each result in the
+job metadata and advancing its status.
+
 ## Inspect Results
 
 ```bash
@@ -84,6 +110,6 @@ find data/emails -type f -print
 
 ## Current Scope
 
-The retriever currently reads email and creates queued work. It does not yet
-consume jobs, classify messages, call an agent, perform semantic search, or
-send email.
+The retriever only reads email and creates queued work. Agent processing is run
+separately by `agents_workflow.workflow`; semantic querying, review, and email
+sending are not implemented yet.

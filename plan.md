@@ -53,6 +53,15 @@ migrations.
 - Currency-specific price lists.
 - Quantity-based and date-valid product prices.
 - Repository functions for product, inventory, and price queries.
+- Dummy catalogue data in `mock_data/product_seed.json`.
+- Persistent Chroma product collection and seed loader.
+
+### Agent workflow
+
+- Classify queued emails with a typed PydanticAI output.
+- Extract quotation details from quotation requests.
+- Persist stage results in `queued_jobs.meta_data`.
+- Advance jobs through `COMPLETED`, `CLASSIFIED`, and `EXTRACTED` statuses.
 
 ## Next Steps
 
@@ -65,7 +74,7 @@ migrations.
 ### Product resolution
 
 - Use exact SKU, name, and alias lookup first.
-- Add semantic product search as a fallback.
+- Add semantic product search with Chroma as a fallback.
 - Return candidates and confidence rather than inventing products.
 
 ### Quotation extraction

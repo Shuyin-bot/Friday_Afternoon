@@ -14,10 +14,11 @@ The current implementation focuses on:
 - Managing the database schema with SQLAlchemy and Alembic.
 - Modeling products, aliases, warehouses, inventory, price lists, and prices
   for a packaging manufacturer.
+- Loading product records into SQLite and a persistent local Chroma collection.
 
-The agent workflow is present as a scaffold. Its agents are intentionally empty
-so they can be built and learned from incrementally. Semantic search, human
-review, and outbound email are not implemented yet.
+The agent workflow currently classifies pending emails and extracts quotation
+details from emails classified as quotation requests. Product resolution,
+semantic search, human review, and outbound email are not implemented yet.
 
 ## Current Flow
 
@@ -30,6 +31,12 @@ email_retriever.retriever
     +--> RetrievedEmail metadata in SQLite
     +--> QueuedJob with PENDING status
     +--> data/emails/<email_id>_email.json
+    |
+    v
+agent workflow
+    +--> classify email
+    +--> extract quotation details
+    +--> persist stage result in queued_jobs.meta_data
 ```
 
 The email body is not stored in the `retrieved_email` table. It is written to a
@@ -43,7 +50,7 @@ db_contexts/
 ├── sessions.py                     Engine and SessionLocal
 ├── models/
 │   ├── email_retriever_models.py   Email and queued-job models
-│   ├── packaging_models.py         Product and manufacturing data models
+│   ├── product_models.py           Product and packaging data models
 │   └── __init__.py                 Model exports for application and Alembic
 └── repos/
     ├── email_repository.py         Email deduplication and queue creation
@@ -56,7 +63,8 @@ agents_workflow/
 ├── workflow.py                     Entry point for pending queued jobs
 └── agents/
     ├── base_agent.py               Agent base abstraction
-    ├── classifier_extractor_agent.py  Classifier/extractor scaffold
+    ├── classifier.py                  Quotation email classifier
+    ├── extractor_agent.py             Quotation detail extractor
     ├── product_catalog_research_agent.py
     ├── external_research_agent.py
     └── email_draft_agent.py
@@ -65,6 +73,15 @@ migrations/
 ├── env.py                          Alembic metadata and database configuration
 ├── script.py.mako                  Migration file template
 └── versions/                       Versioned schema changes
+
+vector_contexts/
+└── chroma.py                       Persistent Chroma client and products collection
+
+mock_data/
+└── product_seed.json                Dummy product, stock, and price data
+
+scripts/
+└── load_product_data.py             Loads seed data into SQLite and Chroma
 ```
 
 ## Setup
@@ -91,6 +108,11 @@ IMAP_PASSWORD=your-gmail-app-password
 MAILBOX=INBOX
 EMAIL_DB_PATH=data/emails.db
 DATA=data
+LLM_PROVIDER=google
+LLM_MODEL=gemini-2.5-flash
+LLM_API_KEY=your-api-key
+CHROMA_PATH=data/chroma
+CHROMA_PRODUCT_COLLECTION=products
 ```
 
 For Gmail, use an App Password rather than the normal account password.
@@ -161,6 +183,32 @@ The retriever:
 
 The module does not classify emails, call an LLM, or send replies.
 
+## Run the Agent Workflow
+
+After retrieving emails, run the workflow from the repository root:
+
+```bash
+uv run python -m agents_workflow.workflow
+```
+
+The workflow processes `PENDING` jobs one at a time. It stores classification
+results in `queued_jobs.meta_data` and moves non-quotation jobs to `COMPLETED`.
+Quotation requests move to `CLASSIFIED`, then the extractor stores their
+details and moves them to `EXTRACTED`.
+
+## Load Product Data
+
+The sample packaging catalogue is defined in `mock_data/product_seed.json`.
+Load it into SQLite and the Chroma products collection with:
+
+```bash
+uv run python -m scripts.load_product_data
+```
+
+The loader uses each SKU as the stable Chroma document ID and can be rerun for
+existing products. Chroma uses its local default embedding model for product
+documents; semantic queries will be added later.
+
 ## Inspect the Database
 
 If the SQLite command-line client is installed:
@@ -227,13 +275,11 @@ is not used as a database instruction or schema definition.
 
 ## Current Limitations
 
-- The `agents_workflow` package is currently a scaffold; its agents are being
-  implemented incrementally with Pydantic/PydanticAI.
-- There is no worker process for continuously consuming `queued_jobs` yet.
-- The workflow entry point currently only reads pending jobs.
-- There is no semantic vector database connection in the current working tree.
-- Inventory and pricing repository functions are available, but seed data and
-  application commands for them are not included yet.
+- The workflow is a simple sequential runner, not a continuously running
+  worker.
+- There is no retry/error state handling around failed agent calls yet.
+- Product data is loaded into Chroma, but semantic query functions are not
+  implemented yet.
 - The retriever currently extracts plain text only.
 - There is no automated test suite in the current working tree.
 

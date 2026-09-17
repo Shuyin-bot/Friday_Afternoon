@@ -90,12 +90,28 @@ The current functions are:
 
 ```text
 create_product
-find_exact_product
-list_products
-get_inventory
-get_current_price
+get_product_by_id
+get_product_by_sku
+search_products
+get_product_by_alias
+get_products_by_category
+get_product_inventory
+get_product_prices
 ```
 
 These functions create short-lived SQLAlchemy sessions and return ORM objects.
 They should be called by application services or future tools rather than by
 the email retriever directly.
+
+## Chroma
+
+Chroma is configured separately from SQLite in:
+
+```text
+vector_contexts/chroma.py
+```
+
+It uses a persistent local client at `CHROMA_PATH` and exposes the
+`CHROMA_PRODUCT_COLLECTION` collection. SQLite remains the source of truth for
+product details, prices, and inventory. Chroma currently stores product
+documents and embeddings for future semantic lookup.

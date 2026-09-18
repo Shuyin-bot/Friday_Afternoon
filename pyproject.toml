@@ -25,8 +25,3 @@ include = [
     "vector_contexts*",
 ]
 exclude = ["mock_data*", "migrations*"]
-
-[project.optional-dependencies]
-dev = [
-    "pytest>=8",
-]

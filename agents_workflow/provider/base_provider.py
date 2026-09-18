@@ -10,22 +10,22 @@ llm_provider = os.getenv('LLM_PROVIDER', None)
 api_key = os.getenv("LLM_API_KEY")
 llm_model_name = os.getenv("LLM_MODEL")
 
-if not llm_model_name or not api_key:
+if not llm_model_name or not llm_provider:
     raise Exception("Some env variables are missing")
 
-provider = GoogleProvider(api_key=os.getenv("LLM_API_KEY"))
-model = GoogleModel(
-    model_name=os.getenv("LLM_MODEL"),
-    provider=provider
-)
-
-if llm_provider == "openai":
+if llm_provider == "google":
+    provider = GoogleProvider(api_key=api_key)
+    model = GoogleModel(
+        model_name=llm_model_name,
+        provider=provider
+    )
+elif llm_provider == "openai":
     from pydantic_ai.providers.openai import OpenAIProvider
     from pydantic_ai.models.openai import OpenAIChatModel
 
-    provider =  OpenAIProvider(api_key=os.getenv("LLM_API_KEY"))
+    provider =  OpenAIProvider(api_key=api_key)
     model = OpenAIChatModel(
-        model_name=os.getenv('LLM_MODEL'),
+        model_name=llm_model_name,
         provider= provider
     )
 elif llm_provider == "ollama":
@@ -34,16 +34,16 @@ elif llm_provider == "ollama":
 
     provider = OllamaProvider(api_key="", base_url=os.getenv("LLM_BASE_URL"))
     model = OllamaModel(
-        model_name=os.get('LLM_MODEL'),
+        model_name=llm_model_name,
         provider=provider
     )
 elif llm_provider == "groq":
     from pydantic_ai.providers.groq import GroqProvider
     from pydantic_ai.models.groq import GroqModel
 
-    provider = GroqProvider(api_key=os.getenv('LLM_API_KEY'))
+    provider = GroqProvider(api_key=api_key)
     model = GroqModel(
-        model_name=os.getenv('LLM_MODEL'),
+        model_name=llm_model_name,
         provider=provider
     )
 elif llm_provider == "openrouter":
@@ -55,3 +55,5 @@ elif llm_provider == "openrouter":
         model_name=llm_model_name,
         provider=provider
     )
+else:
+    raise Exception(f"Unsupported LLM_PROVIDER: {llm_provider}")

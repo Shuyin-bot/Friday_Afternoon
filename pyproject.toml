@@ -11,4 +11,5 @@ dependencies = [
     "pydantic>=2.13.5",
     "pydantic-ai-slim[anthropic,google,groq,openai]>=2.42.0",
     "sqlalchemy>=2.0.52",
+    "tavily-python>=0.5",
 ]

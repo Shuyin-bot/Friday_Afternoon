@@ -16,9 +16,10 @@ The current implementation focuses on:
   for a packaging manufacturer.
 - Loading product records into SQLite and a persistent local Chroma collection.
 
-The agent workflow currently classifies pending emails and extracts quotation
-details from emails classified as quotation requests. Product resolution,
-semantic search, human review, and outbound email are not implemented yet.
+The agent workflow classifies pending emails, extracts quotation details,
+researches the requesting company online, checks the internal product
+catalog (SQL exact match, then Chroma semantic search), and drafts a reply
+email. Human review and actually sending the reply are not implemented yet.
 
 ## Current Flow
 
@@ -33,16 +34,36 @@ email_retriever.retriever
     +--> data/emails/<email_id>_email.json
     |
     v
-agent workflow
-    +--> classify email
-    +--> extract quotation details
-    +--> persist stage result in queued_jobs.meta_data
+agent workflow (agents_workflow.workflow)
+    PENDING      --classify-->        CLASSIFIED (or COMPLETED if not a quote)
+    CLASSIFIED   --extract-->         EXTRACTED
+    EXTRACTED    --research company-> RESEARCH_EXT
+    RESEARCH_EXT --research product-> RESEARCH_INT
+    RESEARCH_INT --draft reply-->     DRAFTED
 ```
+
+Every stage appends its result to `queued_jobs.meta_data` instead of
+overwriting the previous stage. If a stage is missing required input (e.g. no
+company was extracted), it records a `*_skipped` reason and still advances
+the job, so a job can never stall mid-pipeline.
 
 The email body is not stored in the `retrieved_email` table. It is written to a
 JSON file so it can later be passed to an extraction or classification process.
 
+## Review Dashboard
+
+A FastAPI app under `api/` exposes the pipeline results as JSON and a
+single-page dashboard, for reviewing results without a terminal:
+
+```bash
+uv run uvicorn api.main:app --reload --port 8000
+```
+
+Open `http://localhost:8000/` for the dashboard, or `http://localhost:8000/docs`
+for the interactive API docs. See [docs/ui.md](docs/ui.md) for details.
+
 ## Project Structure
+
 
 ```text
 db_contexts/
@@ -278,8 +299,8 @@ is not used as a database instruction or schema definition.
 - The workflow is a simple sequential runner, not a continuously running
   worker.
 - There is no retry/error state handling around failed agent calls yet.
-- Product data is loaded into Chroma, but semantic query functions are not
-  implemented yet.
+- The Review Dashboard is read-mostly; there is no approve/reject action or
+  outbound send yet (would need a new job status + migration).
 - The retriever currently extracts plain text only.
 - There is no automated test suite in the current working tree.
 

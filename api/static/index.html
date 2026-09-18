@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<title>Quotation Bot – Review Dashboard</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+    margin: 0; background: #f4f5f7; color: #1f2430;
+  }
+  header {
+    background: #1f2430; color: #fff; padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  header h1 { font-size: 18px; margin: 0; }
+  header a { color: #9fd3ff; text-decoration: none; font-size: 13px; }
+  .actions button {
+    background: #3b6ef0; color: #fff; border: none; border-radius: 6px;
+    padding: 8px 14px; margin-left: 8px; cursor: pointer; font-size: 13px;
+  }
+  .actions button:hover { background: #2f57c4; }
+  .actions button:disabled { background: #9aa; cursor: wait; }
+  main { padding: 20px 24px; max-width: 1100px; margin: 0 auto; }
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+  .stat-card {
+    background: #fff; border-radius: 8px; padding: 10px 14px; min-width: 110px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.08); text-align: center;
+  }
+  .stat-card .n { font-size: 22px; font-weight: 700; }
+  .stat-card .k { font-size: 11px; color: #667; text-transform: uppercase; letter-spacing: .04em; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  th, td { text-align: left; padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #eee; }
+  th { background: #fafbfc; color: #667; font-weight: 600; }
+  tr.job-row { cursor: pointer; }
+  tr.job-row:hover { background: #f0f4ff; }
+  .badge { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .badge-PENDING { background: #eee; color: #555; }
+  .badge-CLASSIFIED { background: #fff3cd; color: #8a6d00; }
+  .badge-EXTRACTED { background: #ffe3c2; color: #9a5300; }
+  .badge-RESEARCH_EXT, .badge-RESEARCH_INT { background: #dce8ff; color: #2b4fa8; }
+  .badge-DRAFTED { background: #d6f5d6; color: #1c6b1c; }
+  .badge-COMPLETED { background: #e2e2e2; color: #444; }
+  #detail {
+    margin-top: 20px; background: #fff; border-radius: 8px; padding: 16px 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.08); display: none;
+  }
+  #detail h2 { margin-top: 0; font-size: 16px; }
+  .stage { margin-bottom: 14px; }
+  .stage h3 { font-size: 13px; margin: 0 0 6px; color: #445; text-transform: uppercase; letter-spacing: .03em; }
+  .stage .skip { color: #a55; font-size: 13px; font-style: italic; }
+  pre.body {
+    background: #f7f8fa; padding: 10px 12px; border-radius: 6px; font-size: 13px;
+    white-space: pre-wrap; word-break: break-word; max-height: 220px; overflow: auto; margin: 0;
+  }
+  .kv { display: grid; grid-template-columns: 140px 1fr; gap: 4px 12px; font-size: 13px; }
+  .kv div.k { color: #667; }
+  #log { margin-top: 12px; font-size: 12px; color: #667; white-space: pre-wrap; }
+  .hint { font-size: 12px; color: #778; margin-top: -10px; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Quotation Bot – Review Dashboard</h1>
+  <div class="actions">
+    <a href="/docs" target="_blank">API docs (Swagger)</a>
+    <button id="btn-retrieve" onclick="runAction('retrieve')">拉取邮件 Retrieve</button>
+    <button id="btn-workflow" onclick="runAction('workflow')">运行流水线 Run Workflow</button>
+  </div>
+</header>
+<main>
+  <div class="hint">点击一行任务查看详情（分类 / 抽取 / 研究 / 草稿）。数据每次操作后自动刷新。</div>
+  <div class="stats" id="stats"></div>
+  <table>
+    <thead><tr><th>ID</th><th>发件人</th><th>主题</th><th>状态</th><th>创建时间</th></tr></thead>
+    <tbody id="job-rows"></tbody>
+  </table>
+  <div id="detail"></div>
+  <div id="log"></div>
+</main>
+<script>
+const STATUS_ORDER = ["PENDING","CLASSIFIED","EXTRACTED","RESEARCH_EXT","RESEARCH_INT","DRAFTED","COMPLETED"];
+
+async function loadStats() {
+  const res = await fetch('/api/stats');
+  const data = await res.json();
+  const el = document.getElementById('stats');
+  el.innerHTML = STATUS_ORDER.map(s => `
+    <div class="stat-card"><div class="n">${data.counts[s] ?? 0}</div><div class="k">${s}</div></div>
+  `).join('') + `<div class="stat-card"><div class="n">${data.total}</div><div class="k">TOTAL</div></div>`;
+}
+
+async function loadJobs() {
+  const res = await fetch('/api/jobs');
+  const jobs = await res.json();
+  const rows = document.getElementById('job-rows');
+  rows.innerHTML = jobs.map(j => `
+    <tr class="job-row" onclick="loadDetail(${j.id})">
+      <td>${j.id}</td>
+      <td>${escapeHtml(j.from_email)}</td>
+      <td>${escapeHtml(j.subject)}</td>
+      <td><span class="badge badge-${j.status}">${j.status}</span></td>
+      <td>${new Date(j.created_at).toLocaleString()}</td>
+    </tr>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return (s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function stageBlock(title, obj, skippedKey, skippedText) {
+  if (!obj && !skippedText) return '';
+  if (skippedText) {
+    return `<div class="stage"><h3>${title}</h3><div class="skip">跳过 (skipped): ${escapeHtml(skippedText)}</div></div>`;
+  }
+  if (!obj) return '';
+  const kv = Object.entries(obj).map(([k,v]) => `<div class="k">${escapeHtml(k)}</div><div>${escapeHtml(String(v ?? '—'))}</div>`).join('');
+  return `<div class="stage"><h3>${title}</h3><div class="kv">${kv}</div></div>`;
+}
+
+async function loadDetail(id) {
+  const res = await fetch(`/api/jobs/${id}`);
+  const job = await res.json();
+  const meta = job.meta_data || {};
+  const detail = document.getElementById('detail');
+
+  let draftHtml = '';
+  if (meta.draft) {
+    draftHtml = `<div class="stage"><h3>回复草稿 Draft</h3>
+      <div class="kv"><div class="k">subject</div><div>${escapeHtml(meta.draft.subject)}</div></div>
+      <pre class="body">${escapeHtml(meta.draft.body)}</pre></div>`;
+  } else if (meta.draft_skipped) {
+    draftHtml = `<div class="stage"><h3>回复草稿 Draft</h3><div class="skip">跳过 (skipped): ${escapeHtml(meta.draft_skipped)}</div></div>`;
+  }
+
+  detail.innerHTML = `
+    <h2>任务 #${job.id} — ${escapeHtml(job.subject)}</h2>
+    <div class="kv">
+      <div class="k">发件人</div><div>${escapeHtml(job.from_email)}</div>
+      <div class="k">状态</div><div><span class="badge badge-${job.status}">${job.status}</span></div>
+    </div>
+    <div class="stage"><h3>原始邮件 Original Email</h3><pre class="body">${escapeHtml(job.email_body || '(no file found)')}</pre></div>
+    ${stageBlock('分类 Classification', meta.classification)}
+    ${stageBlock('抽取 Extraction', meta.extraction)}
+    ${stageBlock('外部研究 External Research', meta.external_research, null, meta.external_research_skipped)}
+    ${stageBlock('内部研究 Internal Research', meta.internal_research, null, meta.internal_research_skipped)}
+    ${draftHtml}
+  `;
+  detail.style.display = 'block';
+  detail.scrollIntoView({ behavior: 'smooth' });
+}
+
+async function runAction(kind) {
+  const btn = document.getElementById(`btn-${kind}`);
+  btn.disabled = true;
+  const log = document.getElementById('log');
+  log.textContent = `${kind === 'retrieve' ? '拉取邮件中' : '运行流水线中'}... 请等待，完成后会自动刷新（可能需要 30-90 秒）。`;
+  try {
+    await fetch(`/api/run/${kind}`, { method: 'POST' });
+    await new Promise(r => setTimeout(r, kind === 'retrieve' ? 8000 : 45000));
+  } finally {
+    await refresh();
+    btn.disabled = false;
+    log.textContent = '完成，已刷新。若结果未更新，可手动刷新页面。';
+  }
+}
+
+async function refresh() {
+  await loadStats();
+  await loadJobs();
+}
+
+refresh();
+</script>
+</body>
+</html>

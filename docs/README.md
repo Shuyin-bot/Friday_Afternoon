@@ -1,24 +1,15 @@
-# Developer Documentation
+# Documentation
 
-This directory explains how the Quotation Agent is organized and how to operate and maintain it.
+## Guides
 
-## Start Here
-
-1. Read [Getting Started](getting-started.md) to install dependencies and run the tests.
-2. Read [Architecture](architecture.md) to understand how an email moves through the system.
-3. Read [Maintenance Guide](maintenance.md) before changing a layer or adding an integration.
-
-## Current Implementation
-
-The implemented proof of concept currently supports:
-
-```text
-IMAP email detection
-  -> email retrieval and normalization
-  -> SQLite ingestion state
-  -> raw and normalized artifacts
-  -> SQLite job queue
-  -> manually configured Python agent worker
-```
-
-The system does not yet include Ollama calls, real PydanticAI agents, a complete multi-agent workflow, RAG, MCP, a review UI, or outbound email sending.
+- [Getting Started](getting-started.md): install, configure, migrate, and run
+  the email retriever.
+- [Database](database.md): understand the SQLAlchemy models and repositories.
+- [Migrations](migrations.md): create, inspect, apply, and roll back schema
+  migrations.
+- [Workflow](workflow.md): understand the current agent-workflow scaffold and
+  its planned processing flow.
+- [Review UI](ui.md): run the FastAPI review dashboard to inspect pipeline
+  results in a browser instead of `sqlite3`.
+- [Review Brief](review_brief.md): mentor-review-ready summary of the current
+  architecture, a verified end-to-end run, and known limitations.

@@ -1,29 +1,23 @@
 # Getting Started
 
-This guide is for someone setting up the project for the first time.
+## Requirements
 
-## Prerequisites
-
-- Python 3.9 or newer.
-- `uv` installed.
-- A test mailbox if you intend to connect to IMAP.
-- A Gmail app password if using Gmail with IMAP.
-
-Do not use a production mailbox for the first experiment. The initial UID cursor is `0`, so the first ingestion run may inspect every message in the selected mailbox.
+- Python 3.11 or newer.
+- `uv`.
+- A test IMAP mailbox.
+- A Gmail App Password when using Gmail.
 
 ## Install
 
 From the repository root:
 
 ```bash
-uv sync --extra dev
+uv sync
 ```
 
-This installs the project, Pydantic, PydanticAI, `python-dotenv`, and the test dependencies into the environment managed by `uv`.
+## Configure
 
-## Configure IMAP
-
-Copy `.env.example` to `.env` and replace the placeholders:
+Create `.env` with values similar to:
 
 ```env
 IMAP_HOST=imap.gmail.com
@@ -31,175 +25,91 @@ IMAP_PORT=993
 IMAP_USERNAME=your-test-account@gmail.com
 IMAP_PASSWORD=your-gmail-app-password
 MAILBOX=INBOX
-STATE_DB_PATH=data/email_state.db
-DATA_DIR=data
-LLM_PROVIDER=ollama
-LLM_BASE_URL=http://localhost:11434
-LLM_MODEL=llama3.1:8b
-LLM_API_KEY=
+EMAIL_DB_PATH=data/emails.db
+DATA=data
+LLM_PROVIDER=google
+LLM_MODEL=gemini-2.5-flash
+LLM_API_KEY=your-api-key
+CHROMA_PATH=data/chroma
+CHROMA_PRODUCT_COLLECTION=products
 ```
 
-For Gmail, `IMAP_PASSWORD` should be an App Password, not your normal account password. The `.env` file is ignored by Git. Never put credentials in Python source, tests, logs, or queue payloads.
+`EMAIL_DB_PATH` controls the SQLite database used by SQLAlchemy. `DATA`
+controls where retrieved email JSON artifacts are written.
 
-## Run Tests
+## Create the Database
 
-Run the complete suite:
+Apply the schema migrations:
 
 ```bash
-uv run --extra dev pytest
+uv run alembic upgrade head
 ```
 
-Run a single milestone's tests:
+Verify the revision:
 
 ```bash
-uv run --extra dev pytest tests/test_m7.py -v
+uv run alembic current
 ```
 
-The tests use fake IMAP connections, temporary SQLite databases, and deterministic agents. They do not need Gmail, Ollama, or internet access.
+## Retrieve Emails
 
-## Run the Detector
-
-The detector verifies configuration, opens IMAP, and prints detected UID references:
+Run the retriever as a module:
 
 ```bash
-uv run email-detect
+uv run python -m email_retriever.retriever
 ```
 
-The detector CLI uses the persistent UID cursor from `STATE_DB_PATH`. It does not retrieve messages into the queue; that is the ingestion pipeline's responsibility.
+Run it from the repository root. Running the file directly can cause imports
+such as `db_contexts` to fail because Python changes the import path for direct
+file execution.
 
-## Run One Ingestion Cycle
+New messages create:
 
-The ingestion command performs one complete M6 cycle:
+```text
+retrieved_email row
+queued_jobs row with PENDING status
+data/emails/<email_id>_email.json
+```
+
+Running the retriever again skips email IDs already present in the database.
+
+## Load Product Data
+
+Apply the migrations first, then load the sample packaging catalogue:
 
 ```bash
-uv run email-ingest
+uv run python -m scripts.load_product_data
 ```
 
-It:
+This stores product, inventory, and pricing records in SQLite and product
+documents with local embeddings in Chroma.
 
-1. Opens and authenticates an IMAP connection.
-2. Reads the last queued UID from SQLite.
-3. Searches for newer message UIDs.
-4. Records newly discovered messages.
-5. Fetches and parses each message.
-6. Saves `.eml` and normalized `.json` artifacts under `DATA_DIR`.
-7. Creates an `EMAIL_RECEIVED` job.
-8. Marks the email queued and advances the cursor.
-9. Logs out and exits.
+## Run the Agent Workflow
 
-It does not run an agent and does not send email.
+```bash
+uv run python -m agents_workflow.workflow
+```
+
+The workflow processes pending jobs sequentially. It classifies each email and
+extracts quotation details from quotation requests, saving each result in the
+job metadata and advancing its status.
 
 ## Inspect Results
 
-List persisted artifacts:
+```bash
+sqlite3 data/emails.db ".tables"
+sqlite3 data/emails.db "SELECT * FROM retrieved_email;"
+sqlite3 data/emails.db "SELECT * FROM queued_jobs;"
+```
+
+List JSON artifacts:
 
 ```bash
 find data/emails -type f -print
 ```
 
-If SQLite is installed, inspect email state:
+## Current Scope
 
-```bash
-sqlite3 data/email_state.db \
-  "SELECT mailbox, uid, status, error FROM email_messages ORDER BY uid;"
-```
-
-Inspect queue jobs:
-
-```bash
-sqlite3 data/email_state.db \
-  "SELECT id, job_type, status, email_uid, mailbox, attempts FROM jobs ORDER BY created_at;"
-```
-
-The M6 jobs will normally remain `PENDING` until a worker is configured to handle their job type.
-
-## Run the M9 Workflow
-
-M9 provides `QuotationWorkflow` and `WorkflowWorker`. The workflow worker consumes queue jobs, loads normalized email artifacts for `EMAIL_RECEIVED`, and runs the configured Python agents for each later stage. A production worker command is not provided yet; construct the worker with an `SQLiteJobQueue`, `AgentRunner`, `WorkflowStore`, and explicit agent mapping. The complete behavior is demonstrated in `tests/test_m9.py`.
-
-The M9 stub path is intentionally conservative:
-
-```text
-EMAIL_RECEIVED
-  -> CLASSIFY_EMAIL
-  -> EXTRACT_QUOTATION
-  -> VERIFY_SENDER
-  -> RESEARCH_PRODUCTS
-  -> PREPARE_QUOTE
-  -> GENERATE_DRAFT
-  -> NEEDS_HUMAN_REVIEW
-```
-
-The default sender verifier requires human review, and the default product researcher reports that tooling is required. M10 will add controlled product and research tools. No M9 path sends email.
-
-## Run from Cron
-
-Create a log directory:
-
-```bash
-mkdir -p logs data
-```
-
-Add this to `crontab -e`:
-
-```cron
-*/5 * * * * cd /absolute/path/to/quotation_bot && flock -n /tmp/quotation-agent-ingest.lock .venv/bin/python -m email_detection_layer.pipeline >> logs/ingest.log 2>&1
-```
-
-`flock` prevents two slow ingestion runs from overlapping. Use absolute paths because cron has a minimal environment and does not necessarily load your interactive shell configuration.
-
-View logs with:
-
-```bash
-less logs/ingest.log
-```
-
-## Run the M7 Stub Agent
-
-M7 is currently demonstrated by enqueueing a `CLASSIFY_EMAIL` job directly and mapping that job to `quotation_classifier_stub`. See `tests/test_m7.py` for the executable example.
-
-The stub is intentionally deterministic. It identifies quotation-related keywords and flags a small set of prompt-injection phrases. It does not contact Ollama and is not a production classifier.
-
-## Test Ollama Integration
-
-Install and start Ollama separately, then pull the configured model:
-
-```bash
-ollama pull llama3.1:8b
-ollama serve
-```
-
-M8 uses a provider-neutral factory. Ollama is configured through `LLM_PROVIDER=ollama` and uses the OpenAI-compatible endpoint at `LLM_BASE_URL/v1`. The real classifier is created with `PydanticAIQuotationClassifier`; its output is validated as `QuotationClassification`.
-
-Hosted provider examples:
-
-```env
-# Groq
-LLM_PROVIDER=groq
-LLM_MODEL=llama-3.1-8b-instant
-LLM_API_KEY=gsk_your_key
-
-# Gemini
-LLM_PROVIDER=gemini
-LLM_MODEL=gemini-2.0-flash
-LLM_API_KEY=your_google_key
-
-# Anthropic
-LLM_PROVIDER=anthropic
-LLM_MODEL=claude-3-5-haiku-latest
-LLM_API_KEY=your_anthropic_key
-```
-
-The M8 tests inject a fake PydanticAI client, so normal CI does not need any provider service.
-
-Do not test the real model with customer emails or production data. Use a fixture mailbox and review the model's output before connecting it to workflow transitions.
-
-## Stop and Reset Local State
-
-To reset the local proof of concept, stop cron first, then remove only local generated data:
-
-```bash
-rm -rf data logs
-```
-
-Do not run this against a shared or production data directory. The command removes raw emails, normalized messages, queue jobs, and state.
+The retriever only reads email and creates queued work. Agent processing is run
+separately by `agents_workflow.workflow`; semantic querying, review, and email
+sending are not implemented yet.

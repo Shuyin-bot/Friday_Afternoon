@@ -68,9 +68,9 @@ def connect_and_retrieve_email(fetch_all: bool = True) -> None:
             for part in email_message.walk():
                 content_type = part.get_content_type()
                 if content_type == "text/plain":
-                    content += part.get_payload(decode=True).decode()
+                    content += part.get_payload(decode=True).decode('utf-8', errors='replace')
         else:
-            content = email_message.get_payload(decode=True).decode()
+            content = email_message.get_payload(decode=True).decode('utf-8', errors='replace')
         
         record_new_email(
             email_id=int(email_id.decode('utf8')),

@@ -15,3 +15,18 @@ dependencies = [
     "tavily-python>=0.5",
     "uvicorn>=0.30",
 ]
+
+[tool.setuptools.packages.find]
+include = [
+    "api*",
+    "db_contexts*",
+    "agents_workflow*",
+    "email_retriever*",
+    "vector_contexts*",
+]
+exclude = ["mock_data*", "migrations*"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+]

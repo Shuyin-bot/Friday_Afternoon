@@ -61,14 +61,14 @@ def find_product_in_catalog(product: str) -> str:
         "matches": [_product_payload(item) for item in matches],
     })
 
-
+# modify
 def get_internal_research_agent() -> Agent:
     researcher = Agent(
         model,
         instructions=(
             "Your role is to check whether a requested product exists in the "
             "internal catalog. Use the find_product_in_catalog tool with the "
-            "product name. Prefer exact catalog matches. If nothing is found, "
+            "product name. Prefer catalog matches. If nothing is found, "
             "return found as False instead of guessing."
         ),
         output_type=InternalResearchOutput,

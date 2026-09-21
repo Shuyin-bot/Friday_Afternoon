@@ -18,11 +18,18 @@ def create_product(
     name: str,
     category: ProductCategory,
     description: str,
-    box_style: str,
-    material: str,
-    dimensions: str,
-    unit_of_measure: str,
+    box_style: str | None = None,
+    material: str | None = None,
+    dimensions: str | None = None,
+    unit_of_measure: str | None = None,
     aliases: list[str] | None = None,
+    name_de: str | None = None,
+    description_de: str | None = None,
+    specs_json: str | None = None,
+    moq: str | None = None,
+    price_min_eur: float | None = None,
+    price_max_eur: float | None = None,
+    lead_time_weeks: str | None = None,
 ) -> Product:
     with SessionLocal() as session:
         product = Product(
@@ -34,6 +41,13 @@ def create_product(
             material=material,
             dimensions=dimensions,
             unit_of_measure=unit_of_measure,
+            name_de=name_de,
+            description_de=description_de,
+            specs_json=specs_json,
+            moq=moq,
+            price_min_eur=price_min_eur,
+            price_max_eur=price_max_eur,
+            lead_time_weeks=lead_time_weeks,
         )
         session.add(product)
         session.flush()

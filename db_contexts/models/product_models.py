@@ -13,6 +13,11 @@ class ProductCategory(str, PythonEnum):
     FOOD_PACKAGING = "FOOD_PACKAGING"
     RETAIL_PACKAGING = "RETAIL_PACKAGING"
     CUSTOM_PACKAGING = "CUSTOM_PACKAGING"
+    CASE_ERECTOR = "CASE_ERECTOR"
+    CARTON_SEALER = "CARTON_SEALER"
+    WRAP_AROUND_PACKER = "WRAP_AROUND_PACKER"
+    PALLETIZING_CELL = "PALLETIZING_CELL"
+    FORMAT_AND_WEAR_PARTS = "FORMAT_AND_WEAR_PARTS"
 
 
 class Product(Base):
@@ -25,14 +30,23 @@ class Product(Base):
         Enum(ProductCategory), nullable=False
     )
     description: Mapped[str] = mapped_column(Text, nullable=False)
-    box_style: Mapped[str] = mapped_column(String(150), nullable=False)
-    material: Mapped[str] = mapped_column(String(200), nullable=False)
-    dimensions: Mapped[str] = mapped_column(String(100), nullable=False)
-    unit_of_measure: Mapped[str] = mapped_column(String(30), nullable=False)
+    box_style: Mapped[str | None] = mapped_column(String(150), nullable=True)
+    material: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    dimensions: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    unit_of_measure: Mapped[str | None] = mapped_column(String(30), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+    # Machine-catalog specific fields (nullable: packaging materials do not use them).
+    name_de: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    description_de: Mapped[str | None] = mapped_column(Text, nullable=True)
+    specs_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    moq: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    price_min_eur: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
+    price_max_eur: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
+    lead_time_weeks: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
     aliases: Mapped[list["ProductAlias"]] = relationship(
         back_populates="product", cascade="all, delete-orphan"

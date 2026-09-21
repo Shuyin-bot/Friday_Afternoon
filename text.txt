@@ -1,0 +1,3 @@
+modify the product catalogue agent and it's instructions
+the external research may not be necessary if there is enough info from the extractor
+make the agent alot smarter by either sometimes we might we have to search our catalogue to sometimes predict what the customer might want (and probably ditch step by step flow)

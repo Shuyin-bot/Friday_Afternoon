@@ -1,5 +1,17 @@
 from datetime import datetime
+"""
+“仓储层/DAO 层”，负责执行查询和写入：
 
+1. 创建产品
+    插入 Product
+    插入 ProductAlias
+    提交事务
+2. 查询产品
+    按 id / sku / alias / category / 模糊搜索
+3. 查询扩展信息
+    库存：按产品查仓库库存
+    价格：按产品、币种、时间有效性筛选
+"""
 from db_contexts.models import (
     Inventory,
     PriceList,

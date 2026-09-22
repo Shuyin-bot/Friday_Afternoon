@@ -42,6 +42,8 @@ def _price_bounds(price_range: dict) -> tuple[float | None, float | None]:
 
 
 def load_machine_catalog():
+    # 1. 读取Json文件
+    # 1. Load the machine catalog JSON into SQLite and the Chroma products collection.
     data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
 
     with SessionLocal() as session:
@@ -57,6 +59,8 @@ def load_machine_catalog():
             price_min, price_max = _price_bounds(item.get("price_range_eur", {}))
 
             if not product:
+                # 2. 创建或更新数据库记录
+                # 2. If the product doesn't exist yet, create it and any alias.
                 product = Product(
                     sku=sku,
                     name=item["name_en"],
@@ -99,6 +103,8 @@ def load_machine_catalog():
             metadatas.append({"sku": sku, "category": item["category"]})
 
         session.commit()
+        # 3. 将数据加载到Chroma向量数据库
+        # 3. Load the data into the Chroma vector database.
         collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
         print(f"loaded {len(ids)} machines into SQLite and Chroma")
 

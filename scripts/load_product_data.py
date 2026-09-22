@@ -44,12 +44,14 @@ def load_product_data():
                 session.add(warehouse)
                 session.flush()
             warehouses[item["code"]] = (warehouse, item["inventory"])
-
+        # 获取ChromaDB集合
         collection = get_product_collection()
-        documents = []
-        metadatas = []
-        ids = []
+        # 准备三个列表（批量插入数据）
+        documents = [] # 要向量化的文本
+        metadatas = [] # 元数据（辅助信息）
+        ids = [] # 唯一标识（SKU）
 
+        # 第53-86行：遍历产品数据
         for item in data["products"]:
             product = session.query(Product).filter_by(sku=item["sku"]).first()
             if not product:
@@ -84,18 +86,22 @@ def load_product_data():
                         warehouse_id=warehouse.id,
                         quantity_on_hand=inventory.get(product.sku, 0),
                     ))
-
+            # 添加ID（使用SKU作为唯一标识）
             ids.append(product.sku)
+            # 构建要向量化的文本
             documents.append(
                 f"{product.name}. {product.description} "
                 f"Category: {product.category.value}. "
                 f"Style: {product.box_style}. Material: {product.material}. "
                 f"Dimensions: {product.dimensions}."
             )
+            # 添加元数据（可用于过滤）
             metadatas.append({"sku": product.sku, "category": product.category.value})
 
-        session.commit()
+        # 批量插入ChromaDB集合
+        session.commit() # 提交事务，将所有更改保存到SQLite数据库
         collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
+        # upsert = update + insert，表示如果ID存在则更新，不存在则插入
         print(f"loaded {len(ids)} products into SQLite and Chroma")
 
 

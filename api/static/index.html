@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Quotation Bot – Review Dashboard</title>
+<title>Quotation Bot </title>
 <style>
   :root { color-scheme: light; }
   * { box-sizing: border-box; }
@@ -65,15 +65,15 @@
   <h1>Quotation Bot – Review Dashboard</h1>
   <div class="actions">
     <a href="/docs" target="_blank">API docs (Swagger)</a>
-    <button id="btn-retrieve" onclick="runAction('retrieve')">拉取邮件 Retrieve</button>
-    <button id="btn-workflow" onclick="runAction('workflow')">运行流水线 Run Workflow</button>
+    <button id="btn-retrieve" onclick="runAction('retrieve')">Retrieve Emails</button>
+    <button id="btn-workflow" onclick="runAction('workflow')">Run Workflow</button>
   </div>
 </header>
 <main>
-  <div class="hint">点击一行任务查看详情（分类 / 抽取 / 研究 / 草稿）。数据每次操作后自动刷新。</div>
+  <div class="hint">Click on a row to view details (Classify / Extract / Research / Draft). Data is automatically refreshed after each operation.</div>
   <div class="stats" id="stats"></div>
   <table>
-    <thead><tr><th>ID</th><th>发件人</th><th>主题</th><th>状态</th><th>创建时间</th></tr></thead>
+    <thead><tr><th>ID</th><th>Sender</th><th>Subject</th><th>Status</th><th>Created At</th></tr></thead>
     <tbody id="job-rows"></tbody>
   </table>
   <div id="detail"></div>
@@ -82,19 +82,41 @@
 <script>
 const STATUS_ORDER = ["PENDING","CLASSIFIED","EXTRACTED","RESEARCH_EXT","RESEARCH_INT","DRAFTED","COMPLETED"];
 
+/**
+ * 加载统计数据并显示在页面顶部的小卡片里
+ * Load statistics and display them in the cards at the top of the page
+ * 
+ * 作用：向服务器要统计数字（有多少个任务在不同状态），然后生成小卡片显示出来
+ * Purpose: Fetch statistics from server (how many tasks in each status), then generate cards to display them
+ * 
+ * 就像：快递App首页显示"3个待收货、2个运输中、5个已完成"
+ */
 async function loadStats() {
-  const res = await fetch('/api/stats');
-  const data = await res.json();
-  const el = document.getElementById('stats');
+  const res = await fetch('/api/stats');  // 向服务器请求统计数据 / Request statistics from server
+  const data = await res.json();  // 把服务器返回的文字转成JavaScript对象 / Parse server response to JavaScript object
+  const el = document.getElementById('stats');  // 找到页面上显示统计的容器 / Find the stats container element
+  
+  // 为每个状态生成一个小卡片，显示数量（按定义好的顺序排列）/ Generate a card for each status showing its count (in predefined order)
   el.innerHTML = STATUS_ORDER.map(s => `
     <div class="stat-card"><div class="n">${data.counts[s] ?? 0}</div><div class="k">${s}</div></div>
   `).join('') + `<div class="stat-card"><div class="n">${data.total}</div><div class="k">TOTAL</div></div>`;
 }
 
+/**
+ * 加载所有任务列表并显示在表格里
+ * Load all jobs and display them in the table
+ * 
+ * 作用：从服务器获取所有邮件任务，给每个任务生成一行表格
+ * Purpose: Fetch all email tasks from server and generate a table row for each one
+ * 
+ * 就像：Excel表格，每一行是一个任务，显示ID、发件人、主题、状态、时间
+ */
 async function loadJobs() {
-  const res = await fetch('/api/jobs');
-  const jobs = await res.json();
-  const rows = document.getElementById('job-rows');
+  const res = await fetch('/api/jobs');  // 向服务器请求任务列表 / Request job list from server
+  const jobs = await res.json();  // 把返回的数据转成数组 / Parse response to array
+  const rows = document.getElementById('job-rows');  // 找到表格的tbody元素 / Find the table body element
+  
+  // 遍历每个任务，生成HTML表格行 / Loop through each job and generate HTML table row
   rows.innerHTML = jobs.map(j => `
     <tr class="job-row" onclick="loadDetail(${j.id})">
       <td>${j.id}</td>
@@ -103,38 +125,88 @@ async function loadJobs() {
       <td><span class="badge badge-${j.status}">${j.status}</span></td>
       <td>${new Date(j.created_at).toLocaleString()}</td>
     </tr>
-  `).join('');
+  `).join('');  // join('')把数组变成一整段HTML文字 / join('') converts array to one HTML string
 }
 
+/**
+ * 转义HTML特殊字符，防止代码注入攻击
+ * Escape HTML special characters to prevent code injection attacks
+ * 
+ * 作用：把文字中的特殊符号（< > & " '）转成安全的HTML代码
+ * Purpose: Convert special characters (< > & " ') to safe HTML codes
+ * 
+ * 就像：把刀具装进保护套里，防止伤人
+ * 例子 / Example:
+ *   输入 / Input: "<script>alert('hack')<\/script>"
+ *   输出 / Output: "&lt;script&gt;alert(&#39;hack&#39;)&lt;/script&gt;"
+ *   结果 / Result: 只会显示文字，不会执行代码 / Only displays text, won't execute code
+ * 
+ * @param {string} s - 需要转义的文字 / Text to escape
+ * @returns {string} 转义后的安全文字 / Escaped safe text
+ * 
+ */
 function escapeHtml(s) {
   return (s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+/**
+ * 生成处理阶段的HTML展示块（如果该阶段被跳过，显示跳过原因）
+ * Generate HTML block for a processing stage (show skip reason if skipped)
+ * 
+ * 作用：把每个处理步骤的数据整理成好看的HTML格式
+ * Purpose: Format each processing step's data into nice-looking HTML
+ * 
+ * 就像：把快递的每个节点（发货、运输、到达）整理成时间轴展示
+ * Like: Formatting each delivery checkpoint (shipped, in transit, arrived) into a timeline
+ * 
+ * @param {string} title - 阶段标题（如"分类"、"抽取"）/ Stage title (e.g., "Classification", "Extraction")
+ * @param {object} obj - 该阶段的数据对象 / Data object for this stage
+ * @param {string} skippedKey - (未使用) / (Not used)
+ * @param {string} skippedText - 跳过原因（如"没有需要研究的内容"）/ Skip reason (e.g., "Nothing to research")
+ */
 function stageBlock(title, obj, skippedKey, skippedText) {
-  if (!obj && !skippedText) return '';
-  if (skippedText) {
+  if (!obj && !skippedText) return '';  // 没数据也没跳过信息，返回空 / No data and no skip info, return empty
+  
+  if (skippedText) {  // 如果这个阶段被跳过了 / If this stage was skipped
     return `<div class="stage"><h3>${title}</h3><div class="skip">跳过 (skipped): ${escapeHtml(skippedText)}</div></div>`;
   }
-  if (!obj) return '';
+  
+  if (!obj) return '';  // 保险检查：没数据就返回空 / Safety check: no data, return empty
+  
+  // 把对象的键值对转成HTML（键 → 值）/ Convert object key-value pairs to HTML (key → value)
   const kv = Object.entries(obj).map(([k,v]) => `<div class="k">${escapeHtml(k)}</div><div>${escapeHtml(String(v ?? '—'))}</div>`).join('');
   return `<div class="stage"><h3>${title}</h3><div class="kv">${kv}</div></div>`;
 }
 
+/**
+ * 加载单个任务的详细信息并显示在页面下方
+ * Load detailed information for a single job and display it at the bottom of the page
+ * 
+ * 作用：点击表格中的某一行时，获取这个任务的完整处理过程（分类→抽取→研究→草稿）
+ * Purpose: When clicking a table row, fetch this job's complete processing workflow (classify→extract→research→draft)
+ * 
+ * 就像：点击快递单号，查看完整的物流轨迹（每个站点、时间、状态）
+ * Like: Clicking a tracking number to see full delivery route (each checkpoint, time, status)
+ * 
+ * @param {number} id - 任务的ID编号 / Job ID number
+ */
 async function loadDetail(id) {
-  const res = await fetch(`/api/jobs/${id}`);
-  const job = await res.json();
-  const meta = job.meta_data || {};
-  const detail = document.getElementById('detail');
+  const res = await fetch(`/api/jobs/${id}`);  // 向服务器请求这个任务的详细数据 / Request detailed data for this job
+  const job = await res.json();  // 解析返回的JSON数据 / Parse the returned JSON data
+  const meta = job.meta_data || {};  // 获取处理过程的元数据（如果没有就用空对象）/ Get processing metadata (or empty object)
+  const detail = document.getElementById('detail');  // 找到详情显示区域 / Find the detail display area
 
+  // 特殊处理草稿部分（因为草稿有subject和body两个字段）/ Special handling for draft section (has subject and body fields)
   let draftHtml = '';
-  if (meta.draft) {
+  if (meta.draft) {  // 如果生成了草稿 / If draft was generated
     draftHtml = `<div class="stage"><h3>回复草稿 Draft</h3>
       <div class="kv"><div class="k">subject</div><div>${escapeHtml(meta.draft.subject)}</div></div>
       <pre class="body">${escapeHtml(meta.draft.body)}</pre></div>`;
-  } else if (meta.draft_skipped) {
+  } else if (meta.draft_skipped) {  // 如果跳过了草稿生成 / If draft generation was skipped
     draftHtml = `<div class="stage"><h3>回复草稿 Draft</h3><div class="skip">跳过 (skipped): ${escapeHtml(meta.draft_skipped)}</div></div>`;
   }
 
+  // 组装完整的详情HTML，包括所有处理阶段 / Assemble complete detail HTML with all processing stages
   detail.innerHTML = `
     <h2>任务 #${job.id} — ${escapeHtml(job.subject)}</h2>
     <div class="kv">
@@ -148,30 +220,60 @@ async function loadDetail(id) {
     ${stageBlock('内部研究 Internal Research', meta.internal_research, null, meta.internal_research_skipped)}
     ${draftHtml}
   `;
-  detail.style.display = 'block';
-  detail.scrollIntoView({ behavior: 'smooth' });
+  detail.style.display = 'block';  // 显示详情区域（之前是隐藏的）/ Show detail area (was hidden before)
+  detail.scrollIntoView({ behavior: 'smooth' });  // 平滑滚动到详情区域 / Smooth scroll to detail area
 }
 
+/**
+ * 执行操作（拉取邮件 或 运行流水线）
+ * Execute an action (retrieve emails or run workflow)
+ * 
+ * 作用：点击按钮后，告诉服务器开始执行任务，然后等待一段时间，最后刷新页面
+ * Purpose: After clicking button, tell server to start the task, wait for a while, then refresh page
+ * 
+ * 就像：按下洗衣机的启动按钮，等30分钟后去看衣服洗好了没有
+ * 
+ * @param {string} kind - 操作类型：'retrieve'（拉取邮件）或 'workflow'（运行流水线）
+ *                        Action type: 'retrieve' (fetch emails) or 'workflow' (run pipeline)
+ */
 async function runAction(kind) {
-  const btn = document.getElementById(`btn-${kind}`);
-  btn.disabled = true;
-  const log = document.getElementById('log');
+  const btn = document.getElementById(`btn-${kind}`);  // 找到被点击的按钮 / Find the clicked button
+  btn.disabled = true;  // 禁用按钮防止重复点击（按钮变灰）/ Disable button to prevent double-click (button turns gray)
+  const log = document.getElementById('log');  // 找到日志显示区域 / Find the log display area
+  
+  // 显示提示信息 / Display hint message
   log.textContent = `${kind === 'retrieve' ? '拉取邮件中' : '运行流水线中'}... 请等待，完成后会自动刷新（可能需要 30-90 秒）。`;
+  
   try {
+    // 向服务器发送POST请求，告诉它开始执行任务 / Send POST request to server to start the task
     await fetch(`/api/run/${kind}`, { method: 'POST' });
+    
+    // 等待一段时间让服务器处理（拉取邮件8秒，流水线45秒）/ Wait for server to process (8s for retrieve, 45s for workflow)
     await new Promise(r => setTimeout(r, kind === 'retrieve' ? 8000 : 45000));
   } finally {
-    await refresh();
-    btn.disabled = false;
-    log.textContent = '完成，已刷新。若结果未更新，可手动刷新页面。';
+    // 无论成功失败，都要刷新数据并恢复按钮 / Whether success or fail, refresh data and restore button
+    await refresh();  // 刷新统计和任务列表 / Refresh stats and job list
+    btn.disabled = false;  // 恢复按钮可点击状态 / Restore button to clickable state
+    log.textContent = '完成，已刷新。若结果未更新，可手动刷新页面。';  // 提示完成 / Show completion message
   }
 }
 
+/**
+ * 刷新页面数据（重新加载统计和任务列表）
+ * Refresh page data (reload statistics and job list)
+ * 
+ * 作用：一次性更新页面上的所有数据
+ * Purpose: Update all data on the page at once
+ * 
+ * 就像：按下F5刷新网页，但只刷新数据不刷新整个页面
+ */
 async function refresh() {
-  await loadStats();
-  await loadJobs();
+  await loadStats();  // 加载统计数字 / Load statistics
+  await loadJobs();   // 加载任务列表 / Load job list
 }
 
+// 页面一加载就自动执行一次刷新，显示初始数据
+// Automatically run refresh once when page loads to show initial data
 refresh();
 </script>
 </body>

@@ -11,5 +11,7 @@
   its planned processing flow.
 - [Review UI](ui.md): run the FastAPI review dashboard to inspect pipeline
   results in a browser instead of `sqlite3`.
+- [Demo Script](demo_script.md): pre-demo checklist, suggested lead
+  walkthrough order, and known gaps to state proactively.
 - [Review Brief](review_brief.md): mentor-review-ready summary of the current
   architecture, a verified end-to-end run, and known limitations.

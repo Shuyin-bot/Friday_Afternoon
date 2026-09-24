@@ -174,7 +174,13 @@ function stageBlock(title, obj, skippedKey, skippedText) {
   if (!obj) return '';  // 保险检查：没数据就返回空 / Safety check: no data, return empty
   
   // 把对象的键值对转成HTML（键 → 值）/ Convert object key-value pairs to HTML (key → value)
-  const kv = Object.entries(obj).map(([k,v]) => `<div class="k">${escapeHtml(k)}</div><div>${escapeHtml(String(v ?? '—'))}</div>`).join('');
+  // 嵌套的对象/数组（例如多产品的internal_research列表）用JSON.stringify展示，
+  // 而不是丢给String()变成没用的"[object Object]"。
+  // Nested objects/arrays (e.g. the multi-product internal_research list) are
+  // rendered via JSON.stringify instead of falling into the useless
+  // "[object Object]" from String().
+  const fmt = v => (v && typeof v === 'object') ? JSON.stringify(v, null, 2) : String(v ?? '—');
+  const kv = Object.entries(obj).map(([k,v]) => `<div class="k">${escapeHtml(k)}</div><div><pre>${escapeHtml(fmt(v))}</pre></div>`).join('');
   return `<div class="stage"><h3>${title}</h3><div class="kv">${kv}</div></div>`;
 }
 

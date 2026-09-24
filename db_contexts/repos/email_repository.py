@@ -1,3 +1,5 @@
+from sqlalchemy.orm import joinedload
+
 from db_contexts.sessions import SessionLocal
 from db_contexts.models import RetrievedEmail, QueuedJob, JobStatus
 
@@ -41,7 +43,17 @@ def filter_out_seen_emails(email_ids: list) -> list:
 
 def get_queued_jobs_by_stat(job_stat:JobStatus = JobStatus.PENDING) -> list:
     with SessionLocal() as session:
-        queued_jobs = session.query(QueuedJob).filter_by(status=job_stat).all()
+        # Eager-load `email` so callers can safely read job.email.email_id
+        # (the external IMAP UID / seed id used for the data/emails/*.json
+        # filename) after this session has closed. job.email_id is the FK
+        # to retrieved_email.id (the internal autoincrement PK) and is NOT
+        # the same value — do not use it as a filename.
+        queued_jobs = (
+            session.query(QueuedJob)
+            .options(joinedload(QueuedJob.email))
+            .filter_by(status=job_stat)
+            .all()
+        )
         return queued_jobs
 
 

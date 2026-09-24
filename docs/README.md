@@ -15,3 +15,6 @@
   walkthrough order, and known gaps to state proactively.
 - [Review Brief](review_brief.md): mentor-review-ready summary of the current
   architecture, a verified end-to-end run, and known limitations.
+- [Command Cheatsheet](commands_cheatsheet.md): every command you need, by
+  scenario — setup, mock data validation, seeding, running the pipeline,
+  the dashboard, and the Slidev presentation.

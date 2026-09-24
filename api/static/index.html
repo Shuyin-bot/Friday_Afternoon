@@ -22,7 +22,7 @@
   }
   .actions button:hover { background: #2f57c4; }
   .actions button:disabled { background: #9aa; cursor: wait; }
-  main { padding: 20px 24px; max-width: 1100px; margin: 0 auto; }
+  main { padding: 20px 24px; max-width: 1280px; margin: 0 auto; }
   .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
   .stat-card {
     background: #fff; border-radius: 8px; padding: 10px 14px; min-width: 110px;
@@ -52,10 +52,21 @@
   .stage .skip { color: #a55; font-size: 13px; font-style: italic; }
   pre.body {
     background: #f7f8fa; padding: 10px 12px; border-radius: 6px; font-size: 13px;
-    white-space: pre-wrap; word-break: break-word; max-height: 220px; overflow: auto; margin: 0;
+    white-space: pre-wrap; word-break: break-word; max-height: 340px; overflow: auto; margin: 0;
   }
-  .kv { display: grid; grid-template-columns: 140px 1fr; gap: 4px 12px; font-size: 13px; }
+  .kv { display: grid; grid-template-columns: 170px 1fr; gap: 4px 12px; font-size: 13px; }
   .kv div.k { color: #667; }
+  /* stageBlock() renders nested JSON (internal_research, external_research,
+     classification, extraction) into a plain, class-less <pre> — unlike
+     pre.body above, it had no wrap/scroll rules, so long unbroken JSON
+     lines (e.g. a multi-product internal_research dump) overflowed the
+     .kv grid, #detail, and main horizontally. Give every <pre> inside .kv
+     the same safe wrap+scroll behavior. */
+  .kv pre {
+    white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;
+    max-height: 260px; overflow: auto; background: #f7f8fa; padding: 8px 10px;
+    border-radius: 6px; margin: 0; font-size: 12.5px;
+  }
   #log { margin-top: 12px; font-size: 12px; color: #667; white-space: pre-wrap; }
   .hint { font-size: 12px; color: #778; margin-top: -10px; margin-bottom: 16px; }
 </style>

@@ -13,10 +13,17 @@ def get_classifying_agent() -> Agent:
         model,
         instructions=(
             "Your role is to classify an email and determine whether it is a "
-            "quotation request. Set is_quote to True only when the sender is "
+            "quotation request. Set is_quote to True when the sender is "
             "requesting a price, quote, offer, or quotation for a product or "
-            "service. Set it to False for unrelated emails. Give a short "
-            "reason based only on the email content."
+            "service — including RFQ-style buying inquiries that describe "
+            "technical specifications and/or budget and ask to schedule a "
+            "call, discuss sourcing, or indicate lead times, even if they "
+            "never use the literal words 'price' or 'quote'. The underlying "
+            "question is: is this sender trying to buy something from us? "
+            "Set it to False for unrelated emails (spam, phishing, "
+            "recruiting, sponsorship, press, unsolicited supplier pitches, "
+            "misrouted invoices, etc.). Give a short reason based only on "
+            "the email content."
         ),
         output_type=ClassifierOutput
     )

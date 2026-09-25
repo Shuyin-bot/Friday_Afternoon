@@ -7,6 +7,15 @@ from pathlib import Path
 
 load_dotenv()
 
+
+def decode_email_payload(part) -> str:
+    payload = part.get_payload(decode=True)
+    if not payload:
+        return ""
+    charset = part.get_content_charset() or "utf-8"
+    return payload.decode(charset, errors="replace")
+
+
 def record_new_email(
     email_id: int, 
     from_email: str, 
@@ -68,9 +77,9 @@ def connect_and_retrieve_email(fetch_all: bool = True) -> None:
             for part in email_message.walk():
                 content_type = part.get_content_type()
                 if content_type == "text/plain":
-                    content += part.get_payload(decode=True).decode()
+                    content += decode_email_payload(part)
         else:
-            content = email_message.get_payload(decode=True).decode()
+            content = decode_email_payload(email_message)
         
         record_new_email(
             email_id=int(email_id.decode('utf8')),

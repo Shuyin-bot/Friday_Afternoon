@@ -23,3 +23,9 @@ def get_chroma_client() -> chromadb.PersistentClient:
 def get_product_collection() -> Collection:
     """Return the collection used for product embeddings."""
     return get_chroma_client().get_or_create_collection(name=PRODUCT_COLLECTION)
+
+
+def search_products_semantic(query: str, n_results: int = 3) -> list[str]:
+    """Return catalog SKUs that semantically match `query`."""
+    result = get_product_collection().query(query_texts=[query], n_results=n_results)
+    return (result.get("ids") or [[]])[0]

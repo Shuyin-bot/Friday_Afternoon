@@ -45,7 +45,7 @@ async def classify_emails():
         print(meta)
 
         if not res.output.is_quote:
-            _save_meta(job, meta, JobStatus.COMPLETED)
+            _save_meta(job, meta, JobStatus.NOT_QUOTATION)
             # file_path.unlink()
             continue
         _save_meta(job, meta, JobStatus.CLASSIFIED)

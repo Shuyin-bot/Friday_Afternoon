@@ -16,6 +16,7 @@ from db_contexts.repos.email_repository import (
     get_queued_job_counts,
     get_queued_jobs,
     get_queued_jobs_by_stat,
+    update_queued_job,
 )
 from db_contexts.repos.human_request_repository import (
     answer_human_request,
@@ -129,6 +130,17 @@ def get_job(job_id: int) -> JobDetail:
         email_body=email_body,
         meta_data=_deep_parse(_safe_json(job.meta_data) or {}),
     )
+
+
+@app.post("/api/jobs/{job_id}/approve", response_model=JobDetail, tags=["jobs"])
+def approve_job(job_id: int) -> JobDetail:
+    job = get_queued_job(job_id)
+    if not job:
+        raise HTTPException(404, "Job not found")
+    if job.status != JobStatus.DRAFTED:
+        raise HTTPException(400, "Only drafted quotation jobs can be approved")
+    update_queued_job(job_id, JobStatus.COMPLETED)
+    return get_job(job_id)
 
 
 @app.get(

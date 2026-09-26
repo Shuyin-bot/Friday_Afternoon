@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
 from db_contexts.sessions import SessionLocal
@@ -55,6 +56,35 @@ def get_queued_jobs_by_stat(job_stat:JobStatus = JobStatus.PENDING) -> list:
             .all()
         )
         return queued_jobs
+
+
+def get_queued_jobs() -> list[QueuedJob]:
+    with SessionLocal() as session:
+        return (
+            session.query(QueuedJob)
+            .options(joinedload(QueuedJob.email))
+            .order_by(QueuedJob.id)
+            .all()
+        )
+
+
+def get_queued_job(job_id: int) -> QueuedJob | None:
+    with SessionLocal() as session:
+        return session.query(QueuedJob).options(
+            joinedload(QueuedJob.email)
+        ).filter_by(id=job_id).first()
+
+
+def get_queued_job_counts() -> dict[str, int]:
+    with SessionLocal() as session:
+        rows = session.query(QueuedJob.status, func.count(QueuedJob.id)).group_by(
+            QueuedJob.status
+        ).all()
+        counts = {status.value: 0 for status in JobStatus}
+        for status, count in rows:
+            key = status.value if hasattr(status, "value") else str(status)
+            counts[key] = count
+        return counts
 
 
 def update_queued_job(job_id: int, stat: JobStatus, metadata: str = ""):

@@ -3,6 +3,7 @@ from db_contexts.repos.product_repository import get_product_by_sku, search_prod
 from db_contexts.models.email_retriever_models import JobStatus
 from .agents.classifier import get_classifying_agent
 from .agents.core_agent import get_core_agent
+from .agents.tools.human_input_tool import HumanInputRequired
 import asyncio
 import os
 from pydantic_ai.agent import Agent
@@ -52,11 +53,24 @@ async def classify_emails():
 
 async def run_core():
     jobs = get_queued_jobs_by_stat(JobStatus.CLASSIFIED)
-    agent = get_core_agent()
     for job in jobs:
-        email_str = get_path_to_email(job.email_id).read_text()
-        await agent.run(email_str)
-        break
+        email_path = get_path_to_email(job.email.email_id)
+        email_data = json.loads(email_path.read_text())
+        try:
+            agent = get_core_agent()
+            res = await agent.run(email_data.get("content"), deps=job.id)
+            meta = _load_meta(job)
+            meta["draft"] = res.output.model_dump_json()
+            print(meta)
+            _save_meta(job, meta, JobStatus.DRAFTED)
+        except HumanInputRequired as request:
+            meta = _load_meta(job)
+            meta["human_request_id"] = request.request_id
+            _save_meta(job, meta, JobStatus.WAITING_FOR_INPUT)
+        except Exception as error:
+            meta = _load_meta(job)
+            meta["error"] = str(error)
+            _save_meta(job, meta, JobStatus.FAILED)
 
 
 async def main():

@@ -1,4 +1,5 @@
 from .email_retriever_models import JobStatus, QueuedJob, RetrievedEmail
+from .company_research_models import CompanyResearch
 from .product_models import (
     Inventory,
     PriceList,
@@ -13,6 +14,7 @@ __all__ = [
     "JobStatus",
     "QueuedJob",
     "RetrievedEmail",
+    "CompanyResearch",
     "Inventory",
     "PriceList",
     "Product",

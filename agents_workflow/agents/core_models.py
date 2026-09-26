@@ -27,6 +27,19 @@ class CompanyResearchOutput(BaseModel):
     sources: list[str] = Field(default_factory=list)
 
 
+class CompanyResearchSearchOutput(BaseModel):
+    search_term: str
+    found: bool
+    source: str | None = None
+    companies: list[CompanyResearchOutput] = Field(default_factory=list)
+
+
+class CompanyResearchWriteOutput(BaseModel):
+    saved: bool
+    research_id: int | None = None
+    company: str
+
+
 class QuotationLine(BaseModel):
     product_name: str
     sku: str | None = None

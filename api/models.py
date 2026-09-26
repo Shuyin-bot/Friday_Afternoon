@@ -28,6 +28,11 @@ class HumanRequestAnswer(BaseModel):
     answer: str
 
 
+class DraftUpdate(BaseModel):
+    subject: str
+    body: str
+
+
 class HumanRequestResponse(BaseModel):
     id: int
     queued_job_id: int

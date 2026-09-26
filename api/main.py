@@ -1,13 +1,15 @@
 """FastAPI review API for the quotation workflow."""
 
 import json
+import asyncio
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from fastapi import BackgroundTasks, FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from db_contexts.models import JobStatus
@@ -27,6 +29,7 @@ from db_contexts.repos.human_request_repository import (
 from .models import (
     HumanRequestAnswer,
     HumanRequestResponse,
+    DraftUpdate,
     JobDetail,
     JobSummary,
     RunResponse,
@@ -100,6 +103,40 @@ def get_stats() -> StatsResponse:
     return StatsResponse(counts=counts, total=sum(counts.values()))
 
 
+@app.get("/api/events", tags=["jobs"])
+async def job_events(request: Request) -> StreamingResponse:
+    """Stream job-count changes so dashboards update without polling."""
+    async def event_stream():
+        previous_counts = None
+        heartbeat = 0
+        while True:
+            if await request.is_disconnected():
+                break
+
+            counts = get_queued_job_counts()
+            if counts != previous_counts:
+                payload = json.dumps({"counts": counts, "total": sum(counts.values())})
+                yield f"event: job_status\ndata: {payload}\n\n"
+                previous_counts = counts
+                heartbeat = 0
+            elif heartbeat >= 15:
+                yield ": heartbeat\n\n"
+                heartbeat = 0
+
+            await asyncio.sleep(2)
+            heartbeat += 2
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 @app.get("/api/jobs", response_model=list[JobSummary], tags=["jobs"])
 def list_jobs(status: str | None = None) -> list[JobSummary]:
     if status:
@@ -140,6 +177,45 @@ def approve_job(job_id: int) -> JobDetail:
     if job.status != JobStatus.DRAFTED:
         raise HTTPException(400, "Only drafted quotation jobs can be approved")
     update_queued_job(job_id, JobStatus.COMPLETED)
+    return get_job(job_id)
+
+
+def _job_metadata(job) -> dict[str, Any]:
+    try:
+        return json.loads(job.meta_data or "{}")
+    except json.JSONDecodeError:
+        return {}
+
+
+@app.put("/api/jobs/{job_id}/draft", response_model=JobDetail, tags=["jobs"])
+def update_draft(job_id: int, payload: DraftUpdate) -> JobDetail:
+    job = get_queued_job(job_id)
+    if not job:
+        raise HTTPException(404, "Job not found")
+    if job.status != JobStatus.DRAFTED:
+        raise HTTPException(400, "Only drafted quotation jobs can be edited")
+
+    metadata = _job_metadata(job)
+    metadata["draft"] = payload.model_dump()
+    metadata["review_action"] = "EDITED"
+    metadata["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+    update_queued_job(job_id, JobStatus.DRAFTED, json.dumps(metadata))
+    return get_job(job_id)
+
+
+@app.post("/api/jobs/{job_id}/reject", response_model=JobDetail, tags=["jobs"])
+def reject_draft(job_id: int) -> JobDetail:
+    job = get_queued_job(job_id)
+    if not job:
+        raise HTTPException(404, "Job not found")
+    if job.status != JobStatus.DRAFTED:
+        raise HTTPException(400, "Only drafted quotation jobs can be rejected")
+
+    metadata = _job_metadata(job)
+    metadata.pop("draft", None)
+    metadata["review_action"] = "REJECTED"
+    metadata["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+    update_queued_job(job_id, JobStatus.COMPLETED, json.dumps(metadata))
     return get_job(job_id)
 
 

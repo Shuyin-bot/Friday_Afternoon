@@ -1,4 +1,13 @@
+from dataclasses import dataclass
+
 from pydantic import BaseModel, Field
+
+
+@dataclass
+class CoreAgentDependencies:
+    job_id: int
+    session_id: int
+    session_summary: dict
 
 
 class ProductSummary(BaseModel):

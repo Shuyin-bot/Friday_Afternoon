@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
+import json
 
-from db_contexts.models import AgentSession, AgentSessionStatus
+from db_contexts.models import AgentSession, AgentSessionStatus, JobStatus, QueuedJob
 from db_contexts.sessions import SessionLocal
 
 
@@ -89,6 +90,41 @@ def append_agent_message(
         history = list(agent_session.message_history or [])
         history.append(message)
         agent_session.message_history = history
+        agent_session.updated_at = datetime.now(timezone.utc)
+        session.commit()
+        return agent_session
+
+
+def send_job_back_for_revision(
+    queued_job_id: int,
+    comment: str,
+) -> AgentSession | None:
+    """Store reviewer feedback and make the job ready for agent resumption."""
+    with SessionLocal() as session:
+        agent_session = session.query(AgentSession).filter_by(
+            queued_job_id=queued_job_id
+        ).first()
+        job = session.query(QueuedJob).filter_by(id=queued_job_id).first()
+        if not agent_session or not job:
+            return None
+
+        try:
+            metadata = json.loads(job.meta_data or "{}")
+        except json.JSONDecodeError:
+            metadata = {}
+
+        metadata["review_action"] = "SENT_BACK_FOR_REVISION"
+        metadata["review_comment"] = comment
+        metadata["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+
+        job.meta_data = json.dumps(metadata)
+        job.status = JobStatus.CLASSIFIED
+        agent_session.status = AgentSessionStatus.READY_TO_RESUME
+        agent_session.current_step = "draft_review_feedback"
+        agent_session.summary = {
+            **(agent_session.summary or {}),
+            "review_feedback": comment,
+        }
         agent_session.updated_at = datetime.now(timezone.utc)
         session.commit()
         return agent_session

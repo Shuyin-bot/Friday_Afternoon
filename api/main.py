@@ -13,6 +13,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from db_contexts.models import JobStatus
+from db_contexts.repos.agent_session_repository import send_job_back_for_revision
 from db_contexts.repos.email_repository import (
     get_queued_job,
     get_queued_job_counts,
@@ -21,7 +22,7 @@ from db_contexts.repos.email_repository import (
     update_queued_job,
 )
 from db_contexts.repos.human_request_repository import (
-    answer_human_request,
+    answer_human_request_and_resume,
     get_human_request,
     get_pending_human_requests,
 )
@@ -30,6 +31,7 @@ from .models import (
     HumanRequestAnswer,
     HumanRequestResponse,
     DraftUpdate,
+    DraftReviewComment,
     JobDetail,
     JobSummary,
     RunResponse,
@@ -219,6 +221,29 @@ def reject_draft(job_id: int) -> JobDetail:
     return get_job(job_id)
 
 
+@app.post(
+    "/api/jobs/{job_id}/review-comment",
+    response_model=JobDetail,
+    tags=["jobs"],
+)
+def send_draft_back_for_revision(
+    job_id: int,
+    payload: DraftReviewComment,
+) -> JobDetail:
+    job = get_queued_job(job_id)
+    if not job:
+        raise HTTPException(404, "Job not found")
+    if job.status != JobStatus.DRAFTED:
+        raise HTTPException(400, "Only drafted quotation jobs can receive review feedback")
+    if not payload.comment.strip():
+        raise HTTPException(400, "Review comment cannot be empty")
+
+    session = send_job_back_for_revision(job_id, payload.comment.strip())
+    if not session:
+        raise HTTPException(400, "No agent session exists for this job")
+    return get_job(job_id)
+
+
 @app.get(
     "/api/human-requests",
     response_model=list[HumanRequestResponse],
@@ -249,7 +274,9 @@ def answer_request(
     request_id: int,
     payload: HumanRequestAnswer,
 ) -> HumanRequestResponse:
-    request = answer_human_request(request_id, payload.answer)
+    # This repository operation answers the request and, in the same
+    # transaction, marks the session ready and requeues the job as CLASSIFIED.
+    request = answer_human_request_and_resume(request_id, payload.answer)
     if not request:
         raise HTTPException(404, "Human request not found")
     return _to_human_request(request)

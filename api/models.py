@@ -33,6 +33,10 @@ class DraftUpdate(BaseModel):
     body: str
 
 
+class DraftReviewComment(BaseModel):
+    comment: str
+
+
 class HumanRequestResponse(BaseModel):
     id: int
     queued_job_id: int

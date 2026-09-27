@@ -1,21 +1,17 @@
-from pydantic_ai import RunContext
+import json
 
-from db_contexts.models import HumanRequestType
+from pydantic_ai import ModelMessagesTypeAdapter, RunContext
+
+from db_contexts.models import AgentSessionStatus, HumanRequestType
+from db_contexts.repos.agent_session_repository import update_agent_session
 from db_contexts.repos.human_request_repository import create_human_request
 
+from ..core_models import CoreAgentDependencies
 from .tool_logger import log_tool_use
 
 
-class HumanInputRequired(Exception):
-    """Signal that the workflow must pause for a human response."""
-
-    def __init__(self, request_id: int):
-        self.request_id = request_id
-        super().__init__(f"Human input required for request {request_id}")
-
-
 def request_human_input(
-    ctx: RunContext[int],
+    ctx: RunContext[CoreAgentDependencies],
     question: str,
     request_type: HumanRequestType = HumanRequestType.CLARIFICATION,
     context: dict[str, str] | None = None,
@@ -23,9 +19,25 @@ def request_human_input(
     """Create a human request and pause the current workflow job."""
     log_tool_use("request_human_input", f"type={request_type.value}")
     request = create_human_request(
-        queued_job_id=ctx.deps,
+        queued_job_id=ctx.deps.job_id,
         request_type=request_type,
         question=question,
         context=context,
     )
-    raise HumanInputRequired(request.id)
+    update_agent_session(
+        session_id=ctx.deps.session_id,
+        status=AgentSessionStatus.WAITING_FOR_HUMAN,
+        current_step="human_input",
+        summary={
+            **ctx.deps.session_summary,
+            "human_request_id": request.id,
+            "last_question": question,
+            "request_type": request_type.value,
+        },
+        message_history=json.loads(
+            ModelMessagesTypeAdapter.dump_json(ctx.messages).decode()
+        ),
+    )
+    # Let PydanticAI close the interrupted tool call in the message history.
+    # This makes the history valid for a later resumed run.
+    ctx.cancel()

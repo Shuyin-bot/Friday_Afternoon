@@ -1,7 +1,7 @@
 from pydantic_ai import Agent
 
 from ..provider.base_provider import model
-from .core_models import QuotationDraftOutput
+from .core_models import CoreAgentDependencies, QuotationDraftOutput
 from .tools import (
     calculate_quotation_price_tool,
     company_research_search_tool,
@@ -17,7 +17,7 @@ from .tools import (
 def get_core_agent():
     return Agent(
         model,
-        deps_type=int,
+        deps_type=CoreAgentDependencies,
         instructions=(
             "Your role is to draft a quotation reply from an inbound email. "
             "Use the tools when necessary to extract request details, search "

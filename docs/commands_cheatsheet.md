@@ -11,18 +11,18 @@ uv run alembic upgrade head       # create/upgrade the database schema
 uv run alembic current            # check current schema revision
 ```
 
-## Seed the 12-lead demo set and run the pipeline
+## Seed demo data and run the pipeline
 
 ```bash
 uv run python -m scripts.seed_mock_leads            # seed (idempotent — reruns skip already-seeded leads)
 uv run python -m scripts.seed_mock_leads --reset     # delete the previous 90000-90999 seed range, then reseed
-uv run python -m agents_workflow.workflow            # run the full 5-stage pipeline (classify -> extract -> internal/external research -> draft)
+uv run python -m agents_workflow.workflow            # classify and run the resumable core quotation agent
 ```
 
-If a run gets interrupted (e.g. a shell timeout), just run
-`agents_workflow.workflow` again — each stage only picks up jobs still
-sitting in that stage's status, so it safely resumes instead of
-reprocessing already-finished leads.
+If a run gets interrupted, run `agents_workflow.workflow` again. Jobs with an
+existing `agent_sessions` row are resumed from their saved PydanticAI message
+history. Jobs waiting for a human answer are requeued as `CLASSIFIED` after the
+answer is submitted.
 
 ## Inspect the database directly
 
@@ -43,6 +43,13 @@ The "Run Workflow" button in the dashboard is equivalent to running
 `agents_workflow.workflow` from the browser. "Retrieve Emails" runs
 `email_retriever.retriever` (fetches real IMAP mail — not needed for the
 mock demo).
+
+The React frontend is a sibling project. Run it separately with:
+
+```bash
+cd ../quotation_bot_frontend
+npm run dev
+```
 
 ## Slidev presentation (`comments/Friday Afternoon/`)
 

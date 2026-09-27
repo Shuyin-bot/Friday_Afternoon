@@ -90,9 +90,15 @@ documents with local embeddings in Chroma.
 uv run python -m agents_workflow.workflow
 ```
 
-The workflow processes pending jobs sequentially. It classifies each email and
-extracts quotation details from quotation requests, saving each result in the
-job metadata and advancing its status.
+The workflow processes pending jobs sequentially. It classifies each email,
+then lets the core quotation agent choose its tools. Each quotation job gets an
+agent session containing its summary, context, and serialized PydanticAI
+message history.
+
+If the agent needs a human answer, the job becomes `WAITING_FOR_INPUT`. Answer
+the request through the API, then run the workflow again. The job returns to
+`CLASSIFIED` and resumes from its saved session. Draft feedback follows the
+same resume path.
 
 ## Inspect Results
 
@@ -111,5 +117,6 @@ find data/emails -type f -print
 ## Current Scope
 
 The retriever only reads email and creates queued work. Agent processing is run
-separately by `agents_workflow.workflow`; semantic querying, review, and email
-sending are not implemented yet.
+separately by `agents_workflow.workflow`. Product semantic fallback, human
+review, draft review, and session resumption are implemented. Outbound email
+sending is not implemented yet.

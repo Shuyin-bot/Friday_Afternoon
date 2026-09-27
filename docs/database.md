@@ -58,6 +58,41 @@ internal database primary key. The repository creates the email, flushes the
 session to obtain its generated `id`, and then creates the queue row with that
 ID.
 
+## Human Review and Agent Sessions
+
+`human_requests` stores questions raised by the core agent:
+
+```text
+id
+queued_job_id
+request_type
+question
+context
+status
+answer
+created_at
+answered_at
+```
+
+`agent_sessions` stores one resumable agent session per quotation job:
+
+```text
+id
+queued_job_id
+status
+current_step
+summary
+context
+message_history
+last_error
+created_at
+updated_at
+```
+
+`message_history` contains serialized PydanticAI messages. SQLite remains the
+source of truth for the session checkpoint; it is not reconstructed from log
+files.
+
 ## Packaging Tables
 
 `products` stores the company's catalogue. It includes SKU, product name,
@@ -113,5 +148,5 @@ vector_contexts/chroma.py
 
 It uses a persistent local client at `CHROMA_PATH` and exposes the
 `CHROMA_PRODUCT_COLLECTION` collection. SQLite remains the source of truth for
-product details, prices, and inventory. Chroma currently stores product
-documents and embeddings for future semantic lookup.
+product details, prices, and inventory. Chroma stores product documents and
+embeddings as a semantic fallback after SQL exact and alias lookup.

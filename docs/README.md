@@ -7,10 +7,10 @@
 - [Database](database.md): understand the SQLAlchemy models and repositories.
 - [Migrations](migrations.md): create, inspect, apply, and roll back schema
   migrations.
-- [Workflow](workflow.md): understand the current agent-workflow scaffold and
-  its planned processing flow.
-- [Review UI](ui.md): run the FastAPI review dashboard to inspect pipeline
-  results in a browser instead of `sqlite3`.
+- [Workflow](workflow.md): understand classification, agent sessions, human
+  resumption, and draft review.
+- [Review UI](ui.md): run the FastAPI API and separate React dashboard for live
+  pipeline monitoring and human review.
 - [Demo Script](demo_script.md): pre-demo checklist, suggested lead
   walkthrough order, and known gaps to state proactively.
 - [Review Brief](review_brief.md): mentor-review-ready summary of the current

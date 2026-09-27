@@ -15,11 +15,15 @@ The current implementation focuses on:
 - Modeling products, aliases, warehouses, inventory, price lists, and prices
   for a packaging manufacturer.
 - Loading product records into SQLite and a persistent local Chroma collection.
+- Persisting agent sessions and PydanticAI message history for resumable work.
+- Pausing for human input and resuming the core agent after an answer.
+- Reviewing, editing, approving, or sending drafted quotations back for revision.
 
-The agent workflow classifies pending emails, extracts quotation details,
-researches the requesting company online, checks the internal product
-catalog (SQL exact match, then Chroma semantic search), and drafts a reply
-email. Human review and actually sending the reply are not implemented yet.
+The agent workflow classifies pending emails, lets the core agent choose the
+necessary extraction, research, product, pricing, and drafting tools, and
+persists a resumable session for each quotation job. Human input pauses the
+workflow; an answer requeues the job and resumes the agent with its saved
+message history. Sending email is not implemented yet.
 
 ## Current Flow
 
@@ -35,17 +39,30 @@ email_retriever.retriever
     |
     v
 agent workflow (agents_workflow.workflow)
-    PENDING      --classify-->        CLASSIFIED (or COMPLETED if not a quote)
-    CLASSIFIED   --extract-->         EXTRACTED
-    EXTRACTED    --research company-> RESEARCH_EXT
-    RESEARCH_EXT --research product-> RESEARCH_INT
-    RESEARCH_INT --draft reply-->     DRAFTED
+    PENDING      --classify-->        CLASSIFIED
+       |                                  |
+       |                                  +--> DRAFTED
+       +--> NOT_QUOTATION                 |
+                                          +--> WAITING_FOR_INPUT
+                                                   |
+                              human answer --------+
+                                                   |
+                                             CLASSIFIED (resume)
+
+    DRAFTED --approve--> COMPLETED
+    DRAFTED --reject-->  COMPLETED
+    DRAFTED --comment--> CLASSIFIED (resume with feedback)
+    any agent error ---------------------> FAILED
 ```
 
-Every stage appends its result to `queued_jobs.meta_data` instead of
-overwriting the previous stage. If a stage is missing required input (e.g. no
-company was extracted), it records a `*_skipped` reason and still advances
-the job, so a job can never stall mid-pipeline.
+`NOT_QUOTATION` is used for emails that are not quotation requests. `COMPLETED`
+is reserved for quotation work that has been reviewed or rejected. Drafts and
+review feedback are stored in `queued_jobs.meta_data`.
+
+Each quotation job has one `agent_sessions` row. The session stores the current
+step, summary, context, and serialized PydanticAI message history. This allows
+the core agent to resume after human input or draft feedback instead of starting
+from the original email again.
 
 The email body is not stored in the `retrieved_email` table. It is written to a
 JSON file so it can later be passed to an extraction or classification process.
@@ -59,8 +76,10 @@ single-page dashboard, for reviewing results without a terminal:
 uv run uvicorn api.main:app --reload --port 8000
 ```
 
-Open `http://localhost:8000/` for the dashboard, or `http://localhost:8000/docs`
-for the interactive API docs. See [docs/ui.md](docs/ui.md) for details.
+Open `http://localhost:8000/` for the legacy local dashboard, or
+`http://localhost:8000/docs` for the interactive API docs. The React frontend
+lives in the sibling `quotation_bot_frontend/` project and uses the same API.
+See [docs/ui.md](docs/ui.md) for details.
 
 ## Project Structure
 
@@ -71,24 +90,26 @@ db_contexts/
 ├── sessions.py                     Engine and SessionLocal
 ├── models/
 │   ├── email_retriever_models.py   Email and queued-job models
+│   ├── agent_session_models.py      Resumable agent sessions
+│   ├── human_request_models.py      Human-in-the-loop requests
 │   ├── product_models.py           Product and packaging data models
 │   └── __init__.py                 Model exports for application and Alembic
 └── repos/
+    ├── agent_session_repository.py Session checkpoints and resumption
     ├── email_repository.py         Email deduplication and queue creation
+    ├── human_request_repository.py Human answers and job requeueing
     └── product_repository.py       Product, inventory, and pricing queries
 
 email_retriever/
 └── retriever.py                    IMAP retrieval and JSON artifact creation
 
 agents_workflow/
-├── workflow.py                     Entry point for pending queued jobs
+├── workflow.py                     Classification and resumable core workflow
 └── agents/
-    ├── base_agent.py               Agent base abstraction
-    ├── classifier.py                  Quotation email classifier
-    ├── extractor_agent.py             Quotation detail extractor
-    ├── product_catalog_research_agent.py
-    ├── external_research_agent.py
-    └── email_draft_agent.py
+    ├── classifier.py                Quotation email classifier
+    ├── core_agent.py                Tool-using quotation agent
+    ├── core_models.py               Agent dependencies and typed outputs
+    └── tools/                       Research, pricing, drafting, and human input
 
 migrations/
 ├── env.py                          Alembic metadata and database configuration
@@ -158,6 +179,8 @@ The current schema creates these tables:
 ```text
 retrieved_email
 queued_jobs
+human_requests
+agent_sessions
 products
 product_aliases
 warehouses
@@ -212,10 +235,15 @@ After retrieving emails, run the workflow from the repository root:
 uv run python -m agents_workflow.workflow
 ```
 
-The workflow processes `PENDING` jobs one at a time. It stores classification
-results in `queued_jobs.meta_data` and moves non-quotation jobs to `COMPLETED`.
-Quotation requests move to `CLASSIFIED`, then the extractor stores their
-details and moves them to `EXTRACTED`.
+The workflow processes `PENDING` jobs one at a time for classification. It moves
+non-quotation jobs to `NOT_QUOTATION` and sends quotation jobs to the core
+agent in `CLASSIFIED`. The core agent decides which tools to use and creates a
+typed quotation draft.
+
+If the agent requests human input, the job becomes `WAITING_FOR_INPUT`. After
+the human answers, the request repository atomically marks the session
+`READY_TO_RESUME` and requeues the job as `CLASSIFIED`. Running the workflow
+again resumes the saved agent session.
 
 ## Load Product Data
 
@@ -227,8 +255,8 @@ uv run python -m scripts.load_product_data
 ```
 
 The loader uses each SKU as the stable Chroma document ID and can be rerun for
-existing products. Chroma uses its local default embedding model for product
-documents; semantic queries will be added later.
+existing products. Chroma stores product documents and embeddings as a semantic
+fallback after SQL product lookup.
 
 ## Inspect the Database
 
@@ -288,7 +316,7 @@ The current code intentionally separates:
 email retrieval
 database persistence
 database migrations
-    agent workflow scaffold
+    resumable agent workflow
 ```
 
 Email content is treated as external data. It is written to a JSON artifact and
@@ -298,9 +326,9 @@ is not used as a database instruction or schema definition.
 
 - The workflow is a simple sequential runner, not a continuously running
   worker.
-- There is no retry/error state handling around failed agent calls yet.
-- The Review Dashboard is read-mostly; there is no approve/reject action or
-  outbound send yet (would need a new job status + migration).
+- Outbound email sending is not implemented yet.
+- The React frontend is a separate sibling project and requires the FastAPI
+  backend to be running.
 - The retriever currently extracts plain text only.
 - There is no automated test suite in the current working tree.
 

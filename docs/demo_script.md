@@ -40,7 +40,7 @@ known gaps to state proactively rather than let the audience discover.
 | 2 | LEAD-2026-038 (Tiernahrung Deuerer, pet food) | A technical question in the email ("hot-melt or tape for cold storage?"). Show that the draft answers from the catalog's `specs` field rather than guessing, and that anything requiring an engineering check is flagged as such, not promised outright. |
 | 3 | LEAD-2026-025 (Mubea, automotive) | Asks specifically "can your palletizing cell handle KLT containers?" — the catalog lists this as an option that "requires an engineering check". Show the draft correctly hedges instead of over-promising. |
 | 4 | LEAD-2026-027 (Felsengartenkellerei, existing customer) | An existing customer ordering a format set + wear kit by serial number. Show the extractor catching two requested items that both resolve to the same SKU (PFS-FS-KIT), and the draft adopting a warmer, relationship tone. |
-| 5 | LEAD-2026-029 (phishing) | The security case. Show that classify correctly stops it at COMPLETED with `is_quote: false` — no extraction, no research, no draft, no tool calls at all. This is the "the agent never touches hostile input" guarantee. |
+| 5 | LEAD-2026-029 (phishing) | The security case. Show that classification stops it at `NOT_QUOTATION` with `is_quote: false` — no core-agent tools, research, or draft. |
 | 6 | LEAD-2026-018 or LEAD-2026-040 | A supplier's own sales pitch (018) or a misrouted own-supplier invoice (040). Both correctly classify as non-quotes and stop immediately — shows the agent isn't just saying yes to everything that looks like business email. |
 
 If `TAVILY_API_KEY` is configured, add one more beat: re-run LEAD-2026-016
@@ -56,8 +56,8 @@ State these proactively rather than waiting to be caught:
   rubric (A1-A5) and historical outcomes for calibration, but there is no
   Scoring agent yet. This MVP shows intake → draft only.
 - **No outbound sending.** Everything you see is a draft sitting in the
-  dashboard. There is no send/approve action yet — human review happens by
-  reading the dashboard, not by clicking "send" in it.
+  dashboard. Reviewers can approve, edit, reject, or send feedback back to the
+  agent, but there is no email send action yet.
 - **No RAG over past correspondence or historical outcomes.** The draft
   agent is grounded in the live product catalog (SQL + Chroma semantic
   search) and the seller's company profile, both looked up directly, not

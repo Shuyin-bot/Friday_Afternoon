@@ -168,6 +168,218 @@
         "wear_kit_max": 2400
       },
       "lead_time_weeks": "2-4 (format sets), 48 h (wear kits ex stock)"
+    },
+    {
+      "product_id": "PFS-CP-260",
+      "model_code": "PFS-CP 260",
+      "category": "case_packer",
+      "name_de": "Topload-Kartonpacker PFS-CP 260",
+      "name_en": "Topload Case Packer PFS-CP 260",
+      "description_de": "Automatischer Topload-Kartonpacker für Flaschen, Dosen und Becher. Gruppiert Produkte und setzt sie von oben in vorgeklebte Kartons oder Trays.",
+      "description_en": "Automatic topload case packer for bottles, cans and cups. Groups products and loads them from above into pre-glued cases or trays.",
+      "specs": {
+        "max_throughput": "260 products/min",
+        "case_formats": "FEFCO 0201, 0406 and open trays",
+        "product_types": "cans, PET bottles, cartons, cups",
+        "collation_range": "2x2 to 6x5",
+        "power": "8 kW, 400 V / 50 Hz",
+        "compressed_air": "6 bar, approx. 300 NL/min",
+        "control": "Siemens S7-1500, HMI TP1200",
+        "options": ["robotic pick head", "carton presence check", "quick-change format kit"]
+      },
+      "moq": "1 unit",
+      "price_range_eur": { "min": 118000, "max": 168000 },
+      "lead_time_weeks": "16-20"
+    },
+    {
+      "product_id": "PFS-CT-400",
+      "model_code": "PFS-CT 400",
+      "category": "carton_former",
+      "name_de": "Trayformer PFS-CT 400",
+      "name_en": "Tray Former PFS-CT 400",
+      "description_de": "Kompakter Trayformer für Wrap-Around-Zuschnitte mit Heißleimverschluss. Geeignet für offene Trays in Lebensmittel-, Getränke- und Logistikanwendungen.",
+      "description_en": "Compact tray former for wrap-around blanks with hot-melt sealing. Suitable for open trays in food, beverage and logistics applications.",
+      "specs": {
+        "max_throughput": "40 trays/min",
+        "tray_standard": "FEFCO 0406 / 0409",
+        "tray_range_mm": { "length": "180-600", "width": "120-400", "height": "40-180" },
+        "sealing": "hot-melt, 2 glue heads",
+        "power": "4.5 kW, 400 V / 50 Hz",
+        "compressed_air": "6 bar, approx. 160 NL/min",
+        "control": "Siemens S7-1200, HMI KTP700",
+        "options": ["stainless steel infeed", "reject conveyor", "blank magazine extension"]
+      },
+      "moq": "1 unit",
+      "price_range_eur": { "min": 72000, "max": 105000 },
+      "lead_time_weeks": "12-15"
+    },
+    {
+      "product_id": "PFS-CV-900",
+      "model_code": "PFS-CV 900",
+      "category": "conveyor_system",
+      "name_de": "Modulares Förderband PFS-CV 900",
+      "name_en": "Modular Conveyor System PFS-CV 900",
+      "description_de": "Modulares Förderband für Kartons, Trays und KLT-Behälter. Die Förderstrecken werden kundenspezifisch mit Kurven, Transfers und Puffern ausgelegt.",
+      "description_en": "Modular conveyor system for cartons, trays and KLT bins. Conveyor sections are configured with curves, transfers and accumulation buffers for each line.",
+      "specs": {
+        "speed_range": "5-35 m/min",
+        "load_capacity": "up to 50 kg/m",
+        "conveyor_width_mm": "300 / 500 / 700",
+        "modules": "straight, curve, transfer, accumulation and reject",
+        "drive": "servo or geared motor depending on module",
+        "control": "Siemens distributed I/O, ProfiNet",
+        "options": ["barcode tracking", "accumulation logic", "stainless steel frame"]
+      },
+      "moq": "1 line section",
+      "price_range_eur": { "min": 18000, "max": 68000 },
+      "lead_time_weeks": "8-12"
+    },
+    {
+      "product_id": "PFS-LA-120",
+      "model_code": "PFS-LA 120",
+      "category": "labeling_system",
+      "name_de": "Karton-Etikettierer PFS-LA 120",
+      "name_en": "Case Labeling System PFS-LA 120",
+      "description_de": "Automatischer Etikettierer für Seiten- und Oberflächenetiketten auf Kartons. Unterstützt variable Daten, Barcode-Prüfung und Ausschleusung fehlerhafter Etiketten.",
+      "description_en": "Automatic labeling system for side and top labels on cases. Supports variable data, barcode verification and rejection of incorrectly labeled cases.",
+      "specs": {
+        "max_throughput": "120 cases/min",
+        "label_positions": "one or two adjacent sides, optional top label",
+        "label_size_mm": "30-180 x 20-250",
+        "print_engines": "thermal transfer or direct thermal",
+        "verification": "1D/2D barcode camera inspection",
+        "control": "Siemens S7-1200, HMI KTP700",
+        "options": ["print and apply", "reject station", "ERP/MES data interface"]
+      },
+      "moq": "1 unit",
+      "price_range_eur": { "min": 42000, "max": 69000 },
+      "lead_time_weeks": "10-13"
+    },
+    {
+      "product_id": "PFS-VI-500",
+      "model_code": "PFS-VI 500",
+      "category": "vision_inspection",
+      "name_de": "Vision-Inspektionssystem PFS-VI 500",
+      "name_en": "Vision Inspection System PFS-VI 500",
+      "description_de": "Kamerabasiertes Inspektionssystem für Kartonaufdruck, Verschluss, Etikettenposition und Produktanwesenheit. Ergebnisse werden mit Chargen- und Zeitstempel protokolliert.",
+      "description_en": "Camera-based inspection system for carton print, closure, label position and product presence. Results are logged with batch and timestamp information.",
+      "specs": {
+        "inspection_speed": "up to 500 cases/min",
+        "cameras": "1-4 industrial cameras",
+        "inspection_types": "OCR, barcode, print quality, presence and position",
+        "lighting": "LED strobe, application-specific",
+        "reject_interface": "dry contact or ProfiNet",
+        "data_logging": "local history for 90 days, CSV export",
+        "options": ["cloud dashboard connector", "additional camera", "serialized product tracking"]
+      },
+      "moq": "1 system",
+      "price_range_eur": { "min": 28000, "max": 74000 },
+      "lead_time_weeks": "8-12"
+    },
+    {
+      "product_id": "PFS-SW-1800",
+      "model_code": "PFS-SW 1800",
+      "category": "stretch_wrapper",
+      "name_de": "Paletten-Stretchwickler PFS-SW 1800",
+      "name_en": "Pallet Stretch Wrapper PFS-SW 1800",
+      "description_de": "Automatischer Stretchwickler für palettierte Kartons und Trays. Wickelprogramme, Folienvordehnung und Eckenschutz lassen sich über das HMI konfigurieren.",
+      "description_en": "Automatic stretch wrapper for palletized cases and trays. Wrapping programs, film pre-stretch and corner protection are configured through the HMI.",
+      "specs": {
+        "max_pallet_height_mm": "2200",
+        "max_pallet_weight_kg": 1800,
+        "turntable_diameter_mm": 1800,
+        "film_pre_stretch": "150% or 250% motorized pre-stretch",
+        "wrapping_speed": "up to 25 rpm",
+        "power": "3 kW, 400 V / 50 Hz",
+        "options": ["top sheet dispenser", "powered conveyor", "automatic film cutting"]
+      },
+      "moq": "1 unit",
+      "price_range_eur": { "min": 32000, "max": 52000 },
+      "lead_time_weeks": "10-14"
+    },
+    {
+      "product_id": "PFS-GS-25",
+      "model_code": "PFS-GS 25",
+      "category": "glue_system",
+      "name_de": "Heißleim-System PFS-GS 25",
+      "name_en": "Hot-Melt Glue System PFS-GS 25",
+      "description_de": "Heißleim-Auftragssystem für Kartonverschließer, Trayformer und Wrap-Around-Maschinen. Lieferung als Komplettsystem mit Tank, Pumpe, Schläuchen und Düsen.",
+      "description_en": "Hot-melt adhesive application system for case sealers, tray formers and wrap-around machines. Supplied as a complete system with tank, pump, hoses and nozzles.",
+      "specs": {
+        "tank_capacity_kg": 25,
+        "melt_rate": "up to 18 kg/h",
+        "temperature_range": "120-200 °C",
+        "nozzle_count": "1-4",
+        "adhesive_types": "EVA and metallocene hot-melt",
+        "interface": "24 V trigger, optional ProfiNet",
+        "options": ["automatic refill", "low-level alarm", "insulated hose package"]
+      },
+      "moq": "1 system",
+      "price_range_eur": { "min": 7800, "max": 16500 },
+      "lead_time_weeks": "4-7"
+    },
+    {
+      "product_id": "PFS-BC-80",
+      "model_code": "PFS-BC 80",
+      "category": "checkweigher",
+      "name_de": "Kontrollwaage PFS-BC 80",
+      "name_en": "Inline Checkweigher PFS-BC 80",
+      "description_de": "Inline-Kontrollwaage für Kartons und Trays mit automatischer Ausschleusung bei Unter- oder Übergewicht. Geeignet für Qualitätskontrolle und Vollständigkeitsprüfung.",
+      "description_en": "Inline checkweigher for cases and trays with automatic rejection of underweight or overweight packs. Suitable for quality control and completeness checks.",
+      "specs": {
+        "max_throughput": "80 packs/min",
+        "weighing_range_kg": "0.2-30",
+        "accuracy": "from +/- 5 g, product-dependent",
+        "conveyor_width_mm": "300 / 500",
+        "reject_types": "pusher, air blast or stop-and-divert",
+        "control": "touch HMI with recipe management",
+        "options": ["metal detector combination", "stainless steel washdown", "statistics export"]
+      },
+      "moq": "1 unit",
+      "price_range_eur": { "min": 24500, "max": 41000 },
+      "lead_time_weeks": "9-12"
+    },
+    {
+      "product_id": "PFS-RB-12",
+      "model_code": "PFS-RB 12",
+      "category": "robotic_case_packer",
+      "name_de": "Roboter-Kartonpacker PFS-RB 12",
+      "name_en": "Robotic Case Packer PFS-RB 12",
+      "description_de": "Flexible Roboterzelle zum Einsetzen von Einzelprodukten oder Gebinden in Kartons. Geeignet für häufig wechselnde Formate und kleine bis mittlere Serien.",
+      "description_en": "Flexible robotic cell for loading individual products or bundles into cases. Designed for frequent format changes and small to medium production runs.",
+      "specs": {
+        "max_throughput": "12 cases/min",
+        "robot_payload_kg": 25,
+        "product_changeover": "recipe-based, under 20 minutes",
+        "case_formats": "FEFCO 0201 and open trays",
+        "gripper": "vacuum, mechanical or hybrid",
+        "safety": "CE safety fence with access monitoring",
+        "options": ["vision-guided picking", "automatic case magazine", "collaborative robot version"]
+      },
+      "moq": "1 cell",
+      "price_range_eur": { "min": 89000, "max": 142000 },
+      "lead_time_weeks": "14-18"
+    },
+    {
+      "product_id": "PFS-EM-360",
+      "model_code": "PFS-EM 360",
+      "category": "end_of_line_monitoring",
+      "name_de": "End-of-Line Monitor PFS-EM 360",
+      "name_en": "End-of-Line Monitoring Station PFS-EM 360",
+      "description_de": "Zentrale Überwachungsstation für Packlinien mit Produktionskennzahlen, Störmeldungen und OEE-Auswertung. Verbindet Maschinen über OPC UA und stellt Berichte für Schicht und Auftrag bereit.",
+      "description_en": "Central monitoring station for packaging lines with production KPIs, alarms and OEE reporting. Connects machines via OPC UA and provides shift and order reports.",
+      "specs": {
+        "connected_assets": "up to 20 machines",
+        "protocols": "OPC UA, ProfiNet diagnostics, MQTT gateway",
+        "metrics": "OEE, speed, downtime, rejects and energy estimate",
+        "user_roles": "operator, supervisor, maintenance and administrator",
+        "data_retention": "24 months local storage",
+        "deployment": "industrial panel PC or customer VM",
+        "options": ["MES connector", "email alarm escalation", "multi-line dashboard"]
+      },
+      "moq": "1 system",
+      "price_range_eur": { "min": 18500, "max": 46000 },
+      "lead_time_weeks": "6-10"
     }
   ]
 }

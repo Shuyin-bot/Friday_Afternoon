@@ -14,7 +14,19 @@
       "inventory": {
         "PIZZA-001": 2500,
         "MAILER-001": 1200,
-        "CARTON-001": 5000
+        "CARTON-001": 5000,
+        "PIZZA-002": 1800,
+        "PIZZA-003": 2200,
+        "MAILER-002": 900,
+        "TRAY-001": 1400,
+        "PHARMA-001": 750,
+        "COSMETIC-001": 1100,
+        "KRAFT-001": 3000,
+        "BOTTLE-001": 1600,
+        "COLD-001": 600,
+        "DISPLAY-001": 850,
+        "FOLD-001": 2400,
+        "PALLET-001": 400
       }
     }
   ],
@@ -62,6 +74,186 @@
       "prices": [
         {"minimum_quantity": 1, "unit_price": 3.2},
         {"minimum_quantity": 500, "unit_price": 2.65}
+      ]
+    },
+    {
+      "sku": "PIZZA-002",
+      "name": "Large Pizza Shipping Box",
+      "category": "FOOD_PACKAGING",
+      "description": "Large foldable corrugated pizza box for family-size takeaway pizzas.",
+      "box_style": "Lock corner box",
+      "material": "E-flute corrugated cardboard",
+      "dimensions": "450 x 450 x 50 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["large pizza box", "family pizza carton", "pizza carton large"],
+      "prices": [
+        {"minimum_quantity": 1, "unit_price": 2.75},
+        {"minimum_quantity": 500, "unit_price": 2.2}
+      ]
+    },
+    {
+      "sku": "PIZZA-003",
+      "name": "Small Pizza Shipping Box",
+      "category": "FOOD_PACKAGING",
+      "description": "Compact corrugated pizza box for personal-size pizzas and snacks.",
+      "box_style": "Lock corner box",
+      "material": "E-flute corrugated cardboard",
+      "dimensions": "260 x 260 x 40 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["small pizza box", "personal pizza carton", "mini pizza box"],
+      "prices": [
+        {"minimum_quantity": 1, "unit_price": 1.35},
+        {"minimum_quantity": 1000, "unit_price": 0.95}
+      ]
+    },
+    {
+      "sku": "MAILER-002",
+      "name": "Small E-commerce Mailer Box",
+      "category": "MAILER_BOX",
+      "description": "Compact self-locking mailer for cosmetics, accessories and small retail orders.",
+      "box_style": "Roll-end tuck front",
+      "material": "E-flute kraft corrugated cardboard",
+      "dimensions": "220 x 160 x 70 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["small mailer", "small shipping mailer", "accessory mailer"],
+      "prices": [
+        {"minimum_quantity": 1, "unit_price": 1.65},
+        {"minimum_quantity": 1000, "unit_price": 1.2}
+      ]
+    },
+    {
+      "sku": "TRAY-001",
+      "name": "Open Product Display Tray",
+      "category": "RETAIL_PACKAGING",
+      "description": "Open-top corrugated tray for retail displays, food products and promotional packs.",
+      "box_style": "Auto-lock tray",
+      "material": "E-flute corrugated cardboard",
+      "dimensions": "350 x 250 x 120 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["display tray", "open tray", "retail tray", "product tray"],
+      "prices": [
+        {"minimum_quantity": 1, "unit_price": 2.1},
+        {"minimum_quantity": 500, "unit_price": 1.65}
+      ]
+    },
+    {
+      "sku": "PHARMA-001",
+      "name": "Pharmaceutical Folding Carton",
+      "category": "CUSTOM_PACKAGING",
+      "description": "Clean folding carton for pharmaceutical and medical accessory packaging.",
+      "box_style": "Tuck-end folding carton",
+      "material": "FBB coated paperboard",
+      "dimensions": "180 x 90 x 55 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["pharma carton", "medicine box", "medical carton"],
+      "prices": [
+        {"minimum_quantity": 1000, "unit_price": 0.82},
+        {"minimum_quantity": 10000, "unit_price": 0.58}
+      ]
+    },
+    {
+      "sku": "COSMETIC-001",
+      "name": "Premium Cosmetic Gift Box",
+      "category": "RETAIL_PACKAGING",
+      "description": "Premium rigid-style folding gift box for skincare, cosmetics and fragrance products.",
+      "box_style": "Sleeve and tray",
+      "material": "High-density coated paperboard",
+      "dimensions": "220 x 120 x 65 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["cosmetic box", "beauty gift box", "skincare packaging"],
+      "prices": [
+        {"minimum_quantity": 500, "unit_price": 3.8},
+        {"minimum_quantity": 2500, "unit_price": 2.95}
+      ]
+    },
+    {
+      "sku": "KRAFT-001",
+      "name": "Kraft Takeaway Food Box",
+      "category": "FOOD_PACKAGING",
+      "description": "Grease-resistant kraft takeaway box for prepared meals, sandwiches and snacks.",
+      "box_style": "Folded takeaway box",
+      "material": "Natural kraft board with water-based coating",
+      "dimensions": "190 x 140 x 65 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["takeaway box", "food box", "kraft food carton", "meal box"],
+      "prices": [
+        {"minimum_quantity": 500, "unit_price": 0.95},
+        {"minimum_quantity": 5000, "unit_price": 0.68}
+      ]
+    },
+    {
+      "sku": "BOTTLE-001",
+      "name": "Six-Bottle Shipping Carton",
+      "category": "SHIPPING_CARTON",
+      "description": "Protective shipping carton with internal dividers for six glass or PET bottles.",
+      "box_style": "Regular slotted carton with divider insert",
+      "material": "Double-wall corrugated cardboard",
+      "dimensions": "390 x 260 x 300 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["bottle carton", "wine shipping box", "six bottle box", "drink carton"],
+      "prices": [
+        {"minimum_quantity": 1, "unit_price": 5.9},
+        {"minimum_quantity": 250, "unit_price": 4.75}
+      ]
+    },
+    {
+      "sku": "COLD-001",
+      "name": "Insulated Cold-Chain Box",
+      "category": "CUSTOM_PACKAGING",
+      "description": "Insulated corrugated shipping box for temperature-sensitive food and healthcare products.",
+      "box_style": "Insulated shipper with liner",
+      "material": "Double-wall corrugated cardboard with recycled fiber liner",
+      "dimensions": "360 x 260 x 220 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["cold chain box", "insulated shipping box", "temperature shipping carton"],
+      "prices": [
+        {"minimum_quantity": 50, "unit_price": 12.5},
+        {"minimum_quantity": 500, "unit_price": 9.8}
+      ]
+    },
+    {
+      "sku": "DISPLAY-001",
+      "name": "Countertop Retail Display",
+      "category": "RETAIL_PACKAGING",
+      "description": "Printed countertop display unit for presenting small consumer products at retail checkout areas.",
+      "box_style": "Die-cut shelf display",
+      "material": "E-flute corrugated cardboard",
+      "dimensions": "300 x 220 x 380 mm",
+      "unit_of_measure": "unit",
+      "aliases": ["counter display", "retail display", "point of sale display", "POS box"],
+      "prices": [
+        {"minimum_quantity": 50, "unit_price": 8.9},
+        {"minimum_quantity": 500, "unit_price": 6.7}
+      ]
+    },
+    {
+      "sku": "FOLD-001",
+      "name": "Heavy-Duty Folding Carton",
+      "category": "SHIPPING_CARTON",
+      "description": "Reinforced folding carton for industrial parts, tools and medium-weight e-commerce shipments.",
+      "box_style": "Double-wall regular slotted carton",
+      "material": "BC-flute double-wall corrugated cardboard",
+      "dimensions": "500 x 350 x 280 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["heavy duty carton", "industrial shipping box", "reinforced carton", "large transport box"],
+      "prices": [
+        {"minimum_quantity": 1, "unit_price": 6.4},
+        {"minimum_quantity": 250, "unit_price": 5.25}
+      ]
+    },
+    {
+      "sku": "PALLET-001",
+      "name": "Pallet Export Carton",
+      "category": "SHIPPING_CARTON",
+      "description": "Large export carton designed for palletized industrial shipments and warehouse handling.",
+      "box_style": "Heavy-duty regular slotted carton",
+      "material": "Triple-wall corrugated cardboard",
+      "dimensions": "1200 x 800 x 600 mm",
+      "unit_of_measure": "piece",
+      "aliases": ["pallet carton", "export box", "industrial carton", "large shipping carton"],
+      "prices": [
+        {"minimum_quantity": 1, "unit_price": 18.5},
+        {"minimum_quantity": 50, "unit_price": 15.9}
       ]
     }
   ]

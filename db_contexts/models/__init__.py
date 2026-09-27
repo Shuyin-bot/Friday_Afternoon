@@ -1,6 +1,7 @@
 from .email_retriever_models import JobStatus, QueuedJob, RetrievedEmail
 from .company_research_models import CompanyResearch
 from .human_request_models import HumanRequest, HumanRequestStatus, HumanRequestType
+from .agent_session_models import AgentSession, AgentSessionStatus
 from .product_models import (
     Inventory,
     PriceList,
@@ -19,6 +20,8 @@ __all__ = [
     "HumanRequest",
     "HumanRequestStatus",
     "HumanRequestType",
+    "AgentSession",
+    "AgentSessionStatus",
     "Inventory",
     "PriceList",
     "Product",

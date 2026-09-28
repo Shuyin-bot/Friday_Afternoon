@@ -10,12 +10,13 @@ from db_contexts.repos.product_repository import get_product_by_sku, search_prod
 from .agents.classifier import get_classifying_agent
 from .agents.core_agent import get_core_agent
 from .agents.core_models import CoreAgentDependencies
+from .agents.session_history import load_message_history, serialize_message_history
 import asyncio
 import os
 from pydantic_ai.agent import Agent
 from pathlib import Path
 import json
-from pydantic_ai import ModelMessagesTypeAdapter, RunCancelled
+from pydantic_ai import RunCancelled
 
 
 def get_path_to_email(email_external_id) -> Path:
@@ -104,9 +105,7 @@ async def run_core():
                         + "\n".join(resume_instructions)
                     )
 
-            message_history = ModelMessagesTypeAdapter.validate_python(
-                agent_session.message_history or []
-            )
+            message_history = load_message_history(agent_session.message_history)
             deps = CoreAgentDependencies(
                 job_id=job.id,
                 session_id=agent_session.id,
@@ -128,7 +127,7 @@ async def run_core():
                     **(agent_session.summary or {}),
                     "last_action": "draft_created",
                 },
-                message_history=json.loads(res.all_messages_json().decode()),
+                message_history=serialize_message_history(res.all_messages()),
             )
             print(meta)
             _save_meta(job, meta, JobStatus.DRAFTED)
@@ -139,7 +138,7 @@ async def run_core():
             ):
                 raise
 
-            session_messages = json.loads(cancellation.all_messages_json().decode())
+            session_messages = serialize_message_history(cancellation.all_messages())
             update_agent_session(
                 session_id=current_session.id,
                 status=AgentSessionStatus.WAITING_FOR_HUMAN,

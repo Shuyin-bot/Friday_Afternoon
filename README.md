@@ -1,16 +1,58 @@
-# React + Vite
+# Quotation Bot Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React dashboard for monitoring quotation jobs and reviewing AI-generated
+quotation drafts.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- View job statistics and workflow statuses
+- Browse and inspect quotation jobs
+- Review original emails, research details, and quotation drafts
+- Approve, edit, reject, or comment on drafts
+- Answer human-input requests
+- Receive live updates through Server-Sent Events
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React
+- Vite
+- Material UI
+- Emotion
+- JavaScript
 
-## Expanding the Oxlint configuration
+## Setup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The frontend normally runs at:
+
+```text
+http://localhost:5173
+```
+
+The Vite development server proxies `/api` requests to the FastAPI backend at
+`http://localhost:8000`.
+
+Start the backend from the main project directory:
+
+```bash
+uv run uvicorn api.main:app --reload --port 8000
+```
+
+## Other Commands
+
+```bash
+npm run build    # Create a production build
+npm run preview  # Preview the production build
+npm run lint     # Run Oxlint
+```

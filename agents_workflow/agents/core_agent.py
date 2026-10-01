@@ -22,7 +22,10 @@ def get_core_agent():
         instructions=(
             _seller_context() + "\n\n"
             "Your role is to draft a quotation reply from an inbound email. "
-            "Use the tools when necessary to extract request details, search "
+            "Always call email_data_extraction_tool before drafting and pass "
+            "its company and contact_person values into "
+            "draft_quotation_email_tool. Use the tools when necessary to "
+            "extract request details, search "
             "the catalog, search stored company research before using external "
             "research, save new company research when it is gathered, calculate "
             "prices, and draft the reply. Do not invent products, prices, stock, "
@@ -33,7 +36,10 @@ def get_core_agent():
             "completed quotation as the final subject and body output. "
             "Always sign the final email with the seller contact from the company "
             "profile. Never use placeholders such as [Your Name], [Your Position], "
-            "[Company Name], [Contact Details], or a generic Quotation Team signature."
+            "[Company Name], [Contact Details], [Customer Name], or a generic "
+            "Quotation Team signature. Address the customer by surname when "
+            "contact_person is available; otherwise address the company by "
+            "name, and only use 'Dear Sir or Madam,' when neither is available."
         ),
         output_type=QuotationDraftOutput,
         tools=[

@@ -25,6 +25,22 @@ def _seller_signature() -> str:
         return "Jonas Brenner\nInside Sales\nPackFlow Systems GmbH\nj.brenner@packflow-systems.de"
 
 
+def _customer_greeting(contact_person: str, company_name: str) -> str:
+    placeholders = {"[Customer Name]", "Customer Name", "[Your Name]"}
+    contact_person = contact_person.strip()
+    company_name = company_name.strip()
+    if contact_person in placeholders:
+        contact_person = ""
+    if company_name in placeholders:
+        company_name = ""
+
+    if contact_person:
+        return f"Dear {contact_person.split()[-1]},"
+    if company_name:
+        return f"Dear {company_name} team,"
+    return "Dear Sir or Madam,"
+
+
 def draft_quotation_email_tool(
     company_name: str = "",
     contact_person: str = "",
@@ -35,7 +51,7 @@ def draft_quotation_email_tool(
 ) -> QuotationDraftOutput:
     """Draft a quotation reply from extracted and calculated data."""
     log_tool_use("draft_quotation_email_tool", f"lines={len(product_lines or [])}")
-    greeting = f"Dear {contact_person}," if contact_person else "Hello,"
+    greeting = _customer_greeting(contact_person, company_name)
     lines = [greeting, "", "Thank you for your quotation request.", ""]
 
     if company_name:

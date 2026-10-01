@@ -11,6 +11,7 @@ export const jobService = {
   getJobs: () => request("/api/jobs"),
   getJob: (id) => request(`/api/jobs/${id}`),
   getHumanRequests: () => request("/api/human-requests"),
+  getHumanRequestHistory: () => request("/api/human-requests/history"),
   answerHumanRequest: (id, answer) =>
     request(`/api/human-requests/${id}/answer`, {
       method: "POST",
@@ -18,6 +19,7 @@ export const jobService = {
       body: JSON.stringify({ answer }),
     }),
   approveDraft: (id) => request(`/api/jobs/${id}/approve`, { method: "POST" }),
+  unapproveDraft: (id) => request(`/api/jobs/${id}/unapprove`, { method: "POST" }),
   updateDraft: (id, draft) =>
     request(`/api/jobs/${id}/draft`, {
       method: "PUT",

@@ -72,8 +72,15 @@ export function JobDetailPage({ job, onBack, onNotice }) {
     if (!job.rawId) return onNotice("Draft approved in the preview.");
     setSaving(true);
     try {
-      setDetail(await jobService.approveDraft(job.rawId));
-      onNotice("Draft approved and marked as completed.");
+      const isApproved =
+        detail.status === "COMPLETED" &&
+        detail.meta_data?.review_action === "APPROVED";
+      setDetail(
+        await (isApproved
+          ? jobService.unapproveDraft(job.rawId)
+          : jobService.approveDraft(job.rawId)),
+      );
+      onNotice(isApproved ? "Approval cancelled." : "Draft approved.");
     } catch {
       onNotice("Could not approve this draft.");
     } finally {
@@ -255,31 +262,16 @@ export function JobDetailPage({ job, onBack, onNotice }) {
               onSubjectChange={setDraftSubject}
               onBodyChange={setDraftBody}
               onApprove={approveDraft}
+              approved={
+                detail.status === "COMPLETED" &&
+                detail.meta_data?.review_action === "APPROVED"
+              }
+              onComment={() => setCommentOpen(true)}
               onEdit={() => setEditing(true)}
               onSave={saveDraftEdits}
               onReject={() => setRejectOpen(true)}
-              onComment={() => setCommentOpen(true)}
             />
           </Stack>
-          <Card sx={{ p: { xs: 2, md: 3 } }}>
-            <Typography variant="h5" mb={2}>
-              Processing metadata
-            </Typography>
-            <Typography
-              component="pre"
-              sx={{
-                whiteSpace: "pre-wrap",
-                overflow: "auto",
-                bgcolor: "#f5f7fb",
-                borderRadius: 2,
-                p: 2,
-                font: "12px/1.6 monospace",
-                maxHeight: 230,
-              }}
-            >
-              {JSON.stringify(detail.meta_data || {}, null, 2)}
-            </Typography>
-          </Card>
         </Stack>
       )}
       <Dialog
@@ -317,8 +309,7 @@ export function JobDetailPage({ job, onBack, onNotice }) {
         <DialogContent>
           <Typography color="text.secondary" mb={2}>
             Tell the agent what the customer meant or how the quotation should
-            change. For example: “Shipping carton means the 12-inch pizza box,
-            SKU PB-12.”
+            change.
           </Typography>
           <TextField
             autoFocus
@@ -376,10 +367,11 @@ function DraftCard({
   onSubjectChange,
   onBodyChange,
   onApprove,
+  approved,
+  onComment,
   onEdit,
   onSave,
   onReject,
-  onComment,
 }) {
   return (
     <Card sx={{ p: { xs: 2, md: 3 }, flex: 1, bgcolor: "#f8f9ff" }}>
@@ -430,13 +422,23 @@ function DraftCard({
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap mt={2}>
             <Button
               size="small"
-              variant="contained"
+              variant={approved ? "contained" : "outlined"}
               color="success"
               startIcon={<CheckCircleRounded />}
               onClick={onApprove}
               disabled={saving}
             >
-              Approve
+              {approved ? "Approved" : "Approve"}
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              color="primary"
+              startIcon={<CommentRounded />}
+              onClick={onComment}
+              disabled={saving}
+            >
+              Comment
             </Button>
             {editing ? (
               <Button
@@ -465,16 +467,7 @@ function DraftCard({
               onClick={onReject}
               disabled={saving}
             >
-              Reject & delete
-            </Button>
-            <Button
-              size="small"
-              color="warning"
-              startIcon={<CommentRounded />}
-              onClick={onComment}
-              disabled={saving}
-            >
-              Reject & comment
+              Discard draft
             </Button>
           </Stack>
         </Box>
@@ -490,7 +483,7 @@ function DraftCard({
 const preformattedText = {
   whiteSpace: "pre-wrap",
   overflowWrap: "anywhere",
-  font: "13px/1.7 Inter, sans-serif",
+  font: "15px/1.8 Inter, sans-serif",
   color: "text.secondary",
   m: 0,
 };

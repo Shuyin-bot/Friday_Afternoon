@@ -58,7 +58,11 @@ const cardDefinitions = [
   ],
 ];
 
-export function StatusCards({ stats, activeCard, onSelect }) {
+export function StatusCards({ stats, activeCard, onSelect, cardKeys }) {
+  const visibleDefinitions = cardKeys
+    ? cardDefinitions.filter(([key]) => cardKeys.includes(key))
+    : cardDefinitions;
+
   return (
     <Box
       sx={{
@@ -71,7 +75,7 @@ export function StatusCards({ stats, activeCard, onSelect }) {
         "&::-webkit-scrollbar-thumb": { bgcolor: "#cbd3e1", borderRadius: 5 },
       }}
     >
-      {cardDefinitions.map(([key, label, Icon, color, soft, caption]) => (
+      {visibleDefinitions.map(([key, label, Icon, color, soft, caption]) => (
         <Card
           key={key}
           sx={{

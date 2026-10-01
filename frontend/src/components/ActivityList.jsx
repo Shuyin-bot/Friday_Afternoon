@@ -21,8 +21,16 @@ import {
   EmailRounded,
   RefreshRounded,
 } from "@mui/icons-material";
+import { getStatusVisual } from "../utils/statusStyles";
 
-export function ActivityList({ jobs, title, subtitle, onRefresh, onOpen }) {
+export function ActivityList({
+  jobs,
+  title,
+  subtitle,
+  onRefresh,
+  onOpen,
+  showIndex = false,
+}) {
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const pageCount = Math.max(1, Math.ceil(jobs.length / pageSize));
@@ -57,18 +65,37 @@ export function ActivityList({ jobs, title, subtitle, onRefresh, onOpen }) {
               disableGutters
               divider={index < visibleJobs.length - 1}
               secondaryAction={
-                <Chip
-                  label={job.status}
-                  size="small"
-                  sx={{
-                    bgcolor: job.status.toLowerCase().includes("human")
-                      ? "#f3edff"
-                      : "#f2f4f8",
-                    fontWeight: 700,
-                  }}
-                />
+                (() => {
+                  const { color, soft } = getStatusVisual(job.status);
+                  return (
+                    <Chip
+                      label={job.status}
+                      size="small"
+                      sx={{
+                        bgcolor: soft,
+                        color,
+                        border: `1px solid ${color}33`,
+                        fontWeight: 800,
+                      }}
+                    />
+                  );
+                })()
               }
             >
+              {showIndex && (
+                <Box
+                  sx={{
+                    width: 38,
+                    flexShrink: 0,
+                    textAlign: "center",
+                    color: "text.secondary",
+                    fontSize: 12,
+                    fontWeight: 800,
+                  }}
+                >
+                  #{(page - 1) * pageSize + index + 1}
+                </Box>
+              )}
               <ListItemButton
                 onClick={() => onOpen(job)}
                 sx={{ borderRadius: 2, py: 1.2 }}

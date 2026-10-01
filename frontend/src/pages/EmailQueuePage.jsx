@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
-  Chip,
   CircularProgress,
   InputAdornment,
   Stack,
@@ -16,18 +15,27 @@ import {
 import { jobService } from "../services/jobService";
 import { mapJobs } from "../data/demoJobs";
 import { ActivityList } from "../components/ActivityList";
+import { StatusCards } from "../components/StatusCards";
 import { filterJobsByCard, filterJobsBySearch } from "../utils/jobFilters";
 
-const filterChips = [
-  { key: null, label: "All" },
-  { key: "classification", label: "Needs classification" },
-  { key: "progress", label: "In progress" },
-  { key: "review", label: "Human review" },
-  { key: "completed", label: "Completed" },
-  { key: "notQuotation", label: "Not quotation" },
-];
+const queueCardLabels = {
+  progress: "In progress",
+  review: "Human review",
+  completed: "Completed",
+};
 
-export function EmailQueuePage({ onOpenJob, onNotice }) {
+const quotationStatuses = new Set([
+  "CLASSIFIED",
+  "EXTRACTED",
+  "RESEARCH_EXT",
+  "RESEARCH_INT",
+  "DRAFTED",
+  "WAITING_FOR_INPUT",
+  "FAILED",
+  "COMPLETED",
+]);
+
+export function EmailQueuePage({ onOpenJob, onNotice, pageTitle = "Email queue" }) {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeChip, setActiveChip] = useState(null);
@@ -37,7 +45,7 @@ export function EmailQueuePage({ onOpenJob, onNotice }) {
   const loadJobs = useCallback(async () => {
     try {
       const jobsData = await jobService.getJobs();
-      setJobs(mapJobs(jobsData));
+      setJobs(mapJobs(jobsData.filter((job) => quotationStatuses.has(job.status))));
     } catch {
       onNotice("Could not load the email queue — start the API to see live jobs.");
     } finally {
@@ -55,7 +63,9 @@ export function EmailQueuePage({ onOpenJob, onNotice }) {
     setBusyAction("Fetch emails");
     try {
       await jobService.trigger("retrieve");
-      onNotice("Fetch emails started successfully.");
+      onNotice(
+        "Email fetch started. Gmail messages are being retrieved, and missing mock leads will be added automatically.",
+      );
     } catch {
       onNotice("Could not reach the API. Fetch emails is ready once the backend is running.");
     } finally {
@@ -63,18 +73,19 @@ export function EmailQueuePage({ onOpenJob, onNotice }) {
     }
   }
 
-  const counts = useMemo(() => {
-    const result = {};
-    filterChips.forEach(({ key }) => {
-      result[key ?? "all"] = key ? filterJobsByCard(jobs, key).length : jobs.length;
-    });
-    return result;
-  }, [jobs]);
-
   const visibleJobs = useMemo(() => {
     const byCard = filterJobsByCard(jobs, activeChip);
     return filterJobsBySearch(byCard, search);
   }, [jobs, activeChip, search]);
+
+  const queueStats = useMemo(
+    () => ({
+      progress: filterJobsByCard(jobs, "progress").length,
+      review: filterJobsByCard(jobs, "review").length,
+      completed: filterJobsByCard(jobs, "completed").length,
+    }),
+    [jobs],
+  );
 
   return (
     <>
@@ -95,10 +106,10 @@ export function EmailQueuePage({ onOpenJob, onNotice }) {
             Pipeline
           </Typography>
           <Typography variant="h3" sx={{ fontSize: { xs: 32, md: 42 }, mt: 0.5 }}>
-            Email queue
+            {pageTitle}
           </Typography>
           <Typography color="text.secondary" mt={1}>
-            Every inbound email moving through the quotation pipeline.
+            Quotation emails recognized by the pipeline.
           </Typography>
         </Box>
         <Button
@@ -119,32 +130,14 @@ export function EmailQueuePage({ onOpenJob, onNotice }) {
         </Button>
       </Stack>
 
-      <Stack
-        direction={{ xs: "column", md: "row" }}
-        spacing={2}
-        alignItems={{ xs: "stretch", md: "center" }}
-        justifyContent="space-between"
-        mb={3}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            gap: 1,
-            flexWrap: "wrap",
-            overflowX: { xs: "auto", md: "visible" },
-          }}
-        >
-          {filterChips.map(({ key, label }) => (
-            <Chip
-              key={label}
-              label={`${label} · ${counts[key ?? "all"] ?? 0}`}
-              onClick={() => setActiveChip(key)}
-              color={activeChip === key ? "primary" : "default"}
-              variant={activeChip === key ? "filled" : "outlined"}
-              sx={{ fontWeight: 700 }}
-            />
-          ))}
-        </Box>
+      <StatusCards
+        stats={queueStats}
+        activeCard={activeChip}
+        onSelect={(key) => setActiveChip(activeChip === key ? null : key)}
+        cardKeys={["progress", "review", "completed"]}
+      />
+
+      <Stack direction="row" justifyContent="flex-end" mb={3}>
         <TextField
           size="small"
           placeholder="Search by subject or sender..."
@@ -170,12 +163,13 @@ export function EmailQueuePage({ onOpenJob, onNotice }) {
           jobs={visibleJobs}
           title={
             activeChip
-              ? filterChips.find((chip) => chip.key === activeChip)?.label
-              : "All queued emails"
+              ? queueCardLabels[activeChip]
+              : "Recognized quotation emails"
           }
           subtitle="Click a job to open its review workspace."
           onRefresh={loadJobs}
           onOpen={onOpenJob}
+          showIndex
         />
       )}
     </>

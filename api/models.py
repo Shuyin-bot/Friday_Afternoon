@@ -7,6 +7,8 @@ class JobSummary(BaseModel):
     from_email: str
     subject: str
     created_at: str
+    review_action: str | None = None
+    reviewed_at: str | None = None
 
 
 class JobDetail(JobSummary):

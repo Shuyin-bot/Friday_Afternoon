@@ -16,6 +16,8 @@ export function filterJobsByCard(jobs, activeCard) {
     if (activeCard === "progress")
       return (
         status.includes("classif") ||
+        status.includes("extract") ||
+        status.includes("research") ||
         status.includes("progress") ||
         status.includes("processing")
       );

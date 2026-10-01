@@ -78,12 +78,15 @@ def _status_value(status) -> str:
 
 
 def _to_summary(job) -> JobSummary:
+    metadata = _job_metadata(job)
     return JobSummary(
         id=job.id,
         status=_status_value(job.status),
         from_email=job.email.from_email if job.email else "unknown",
         subject=job.email.subject if job.email else "unknown",
         created_at=job.created_at.isoformat(),
+        review_action=metadata.get("review_action"),
+        reviewed_at=metadata.get("reviewed_at"),
     )
 
 

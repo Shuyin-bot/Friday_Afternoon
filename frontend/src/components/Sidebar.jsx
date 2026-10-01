@@ -14,13 +14,11 @@ import {
   AutoAwesomeRounded,
   BoltRounded,
   DashboardRounded,
-  InboxRounded,
   PsychologyRounded,
 } from "@mui/icons-material";
 
 const items = [
   { label: "Overview", icon: <DashboardRounded /> },
-  { label: "Email queue", icon: <InboxRounded /> },
   { label: "Human review", icon: <PsychologyRounded /> },
 ];
 

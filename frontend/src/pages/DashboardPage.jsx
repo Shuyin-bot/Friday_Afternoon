@@ -54,7 +54,11 @@ export function DashboardPage({ onOpenJob, onNotice }) {
     setBusyAction(label);
     try {
       await jobService.trigger(action);
-      onNotice(`${label} started successfully.`);
+      onNotice(
+        action === "retrieve"
+          ? "Email fetch started. Gmail messages are being retrieved, and missing mock leads will be added automatically."
+          : `${label} started successfully.`,
+      );
     } catch {
       onNotice(
         `Could not reach the API. ${label} is ready once the backend is running.`,
@@ -100,7 +104,7 @@ export function DashboardPage({ onOpenJob, onNotice }) {
             variant="h3"
             sx={{ fontSize: { xs: 32, md: 42 }, mt: 0.5 }}
           >
-            Good morning, Kwaku <span>✦</span>
+            Good afternoon, Pack Flow <span>✦</span>
           </Typography>
           <Typography color="text.secondary" mt={1}>
             Here’s the pulse of your quotation pipeline.

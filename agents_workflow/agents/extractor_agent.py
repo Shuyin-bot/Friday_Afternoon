@@ -23,7 +23,9 @@ def get_extractor_agent() -> Agent:
             "requested, return a single-element list. If no specific product "
             "is mentioned, return an empty list instead of guessing. Also "
             "extract quantity, company, contact person, and any other "
-            "relevant requirements. If information is missing, return None "
+            "relevant requirements. Preserve the contact person's full name "
+            "exactly as written in the email; never return placeholders such "
+            "as 'Customer Name'. If information is missing, return None "
             "instead of guessing."
         ),
         output_type=ExtractorOutput

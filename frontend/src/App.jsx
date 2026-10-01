@@ -14,7 +14,6 @@ import { ThemeProvider } from "@mui/material/styles";
 import { Sidebar } from "./components/Sidebar";
 import { DashboardPage } from "./pages/DashboardPage";
 import { EmailQueuePage } from "./pages/EmailQueuePage";
-import { HumanReviewPage } from "./pages/HumanReviewPage";
 import { JobDetailPage } from "./pages/JobDetailPage";
 import { theme } from "./theme";
 
@@ -101,10 +100,12 @@ function App() {
               onBack={() => setSelectedJob(null)}
               onNotice={setNotice}
             />
-          ) : activeView === "Email queue" ? (
-            <EmailQueuePage onOpenJob={setSelectedJob} onNotice={setNotice} />
           ) : activeView === "Human review" ? (
-            <HumanReviewPage onOpenJob={setSelectedJob} onNotice={setNotice} />
+            <EmailQueuePage
+              pageTitle="Human Review"
+              onOpenJob={setSelectedJob}
+              onNotice={setNotice}
+            />
           ) : (
             <DashboardPage onOpenJob={setSelectedJob} onNotice={setNotice} />
           )}

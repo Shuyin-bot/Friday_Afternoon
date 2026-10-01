@@ -9,16 +9,14 @@ export function HumanReviewPage({ onOpenJob, onNotice }) {
   const [requests, setRequests] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [answers, setAnswers] = useState({});
-  const [savingId, setSavingId] = useState(null);
 
   const loadRequests = useCallback(async () => {
     try {
-      const [requestsData, jobsData] = await Promise.all([
-        jobService.getHumanRequests(),
+      const [historyData, jobsData] = await Promise.all([
+        jobService.getHumanRequestHistory(),
         jobService.getJobs(),
       ]);
-      setRequests(requestsData);
+      setRequests(historyData);
       setJobs(mapJobs(jobsData));
     } catch {
       onNotice(
@@ -41,26 +39,6 @@ export function HumanReviewPage({ onOpenJob, onNotice }) {
     return map;
   }, [jobs]);
 
-  async function submitAnswer(requestId) {
-    const answer = answers[requestId];
-    if (!answer || !answer.trim()) return;
-    setSavingId(requestId);
-    try {
-      await jobService.answerHumanRequest(requestId, answer.trim());
-      setRequests((current) => current.filter((item) => item.id !== requestId));
-      setAnswers((current) => {
-        const next = { ...current };
-        delete next[requestId];
-        return next;
-      });
-      onNotice("Human answer saved successfully.");
-    } catch {
-      onNotice("Could not save the human answer.");
-    } finally {
-      setSavingId(null);
-    }
-  }
-
   return (
     <>
       <Box mb={4}>
@@ -76,7 +54,7 @@ export function HumanReviewPage({ onOpenJob, onNotice }) {
           Human review
         </Typography>
         <Typography color="text.secondary" mt={1}>
-          Decisions the agents are waiting on you for, across every job.
+          Previously approved human decisions across the quotation pipeline.
         </Typography>
       </Box>
 
@@ -115,12 +93,7 @@ export function HumanReviewPage({ onOpenJob, onNotice }) {
                 )}
                 <HumanReviewCard
                   request={request}
-                  answer={answers[request.id] || ""}
-                  onAnswerChange={(value) =>
-                    setAnswers((current) => ({ ...current, [request.id]: value }))
-                  }
-                  onSubmit={() => submitAnswer(request.id)}
-                  saving={savingId === request.id}
+                  readOnly
                 />
               </Box>
             );
@@ -130,10 +103,10 @@ export function HumanReviewPage({ onOpenJob, onNotice }) {
         <Box sx={{ py: 10, textAlign: "center" }}>
           <CheckCircleRounded sx={{ color: "#1d9a73", fontSize: 48 }} />
           <Typography fontWeight={800} mt={1.5} fontSize={18}>
-            Nothing needs your attention
+            No approved human reviews yet
           </Typography>
           <Typography variant="body2" color="text.secondary" mt={0.5}>
-            All human review requests have been answered.
+            Approved human decisions will appear here.
           </Typography>
         </Box>
       )}

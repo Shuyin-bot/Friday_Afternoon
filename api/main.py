@@ -180,7 +180,27 @@ def approve_job(job_id: int) -> JobDetail:
         raise HTTPException(404, "Job not found")
     if job.status != JobStatus.DRAFTED:
         raise HTTPException(400, "Only drafted quotation jobs can be approved")
-    update_queued_job(job_id, JobStatus.COMPLETED)
+    metadata = _job_metadata(job)
+    metadata["review_action"] = "APPROVED"
+    metadata["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+    update_queued_job(job_id, JobStatus.COMPLETED, json.dumps(metadata))
+    return get_job(job_id)
+
+
+@app.post("/api/jobs/{job_id}/unapprove", response_model=JobDetail, tags=["jobs"])
+def unapprove_job(job_id: int) -> JobDetail:
+    job = get_queued_job(job_id)
+    if not job:
+        raise HTTPException(404, "Job not found")
+    if job.status != JobStatus.COMPLETED:
+        raise HTTPException(400, "Only approved quotation jobs can be unapproved")
+
+    metadata = _job_metadata(job)
+    if metadata.get("review_action") != "APPROVED":
+        raise HTTPException(400, "Only approved quotation jobs can be unapproved")
+    metadata["review_action"] = "UNAPPROVED"
+    metadata["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+    update_queued_job(job_id, JobStatus.DRAFTED, json.dumps(metadata))
     return get_job(job_id)
 
 

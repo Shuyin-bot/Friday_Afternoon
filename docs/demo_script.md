@@ -24,9 +24,9 @@ known gaps to state proactively rather than let the audience discover.
    ```bash
    uv run uvicorn api.main:app --reload --port 8000
    ```
-   Seeded demo leads are prefixed `[MOCK LEAD-2026-...]` in the subject line
-   and use `.example` sender domains, so they are easy to pick out from any
-   real test-mailbox traffic also sitting in the dashboard.
+  Seeded demo leads use reserved `.example` sender domains, so they remain
+  distinguishable from real test-mailbox traffic without changing the subject
+  lines shown in the dashboard.
 5. Optional, for a "watch it happen live" moment instead of pre-computed
    results: reset right before presenting and trigger `Run Workflow` from
    the dashboard UI in front of the audience instead of the CLI. Each lead

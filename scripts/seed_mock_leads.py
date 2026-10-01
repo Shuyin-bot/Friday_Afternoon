@@ -168,9 +168,8 @@ def seed_mock_leads(source_file: Path = SOURCE_FILE) -> None:
         is_new = record_new_email(
             email_id=email_id,
             from_email=raw["from"],
-            # 这里的 subject 字段加上了 [MOCK <lead_id>] 前缀，方便区分模拟邮件和真实邮件
-            # 最终主题变成（示例）： [MOCK LEAD-2026-016] Need a case erector
-            subject=f"[MOCK {lead['lead_id']}] {raw['subject']}",
+            # Keep the injected email indistinguishable from a normal email in the UI.
+            subject=raw["subject"],
             content=raw["body"],
         )
         if is_new:

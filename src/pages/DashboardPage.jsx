@@ -10,7 +10,6 @@ import {
 import {
   EmailRounded,
   PlayArrowRounded,
-  ReplyRounded,
   TuneRounded,
   WarningAmberRounded,
 } from "@mui/icons-material";
@@ -18,29 +17,7 @@ import { jobService } from "../services/jobService";
 import { demoJobs, mapJobs, mapStats } from "../data/demoJobs";
 import { StatusCards } from "../components/StatusCards";
 import { ActivityList } from "../components/ActivityList";
-
-function filterJobs(jobs, activeCard) {
-  if (!activeCard) return jobs;
-  return jobs.filter((job) => {
-    const status = job.status.toLowerCase();
-    if (activeCard === "classification")
-      return status.includes("pending") || status.includes("classification");
-    if (activeCard === "review")
-      return (
-        status.includes("waiting") ||
-        status.includes("review") ||
-        status.includes("draft")
-      );
-    if (activeCard === "progress")
-      return (
-        status.includes("classif") ||
-        status.includes("progress") ||
-        status.includes("processing")
-      );
-    if (activeCard === "completed") return status.includes("complete");
-    return status.includes("not quotation") || status.includes("not_quotation");
-  });
-}
+import { filterJobsByCard } from "../utils/jobFilters";
 
 export function DashboardPage({ onOpenJob, onNotice }) {
   const [stats, setStats] = useState({
@@ -88,7 +65,7 @@ export function DashboardPage({ onOpenJob, onNotice }) {
   }
 
   const visibleJobs = useMemo(
-    () => filterJobs(jobs, activeCard),
+    () => filterJobsByCard(jobs, activeCard),
     [jobs, activeCard],
   );
   const selectedLabel =
@@ -135,16 +112,6 @@ export function DashboardPage({ onOpenJob, onNotice }) {
           alignItems="center"
           sx={{ alignSelf: { xs: "center", sm: "auto" }, width: "fit-content" }}
         >
-          <Button
-            size="small"
-            variant="outlined"
-            color="secondary"
-            startIcon={<ReplyRounded fontSize="small" />}
-            onClick={() => onNotice("Quotation reply flow is ready to connect.")}
-            sx={{ alignSelf: "center", height: "fit-content" }}
-          >
-            Reply quotations
-          </Button>
           <Button
             size="small"
             variant="outlined"

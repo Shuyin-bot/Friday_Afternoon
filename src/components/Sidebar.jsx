@@ -24,7 +24,7 @@ const items = [
   { label: "Human review", icon: <PsychologyRounded /> },
 ];
 
-export function Sidebar({ onNavigate }) {
+export function Sidebar({ onNavigate, activeView }) {
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <Box
@@ -44,10 +44,10 @@ export function Sidebar({ onNavigate }) {
       </Box>
       <Divider />
       <List sx={{ px: 1.5, py: 2 }}>
-        {items.map((item, index) => (
+        {items.map((item) => (
           <ListItem disablePadding key={item.label} sx={{ mb: 0.5 }}>
             <ListItemButton
-              selected={index === 0}
+              selected={item.label === activeView}
               onClick={() => onNavigate(item.label)}
               sx={{
                 borderRadius: 2,

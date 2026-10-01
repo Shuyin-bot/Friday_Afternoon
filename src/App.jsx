@@ -13,6 +13,8 @@ import { MenuRounded } from "@mui/icons-material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Sidebar } from "./components/Sidebar";
 import { DashboardPage } from "./pages/DashboardPage";
+import { EmailQueuePage } from "./pages/EmailQueuePage";
+import { HumanReviewPage } from "./pages/HumanReviewPage";
 import { JobDetailPage } from "./pages/JobDetailPage";
 import { theme } from "./theme";
 
@@ -20,11 +22,13 @@ const drawerWidth = 248;
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeView, setActiveView] = useState("Overview");
   const [selectedJob, setSelectedJob] = useState(null);
   const [notice, setNotice] = useState("");
 
   function navigate(label) {
-    if (label === "Overview") setSelectedJob(null);
+    setActiveView(label);
+    setSelectedJob(null);
     setMobileOpen(false);
   }
 
@@ -62,7 +66,7 @@ function App() {
               "& .MuiDrawer-paper": { width: drawerWidth },
             }}
           >
-            <Sidebar onNavigate={navigate} />
+            <Sidebar onNavigate={navigate} activeView={activeView} />
           </Drawer>
           <Drawer
             variant="permanent"
@@ -76,7 +80,7 @@ function App() {
             }}
             open
           >
-            <Sidebar onNavigate={navigate} />
+            <Sidebar onNavigate={navigate} activeView={activeView} />
           </Drawer>
         </Box>
         <Box
@@ -97,6 +101,10 @@ function App() {
               onBack={() => setSelectedJob(null)}
               onNotice={setNotice}
             />
+          ) : activeView === "Email queue" ? (
+            <EmailQueuePage onOpenJob={setSelectedJob} onNotice={setNotice} />
+          ) : activeView === "Human review" ? (
+            <HumanReviewPage onOpenJob={setSelectedJob} onNotice={setNotice} />
           ) : (
             <DashboardPage onOpenJob={setSelectedJob} onNotice={setNotice} />
           )}

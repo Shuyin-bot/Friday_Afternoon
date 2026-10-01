@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Alert,
-  Avatar,
   Box,
   Button,
   Card,
@@ -24,9 +23,9 @@ import {
   DeleteOutlineRounded,
   EmailRounded,
   EditRounded,
-  PsychologyRounded,
 } from "@mui/icons-material";
 import { jobService } from "../services/jobService";
+import { HumanReviewCard } from "../components/HumanReviewCard";
 
 export function JobDetailPage({ job, onBack, onNotice }) {
   const [detail, setDetail] = useState(job);
@@ -188,7 +187,7 @@ export function JobDetailPage({ job, onBack, onNotice }) {
         onClick={onBack}
         sx={{ mb: 3, color: "text.secondary" }}
       >
-        Back to dashboard
+        Back
       </Button>
       <Stack
         direction={{ xs: "column", md: "row" }}
@@ -345,52 +344,6 @@ export function JobDetailPage({ job, onBack, onNotice }) {
         </DialogActions>
       </Dialog>
     </Box>
-  );
-}
-
-function HumanReviewCard({
-  request,
-  answer,
-  onAnswerChange,
-  onSubmit,
-  saving,
-}) {
-  return (
-    <Card
-      sx={{ p: { xs: 2, md: 3 }, bgcolor: "#fffaf3", borderColor: "#f2d29b" }}
-    >
-      <Stack direction="row" spacing={1.5} alignItems="flex-start">
-        <Avatar sx={{ bgcolor: "#fff0cf", color: "#b97900" }}>
-          <PsychologyRounded />
-        </Avatar>
-        <Box flex={1}>
-          <Typography variant="overline" color="#a36a00" fontWeight={800}>
-            Human review required
-          </Typography>
-          <Typography variant="h5" mt={0.3}>
-            {request.question}
-          </Typography>
-          <TextField
-            fullWidth
-            multiline
-            minRows={3}
-            value={answer}
-            onChange={(event) => onAnswerChange(event.target.value)}
-            placeholder="Add your decision or clarification..."
-            sx={{ mt: 2, bgcolor: "white" }}
-          />
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={onSubmit}
-            disabled={!answer.trim() || saving}
-            sx={{ mt: 1.5 }}
-          >
-            Save human answer
-          </Button>
-        </Box>
-      </Stack>
-    </Card>
   );
 }
 

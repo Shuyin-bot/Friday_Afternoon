@@ -42,6 +42,13 @@ def get_pending_human_requests() -> list[HumanRequest]:
         ).order_by(HumanRequest.created_at).all()
 
 
+def get_answered_human_requests() -> list[HumanRequest]:
+    with SessionLocal() as session:
+        return session.query(HumanRequest).filter_by(
+            status=HumanRequestStatus.ANSWERED
+        ).order_by(HumanRequest.answered_at.desc()).all()
+
+
 def answer_human_request_and_resume(
     request_id: int,
     answer: str,

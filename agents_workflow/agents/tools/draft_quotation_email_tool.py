@@ -1,7 +1,28 @@
+import json
+from pathlib import Path
 from typing import Any
 
 from ..core_models import QuotationDraftOutput
 from .tool_logger import log_tool_use
+
+
+_COMPANY_INFO_PATH = Path(__file__).resolve().parents[3] / "mock_data" / "company_info.json"
+
+
+def _seller_signature() -> str:
+    try:
+        data = json.loads(_COMPANY_INFO_PATH.read_text(encoding="utf-8"))
+        inside_sales = next(
+            person for person in data["sales_team"] if person["role_en"] == "Inside Sales"
+        )
+        return (
+            f"{inside_sales['name']}\n"
+            f"{inside_sales['role_en']}\n"
+            f"{data['legal_name']}\n"
+            f"{inside_sales['email']}"
+        )
+    except (OSError, KeyError, json.JSONDecodeError, StopIteration):
+        return "Jonas Brenner\nInside Sales\nPackFlow Systems GmbH\nj.brenner@packflow-systems.de"
 
 
 def draft_quotation_email_tool(
@@ -55,7 +76,7 @@ def draft_quotation_email_tool(
         "",
         "Please let us know if you would like to provide any missing details.",
         "Kind regards,",
-        "Quotation Team",
+        _seller_signature(),
     ])
     return QuotationDraftOutput(
         subject="Quotation Request",

@@ -23,6 +23,7 @@ from db_contexts.repos.email_repository import (
 )
 from db_contexts.repos.human_request_repository import (
     answer_human_request_and_resume,
+    get_answered_human_requests,
     get_human_request,
     get_pending_human_requests,
 )
@@ -252,6 +253,15 @@ def send_draft_back_for_revision(
 )
 def list_human_requests() -> list[HumanRequestResponse]:
     return [_to_human_request(item) for item in get_pending_human_requests()]
+
+
+@app.get(
+    "/api/human-requests/history",
+    response_model=list[HumanRequestResponse],
+    tags=["human review"],
+)
+def list_human_request_history() -> list[HumanRequestResponse]:
+    return [_to_human_request(item) for item in get_answered_human_requests()]
 
 
 @app.get(

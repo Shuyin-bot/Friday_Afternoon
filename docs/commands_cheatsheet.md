@@ -44,10 +44,10 @@ The "Run Workflow" button in the dashboard is equivalent to running
 `email_retriever.retriever` (fetches real IMAP mail — not needed for the
 mock demo).
 
-The React frontend is a sibling project. Run it separately with:
+The React frontend lives in `frontend/`. Run it separately with:
 
 ```bash
-cd ../friday_afternoon_fe
+cd frontend
 npm run dev
 ```
 

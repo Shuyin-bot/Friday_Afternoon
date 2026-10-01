@@ -78,7 +78,7 @@ uv run uvicorn api.main:app --reload --port 8000
 
 Open `http://localhost:8000/` for the legacy local dashboard, or
 `http://localhost:8000/docs` for the interactive API docs. The React frontend
-lives in the sibling `friday_afternoon_fe/` project and uses the same API.
+lives in the `frontend/` directory and uses the same API.
 See [docs/ui.md](docs/ui.md) for details.
 
 ## Project Structure
@@ -126,6 +126,9 @@ mock_data/
 scripts/
 ├── load_product_data.py             Loads seed data into SQLite and Chroma
 └── seed_mock_leads.py                Seeds the mock demo leads as if retrieved via IMAP
+
+frontend/
+└── React + Vite dashboard for the quotation pipeline (see frontend/README.md)
 ```
 
 ## Setup
@@ -329,8 +332,8 @@ is not used as a database instruction or schema definition.
 - The workflow is a simple sequential runner, not a continuously running
   worker.
 - Outbound email sending is not implemented yet.
-- The React frontend is a separate sibling project and requires the FastAPI
-  backend to be running.
+- The React frontend lives in `frontend/` and requires the FastAPI backend to
+  be running.
 - The retriever currently extracts plain text only.
 - There is no automated test suite in the current working tree.
 

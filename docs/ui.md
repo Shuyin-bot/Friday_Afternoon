@@ -1,10 +1,10 @@
 # Review UI and API
 
 The FastAPI application exposes the quotation pipeline for local review. The
-React frontend is maintained separately in the sibling directory:
+React frontend lives in:
 
 ```text
-../friday_afternoon_fe/
+frontend/
 ```
 
 The API is intended for local development only. It has no authentication or
@@ -24,7 +24,7 @@ uv run uvicorn api.main:app --reload --port 8000
 In a second terminal:
 
 ```bash
-cd ../friday_afternoon_fe
+cd frontend
 npm install
 npm run dev
 ```

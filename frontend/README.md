@@ -63,7 +63,7 @@ http://localhost:5173
 The Vite development server proxies `/api` requests to the FastAPI backend at
 `http://localhost:8000`.
 
-Start the backend from the main project directory:
+Start the backend from the repo root:
 
 ```bash
 uv run uvicorn api.main:app --reload --port 8000

@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import {
   EmailRounded,
+  PlayArrowRounded,
   SearchRounded,
 } from "@mui/icons-material";
 import { jobService } from "../services/jobService";
@@ -73,6 +74,18 @@ export function EmailQueuePage({ onOpenJob, onNotice, pageTitle = "Email queue" 
     }
   }
 
+  async function runWorkflow() {
+    setBusyAction("Run workflow");
+    try {
+      await jobService.trigger("workflow");
+      onNotice("Run workflow started successfully.");
+    } catch {
+      onNotice("Could not reach the API. Run workflow is ready once the backend is running.");
+    } finally {
+      setBusyAction("");
+    }
+  }
+
   const visibleJobs = useMemo(() => {
     const byCard = filterJobsByCard(jobs, activeChip);
     return filterJobsBySearch(byCard, search);
@@ -112,22 +125,45 @@ export function EmailQueuePage({ onOpenJob, onNotice, pageTitle = "Email queue" 
             Quotation emails recognized by the pipeline.
           </Typography>
         </Box>
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={
-            busyAction === "Fetch emails" ? (
-              <CircularProgress size={14} />
-            ) : (
-              <EmailRounded fontSize="small" />
-            )
-          }
-          onClick={fetchEmails}
-          disabled={!!busyAction}
-          sx={{ alignSelf: { xs: "flex-start", sm: "center" }, height: "fit-content" }}
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          sx={{ alignSelf: { xs: "flex-start", sm: "center" }, width: "fit-content" }}
         >
-          Fetch emails
-        </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={
+              busyAction === "Fetch emails" ? (
+                <CircularProgress size={14} />
+              ) : (
+                <EmailRounded fontSize="small" />
+              )
+            }
+            onClick={fetchEmails}
+            disabled={!!busyAction}
+            sx={{ height: "fit-content" }}
+          >
+            Fetch emails
+          </Button>
+          <Button
+            size="small"
+            variant="contained"
+            startIcon={
+              busyAction === "Run workflow" ? (
+                <CircularProgress size={14} color="inherit" />
+              ) : (
+                <PlayArrowRounded fontSize="small" />
+              )
+            }
+            onClick={runWorkflow}
+            disabled={!!busyAction}
+            sx={{ height: "fit-content" }}
+          >
+            Run workflow
+          </Button>
+        </Stack>
       </Stack>
 
       <StatusCards

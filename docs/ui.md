@@ -60,7 +60,7 @@ The frontend provides:
 | GET | `/api/human-requests` | List pending human requests |
 | GET | `/api/human-requests/{id}` | Get one human request |
 | POST | `/api/human-requests/{id}/answer` | Answer and requeue a request |
-| POST | `/api/run/retrieve` | Start IMAP retrieval in the background |
+| POST | `/api/run/retrieve` | Start IMAP retrieval and seed missing mock leads in the background |
 | POST | `/api/run/workflow` | Start the agent workflow in the background |
 
 ## Human answer behavior

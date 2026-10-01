@@ -43,8 +43,9 @@ uv run uvicorn api.main:app --reload --port 8000
 
 The "Run Workflow" button in the dashboard is equivalent to running
 `agents_workflow.workflow` from the browser. "Retrieve Emails" runs
-`email_retriever.retriever` (fetches real IMAP mail — not needed for the
-mock demo).
+`email_retriever.retriever` and then seeds the mock leads when the reserved
+mock range is empty. It is safe to click again because both retrieval and
+seeding are idempotent.
 
 The React frontend lives in `frontend/`. Run it separately with:
 

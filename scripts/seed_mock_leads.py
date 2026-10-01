@@ -72,6 +72,19 @@ def _seed_email_id(lead_id: str) -> int:
     return email_id
 
 
+def count_seeded_leads() -> int:
+    """Return the number of mock emails currently in the reserved ID range."""
+    with SessionLocal() as session:
+        return (
+            session.query(RetrievedEmail)
+            .filter(
+                RetrievedEmail.email_id >= SEED_ID_BASE,
+                RetrievedEmail.email_id <= SEED_ID_MAX,
+            )
+            .count()
+        )
+
+
 def reset_seeded_rows() -> None:
     """删除以前导入的模拟邮件.
     目标：删除 90000 到 90999 范围内的邮件
@@ -182,7 +195,7 @@ if __name__ == "__main__":
         # action="store_true" 表示：
         # 没写 --reset 时，值是 False; 写了 --reset 时，值是 True
         "--reset", action="store_true",
-        help="delete previously seeded rows (id range 90000-90999) before reseeding",
+        help="delete previously seeded rows (id range 90000-90999)",
     )
     args = parser.parse_args()
 

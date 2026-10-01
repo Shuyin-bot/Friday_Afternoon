@@ -26,6 +26,7 @@ from db_contexts.repos.human_request_repository import (
     get_human_request,
     get_pending_human_requests,
 )
+from scripts.seed_mock_leads import count_seeded_leads
 
 from .models import (
     HumanRequestAnswer,
@@ -286,10 +287,21 @@ def _run_module(module: str) -> None:
     subprocess.run([sys.executable, "-m", module], cwd=REPO_ROOT, check=False)
 
 
+def _run_retrieve_and_seed_missing_mocks() -> None:
+    _run_module("email_retriever.retriever")
+    if count_seeded_leads() == 0:
+        _run_module("scripts.seed_mock_leads")
+
+
 @app.post("/api/run/retrieve", response_model=RunResponse, tags=["actions"])
 def run_retrieve(background_tasks: BackgroundTasks) -> RunResponse:
-    background_tasks.add_task(_run_module, "email_retriever.retriever")
-    return RunResponse(started=True, message="Retriever started in the background.")
+    background_tasks.add_task(_run_retrieve_and_seed_missing_mocks)
+    return RunResponse(
+        started=True,
+        message=(
+            "IMAP retrieval started; missing mock leads will be seeded automatically."
+        ),
+    )
 
 
 @app.post("/api/run/workflow", response_model=RunResponse, tags=["actions"])

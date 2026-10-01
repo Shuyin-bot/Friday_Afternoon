@@ -78,7 +78,7 @@ uv run uvicorn api.main:app --reload --port 8000
 
 Open `http://localhost:8000/` for the legacy local dashboard, or
 `http://localhost:8000/docs` for the interactive API docs. The React frontend
-lives in the sibling `quotation_bot_frontend/` project and uses the same API.
+lives in the sibling `friday_afternoon_fe/` project and uses the same API.
 See [docs/ui.md](docs/ui.md) for details.
 
 ## Project Structure
@@ -120,10 +120,12 @@ vector_contexts/
 └── chroma.py                       Persistent Chroma client and products collection
 
 mock_data/
-└── product_seed.json                Dummy product, stock, and price data
+├── product_seed.json                Dummy product, stock, and price data
+└── leads/email_inbox.v1-demo.json   Seed lead set for scripts/seed_mock_leads.py
 
 scripts/
-└── load_product_data.py             Loads seed data into SQLite and Chroma
+├── load_product_data.py             Loads seed data into SQLite and Chroma
+└── seed_mock_leads.py                Seeds the mock demo leads as if retrieved via IMAP
 ```
 
 ## Setup

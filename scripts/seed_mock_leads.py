@@ -4,9 +4,10 @@ from the real mailbox — without touching IMAP at all.
 Source of truth: mock_data/leads/email_inbox.v1-demo.json, a *derived, not
 frozen* subset of the frozen v1 mock dataset (see
 the file's own `note` / `source_mapping`
-fields). It lives in the sibling `mock_data/` directory in the local development 
-environment, — NOT inside this repo — by design: it is fixture data for
-demoing/evaluating the agent workflow, not part of the product itself.
+fields). It ships inside this repo at `mock_data/leads/` so the demo seed
+data is available on a fresh clone without any extra setup. Override
+MOCK_DATA_DIR if you keep a different/larger mock dataset elsewhere (e.g.
+the full frozen v1 set with ground_truth/, past_correspondence.json, etc.).
 
 Why a seed script instead of actually emailing these leads into the test
 mailbox: the `from` addresses are synthetic (many use the reserved
@@ -32,7 +33,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-from turtle import reset
 
 from db_contexts.sessions import SessionLocal
 from db_contexts.models import QueuedJob, RetrievedEmail
@@ -42,10 +42,10 @@ from email_retriever.retriever import record_new_email
 SEED_ID_BASE = 90000
 SEED_ID_MAX = 90999
 
-# Defaults to the sibling mock_data/ directory next to this repo. Override
-# with MOCK_DATA_DIR if your layout differs.
-# Path(__file__).resolve()得到当前文件的绝对路径，.parents[2]得到上两级目录，然后拼接mock_data/leads/email_inbox.v1-demo.json
-DEFAULT_SOURCE = Path(__file__).resolve().parents[2] / "mock_data" / "leads" / "email_inbox.v1-demo.json"
+# Defaults to this repo's own mock_data/ directory. Override with
+# MOCK_DATA_DIR if you want to point at a different mock dataset location.
+# Path(__file__).resolve()得到当前文件的绝对路径，.parents[1]得到上一级目录（repo 根目录），然后拼接mock_data/leads/email_inbox.v1-demo.json
+DEFAULT_SOURCE = Path(__file__).resolve().parents[1] / "mock_data" / "leads" / "email_inbox.v1-demo.json"
 
 if os.getenv("MOCK_DATA_DIR"):
     SOURCE_FILE = (
@@ -118,8 +118,8 @@ def seed_mock_leads(source_file: Path = SOURCE_FILE) -> None:
     if not source_file.exists():
         raise FileNotFoundError(
             f"{source_file} not found. Set MOCK_DATA_DIR to the directory that "
-            "contains leads/email_inbox.v1-demo.json if mock_data/ is not a "
-            "sibling of this repo."
+            "contains leads/email_inbox.v1-demo.json if you're using a "
+            "different mock dataset than the one bundled in this repo."
         )
 
     data = json.loads(source_file.read_text(encoding="utf-8"))

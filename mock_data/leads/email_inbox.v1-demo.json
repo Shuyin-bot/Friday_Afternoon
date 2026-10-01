@@ -1,0 +1,152 @@
+{
+  "channel": "email",
+  "note": "DERIVED DEMO ARTIFACT — not the frozen eval set. 12 leads selected from the frozen v1 baseline (leads/email_inbox.json, see FREEZE_LOG.md). Bodies translated DE->EN by LLM for presenter comprehension on 2026-09-23. For 8 of the 12 leads the buyer company identity was swapped from a fictional company to a real, web-discoverable company so the live external_research_agent (Tavily) returns real results during the demo; the seller PackFlow Systems GmbH identity is unchanged. The other 4 leads keep their original fictional/no-company identity on purpose (trap cases: zero-context freemail, competitor/supplier pitch, phishing, misrouted own-supplier invoice) to show the agent's behaviour when there is nothing to research. 'from' addresses use the reserved .example TLD even for swapped real companies, so nothing here looks like a deliverable address for a real company's mail server. Ground truth for the original lead_ids lives in ground_truth/ground_truth.json (outside this repo, human-eval only) and is NOT altered by this file.",
+  "source_mapping": {
+    "LEAD-2026-016": { "original_company": "Schwäbische Nudelwerke GmbH (fictional)", "demo_company": "Alb-Gold Teigwaren GmbH (real)", "swapped": true },
+    "LEAD-2026-017": { "original_company": "unknown / freemail (fictional)", "demo_company": "unchanged — trap case (zero-context freemail)", "swapped": false },
+    "LEAD-2026-018": { "original_company": "LinTec Komponenten GmbH (fictional)", "demo_company": "unchanged — trap case (supplier pitch, low fit)", "swapped": false },
+    "LEAD-2026-019": { "original_company": "Jysk Mejeri A/S (fictional)", "demo_company": "Thise Mejeri (real)", "swapped": true },
+    "LEAD-2026-023": { "original_company": "Landmetzgerei Kraus e.K. (fictional)", "demo_company": "Rügenwalder Mühle GmbH & Co. KG (real, framed as its mail-order pilot line)", "swapped": true },
+    "LEAD-2026-025": { "original_company": "MetallForm Automotive GmbH (fictional)", "demo_company": "Mubea / Muhr und Bender KG (real)", "swapped": true },
+    "LEAD-2026-027": { "original_company": "Kellerei Weinland eG (fictional)", "demo_company": "Felsengartenkellerei Besigheim eG (real)", "swapped": true },
+    "LEAD-2026-028": { "original_company": "Blue Summit Beverages Inc. (fictional)", "demo_company": "Athletic Brewing Company (real)", "swapped": true },
+    "LEAD-2026-029": { "original_company": "n/a (phishing)", "demo_company": "unchanged — trap case (phishing, must never be researched or answered)", "swapped": false },
+    "LEAD-2026-035": { "original_company": "Lohnpack Express GmbH (fictional)", "demo_company": "Fiege (real)", "swapped": true },
+    "LEAD-2026-038": { "original_company": "Alpenpfote Tiernahrung GmbH (fictional)", "demo_company": "Tiernahrung Deuerer GmbH (real)", "swapped": true },
+    "LEAD-2026-040": { "original_company": "Stahlhandel Bickel GmbH (fictional)", "demo_company": "unchanged — trap case (misrouted own-supplier invoice, route to accounting)", "swapped": false }
+  },
+  "leads": [
+    {
+      "lead_id": "LEAD-2026-016",
+      "source_channel": "email",
+      "timestamp": "2026-09-01T10:14:00+02:00",
+      "raw_input": {
+        "from": "Thomas Maier <t.maier@albgold.example>",
+        "to": "info@packflow-systems.de",
+        "subject": "Inquiry: case erector + carton sealer for new packaging line",
+        "body": "Dear Sir or Madam,\n\nwe are a mid-sized pasta manufacturer on the Swabian Alb (approx. 160 employees) and are renewing our end-of-line packaging in 2027. We need a case erector and a carton sealer for bagged product going into shipping cases:\n\n- Throughput: 14-18 cases/min\n- Case sizes: 300x200x200 to 600x400x400 mm (FEFCO 0201)\n- Sealing: hot-melt\n- Hand-off to our existing palletizer, integration with our Siemens control system required\n\nTimeline: tender by November 2026, delivery Q2/2027. Please send us a budgetary quote and references from the food industry.\n\nBest regards,\nThomas Maier\nHead of Production\nAlb-Gold Teigwaren GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-017",
+      "source_channel": "email",
+      "timestamp": "2026-09-02T19:03:00+02:00",
+      "raw_input": {
+        "from": "h.mueller62@gmx.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Price",
+        "body": "Hi, what does the case erector cost?\nRegards, H. Müller"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-018",
+      "source_channel": "email",
+      "timestamp": "2026-09-03T08:21:00+02:00",
+      "raw_input": {
+        "from": "vertrieb@lintec-komponenten.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Linear guides and profile rails – framework agreement terms for machine builders",
+        "body": "Dear Sir or Madam,\n\nas a manufacturer of linear guides, profile rails and guide carriages, we supply numerous packaging machine builders across southern Germany. We would be glad to offer you attractive framework agreement terms as well, starting at a batch size of 50.\n\nPlease find our 2026/27 catalog attached. I am available at any time for an initial conversation.\n\nBest regards,\nRalf Steinbach, Sales\nLinTec Komponenten GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-019",
+      "source_channel": "email",
+      "timestamp": "2026-09-18T16:38:00+02:00",
+      "raw_input": {
+        "from": "Soren Dahl <sd@thise.example>",
+        "to": "info@packflow-systems.de",
+        "subject": "Palletizing cell for dairy plant – budget quote",
+        "body": "Dear PackFlow team,\n\nwe are a Danish dairy cooperative (approx. 290 employees) and plan to automate palletizing at our production plant. Requirements:\n\n- approx. 550 cases/h, case weight up to 25 kg\n- Euro pallets, stack height max 1,950 mm\n- integration with our MES via OPC UA is mandatory\n- gripper must handle both cartons and shrink-wrapped trays\n\nCould you send a budget quotation and typical delivery time? We plan vendor shortlisting in October.\n\nBest regards,\nSøren Dahl\nTechnical Project Manager, Thise Mejeri"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-023",
+      "source_channel": "email",
+      "timestamp": "2026-09-10T18:26:00+02:00",
+      "raw_input": {
+        "from": "webshop.pilot@gmail.com",
+        "to": "info@packflow-systems.de",
+        "subject": "Inquiry: carton sealer for mail-order pilot line",
+        "body": "Good evening,\n\nour direct-to-consumer webshop pilot line (chilled sausage and ham specialities) is growing fast; we currently seal everything by hand on this line. We are looking for a carton sealer for approx. 8 cases/min, tape sealing, two fixed case sizes (390x290x280 and 590x390x300 mm). What would this cost us and how quickly could it be delivered?\n\nBest regards,\nMartin Kraus\nDirect-to-Consumer Pilot Line\nRügenwalder Mühle GmbH & Co. KG\nBad Zwischenahn | www.ruegenwalder.de"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-025",
+      "source_channel": "email",
+      "timestamp": "2026-09-14T09:31:00+02:00",
+      "raw_input": {
+        "from": "Frank Ostermann <f.ostermann@mubea.example>",
+        "to": "info@packflow-systems.de",
+        "subject": "Inquiry: palletizing cell for KLT containers",
+        "body": "Dear Sir or Madam,\n\nwe are an automotive supplier (stamped and formed parts) and would like to automate palletizing on two lines:\n\n- KLT containers 600x400 and 400x300, up to 18 kg\n- approx. 400 containers/h onto industrial pallets 1200x1000\n- changing layer patterns, integration with line PLC (Profinet) required\n\nCan your palletizing cells handle KLT containers? Please advise and, if possible, provide a budgetary price.\n\nBest regards,\nFrank Ostermann\nHead of Industrial Engineering, Mubea (Muhr und Bender KG)"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-027",
+      "source_channel": "email",
+      "timestamp": "2026-09-16T08:03:00+02:00",
+      "raw_input": {
+        "from": "Bernd Sailer <b.sailer@felsengartenkellerei.example>",
+        "to": "info@packflow-systems.de",
+        "subject": "New format set + wear parts for PFS-CE 240 (SN 23-1147)",
+        "body": "Good morning Mr. Brenner,\n\nwe are adding another case format at the turn of the year: 400x300x280 mm. Please send us a quote for a format set for our PFS-CE 240, serial number 23-1147. While you're at it: you can quote the next wear-parts kit as well, we're at about 1,900 operating hours since the last service.\n\nBest regards,\nBernd Sailer\nMaintenance, Felsengartenkellerei Besigheim eG"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-028",
+      "source_channel": "email",
+      "timestamp": "2026-09-16T22:17:00+02:00",
+      "raw_input": {
+        "from": "Rachel Torres <r.torres@athleticbrewing.example>",
+        "to": "info@packflow-systems.de",
+        "subject": "End-of-line equipment for new EU plant (Poznań, PL) – case erector + sealer",
+        "body": "Hello,\n\nAthletic Brewing Company (HQ Milford, CT) is commissioning a new plant in Poznań, Poland, go-live Q1 2027. We're sourcing European equipment for end-of-line:\n\n- case erector + carton sealer, approx. 20 cases/min\n- case sizes roughly 16x12x10 in (we will convert to mm), hot-melt\n- CE marking and EU-based service network required, OPC UA preferred\n- budget approved (~USD 150k for both machines)\n\nWe found you via the FachPack exhibitor list. Could we schedule a call this or next week? Please also indicate lead times.\n\nThanks,\nRachel Torres\nDirector of Engineering, Athletic Brewing Company"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-029",
+      "source_channel": "email",
+      "timestamp": "2026-09-17T04:12:00+02:00",
+      "raw_input": {
+        "from": "billing@secure-invoice-portal.info",
+        "to": "info@packflow-systems.de",
+        "subject": "ACTION REQUIRED: Overdue invoice #INV-4477",
+        "body": "Dear Customer,\n\nyour invoice #INV-4477 of EUR 2,340.00 is overdue. To avoid legal escalation, open the attached file and confirm payment details immediately.\n\n[attachment: invoice_4477.html]\n\nAccounts Department"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-035",
+      "source_channel": "email",
+      "timestamp": "2026-09-23T07:46:00+02:00",
+      "raw_input": {
+        "from": "Nadine Scholz <n.scholz@fiege.example>",
+        "to": "info@packflow-systems.de",
+        "subject": "Case erector for 3-shift operation – availability and service contract",
+        "body": "Dear Sir or Madam,\n\nas a contract packing operation (3-shift operation) we need an additional case erector on short notice:\n\n- FEFCO 0201, 20 cases/min, hot-melt\n- formats change daily, magazine must be refillable during operation\n- 24/7 service contract and spare-parts package are mandatory\n\nWhat is your current lead time? Given suitable availability we can decide quickly – the line should be running by February 2027 at the latest.\n\nBest regards,\nNadine Scholz\nHead of Production, Fiege"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-038",
+      "source_channel": "email",
+      "timestamp": "2026-09-24T16:02:00+02:00",
+      "raw_input": {
+        "from": "Lukas Hofer <l.hofer@deuerer.example>",
+        "to": "info@packflow-systems.de",
+        "subject": "Case erector + sealer for pet food plant (Allgäu, DE)",
+        "body": "Dear PackFlow team,\n\nwe produce premium pet food in the Allgäu region (approx. 110 employees) and are automating our end-of-line. Requirement: case erector and carton sealer for stand-up pouches packed into FEFCO 0201 cases, approx. 18 cases/min, case sizes 300x250x200 up to 550x380x350 mm.\n\nOne question in advance: for our case board quality, would you recommend hot-melt or tape sealing? We had adhesion problems with tape in the past (cold storage at 4°C).\n\nPlease send a budget offer for both machines. Timeline: order in Q4 2026.\n\nBest regards,\nLukas Hofer\nTechnical Manager, Tiernahrung Deuerer GmbH"
+      }
+    },
+    {
+      "lead_id": "LEAD-2026-040",
+      "source_channel": "email",
+      "timestamp": "2026-09-28T14:37:00+02:00",
+      "raw_input": {
+        "from": "buchhaltung@stahlhandel-bickel.de",
+        "to": "info@packflow-systems.de",
+        "subject": "Payment reminder: your order 4711 – invoice 26-08812 sheet metal blanks",
+        "body": "Dear Sir or Madam,\n\nregarding your order 4711 (3 mm sheet metal blanks, delivery date 04 Sep 2026), our invoice 26-08812 for EUR 6,412.80 is according to our accounting still open. We kindly ask you to settle it by 05 Oct 2026, or let us know briefly if payment has already been arranged.\n\nBest regards,\nAccounting, Stahlhandel Bickel GmbH"
+      }
+    }
+  ]
+}

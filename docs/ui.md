@@ -4,7 +4,7 @@ The FastAPI application exposes the quotation pipeline for local review. The
 React frontend is maintained separately in the sibling directory:
 
 ```text
-../quotation_bot_frontend/
+../friday_afternoon_fe/
 ```
 
 The API is intended for local development only. It has no authentication or
@@ -24,7 +24,7 @@ uv run uvicorn api.main:app --reload --port 8000
 In a second terminal:
 
 ```bash
-cd ../quotation_bot_frontend
+cd ../friday_afternoon_fe
 npm install
 npm run dev
 ```
@@ -37,6 +37,9 @@ The frontend provides:
 - Status cards for classification, human review, in-progress, completed, and
   non-quotation jobs
 - Horizontal status-card scrolling and activity pagination
+- Dedicated **Email queue** nav page (filter chips + search over all jobs)
+  and **Human review** nav page (every pending human request across jobs,
+  answerable inline), in addition to the dashboard overview
 - Live dashboard updates through Server-Sent Events
 - Job detail pages with the original email, draft, metadata, and human review
 - Draft approval, editing, rejection, and reviewer feedback

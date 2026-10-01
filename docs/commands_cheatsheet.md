@@ -47,19 +47,19 @@ mock demo).
 The React frontend is a sibling project. Run it separately with:
 
 ```bash
-cd ../quotation_bot_frontend
+cd ../friday_afternoon_fe
 npm run dev
 ```
 
-## Slidev presentation (`comments/Friday Afternoon/`)
+## Slidev presentation (`Friday Afternoon/`)
 
 ```bash
-cd "Friday_Afternoon/comments/Friday Afternoon"
-pnpm install                                                   # install deps (once)
-pnpm dev                                                        # live preview at http://localhost:3030 — highest fidelity (animations/mermaid all work)
-pnpm run build                                                  # syntax/build check only, produces nothing presentable
-pnpm exec slidev export --format pptx --output <name>           # export an image-based pptx
-pnpm exec slidev export --format png --output <dir>             # export one PNG per slide, for your own preview/QA
+cd "Friday Afternoon"
+corepack pnpm install                                           # install deps (once)
+corepack pnpm run dev                                            # live preview at http://localhost:3030 — highest fidelity (animations/mermaid all work)
+corepack pnpm run build                                          # syntax/build check only, produces nothing presentable
+corepack pnpm exec slidev export --format pptx --output <name>   # export an image-based pptx
+corepack pnpm exec slidev export --format png --output <dir>     # export one PNG per slide, for your own preview/QA
 ```
 
 Switch theme: change the `theme:` line in `slides.md`'s frontmatter

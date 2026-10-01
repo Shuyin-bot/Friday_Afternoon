@@ -15,7 +15,7 @@ uv run alembic current            # check current schema revision
 
 ```bash
 uv run python -m scripts.seed_mock_leads            # seed (idempotent — reruns skip already-seeded leads)
-uv run python -m scripts.seed_mock_leads --reset     # delete the previous 90000-90999 seed range, then reseed
+uv run python -m scripts.seed_mock_leads --reset     # delete seeded pipeline rows and artifacts
 uv run python -m agents_workflow.workflow            # classify and run the resumable core quotation agent
 ```
 

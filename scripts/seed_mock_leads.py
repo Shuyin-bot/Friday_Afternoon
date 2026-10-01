@@ -27,7 +27,7 @@ of real retrieved mail.
 
 Usage:
     uv run python -m scripts.seed_mock_leads          # seed (idempotent)
-    uv run python -m scripts.seed_mock_leads --reset  # delete seeded rows first, then reseed
+    uv run python -m scripts.seed_mock_leads --reset  # delete seeded pipeline rows
 """
 import argparse
 import json
@@ -35,7 +35,7 @@ import os
 from pathlib import Path
 
 from db_contexts.sessions import SessionLocal
-from db_contexts.models import QueuedJob, RetrievedEmail
+from db_contexts.models import AgentSession, HumanRequest, QueuedJob, RetrievedEmail
 from email_retriever.retriever import record_new_email
 
 # 定义模拟邮件的ID范围，确保不会与真实邮件的UID冲突。
@@ -77,9 +77,9 @@ def reset_seeded_rows() -> None:
     目标：删除 90000 到 90999 范围内的邮件
     删除对应的任务
     删除对应的 JSON 文件 
-    Delete previously seeded retrieved_email/queued_jobs rows and their
-    JSON artifacts. Only ever touches the reserved 90000-90999 id range —
-    never real IMAP-retrieved mail."""
+    Delete previously seeded pipeline rows and their JSON artifacts. Only ever
+    touches the reserved 90000-90999 id range — never real IMAP-retrieved mail.
+    """
     data_dir = os.getenv("DATA_DIR", os.getenv("DATA", "data"))
     with SessionLocal() as session: # 打开数据库会话/连接
         # 等价于SQL：
@@ -92,10 +92,30 @@ def reset_seeded_rows() -> None:
             .all()
         )
         count = len(emails)
+        email_row_ids = [email.id for email in emails]
+        jobs = (
+            session.query(QueuedJob)
+            .filter(QueuedJob.email_id.in_(email_row_ids))
+            .all()
+            if email_row_ids
+            else []
+        )
+        job_ids = [job.id for job in jobs]
+
+        # Delete child pipeline rows before queued_jobs because these foreign
+        # keys do not use database-level ON DELETE CASCADE.
+        if job_ids:
+            session.query(HumanRequest).filter(
+                HumanRequest.queued_job_id.in_(job_ids)
+            ).delete(synchronize_session=False)
+            session.query(AgentSession).filter(
+                AgentSession.queued_job_id.in_(job_ids)
+            ).delete(synchronize_session=False)
+            session.query(QueuedJob).filter(
+                QueuedJob.id.in_(job_ids)
+            ).delete(synchronize_session=False)
+
         for e in emails:
-            # 删除与该邮件相关的所有 queued_jobs
-            # 注意区别e.email_id（外部邮件ID：90016）和 e.id（内部数据库主键ID）
-            session.query(QueuedJob).filter_by(email_id=e.id).delete()
             # 找到JSON文件
             artifact = Path(data_dir) / "emails" / f"{e.email_id}_email.json"
             # 标记删除JSON文件，如果文件不存在则忽略
@@ -168,5 +188,5 @@ if __name__ == "__main__":
 
     if args.reset:
         reset_seeded_rows()
-    # 无论有没有执行 reset，最后都会导入模拟数据。
-    seed_mock_leads()
+    else:
+        seed_mock_leads()

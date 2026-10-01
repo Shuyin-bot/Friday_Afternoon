@@ -13,6 +13,7 @@ known gaps to state proactively rather than let the audience discover.
 2. Reset and reseed the demo leads so the run is fresh and reproducible:
    ```bash
    uv run python -m scripts.seed_mock_leads --reset
+  uv run python -m scripts.seed_mock_leads
    ```
 3. Run the full pipeline once before presenting, so you already know what
    each stage produced and are not debugging live:

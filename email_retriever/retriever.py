@@ -3,9 +3,28 @@ import email
 import os, json
 from dotenv import load_dotenv
 from db_contexts.repos.email_repository import create_email_if_not_exist, filter_out_seen_emails
+from email.header import decode_header, make_header
 from pathlib import Path
 
 load_dotenv()
+
+
+def _decode_mime_header(value: str | None) -> str:
+    if not value:
+        return ""
+    return str(make_header(decode_header(value)))
+
+
+def _decode_body(part) -> str:
+    payload = part.get_payload(decode=True)
+    if payload is None:
+        return ""
+
+    charset = part.get_content_charset() or "utf-8"
+    try:
+        return payload.decode(charset)
+    except (LookupError, UnicodeDecodeError):
+        return payload.decode("utf-8", errors="replace")
 
 def record_new_email(
     email_id: int, 
@@ -68,14 +87,14 @@ def connect_and_retrieve_email(fetch_all: bool = True) -> None:
             for part in email_message.walk():
                 content_type = part.get_content_type()
                 if content_type == "text/plain":
-                    content += part.get_payload(decode=True).decode('utf-8', errors='replace')
+                    content += _decode_body(part)
         else:
-            content = email_message.get_payload(decode=True).decode('utf-8', errors='replace')
+            content = _decode_body(email_message)
         
         record_new_email(
             email_id=int(email_id.decode('utf8')),
-            from_email=email_message.get("From"),
-            subject=email_message.get("Subject"),
+            from_email=_decode_mime_header(email_message.get("From")),
+            subject=_decode_mime_header(email_message.get("Subject")),
             content=content
         )
 
